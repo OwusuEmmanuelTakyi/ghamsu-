@@ -23,7 +23,6 @@ function Counter({
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.floor(eased * target));
       if (progress < 1) requestAnimationFrame(step);
@@ -32,7 +31,7 @@ function Counter({
   }, [inView, target, duration]);
 
   return (
-    <div ref={ref} className="text-3xl font-bold text-blue-900 mb-1">
+    <div ref={ref} className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-900 mb-1">
       {count.toLocaleString()}
       {suffix}
     </div>
@@ -67,30 +66,31 @@ export function AboutPreview() {
             </p>
 
             {/* Stats */}
-            {/* Stats */}
-<div className="grid grid-cols-3 gap-4 mb-8">
-  {[
-    { target: 100, suffix: "+", label: "Locals" },
-    { target: 100000, suffix: "+", label: "Members" },
-    { target: 50000, suffix: "+", label: "Souls Won/Year" },
-  ].map((stat, i) => (
-    <motion.div
-      key={stat.label}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: 0.2 + i * 0.1, duration: 0.7 }}
-      className="text-center p-4 bg-white rounded-lg shadow-sm"
-    >
-      <Counter
-        target={stat.target}
-        suffix={stat.suffix}
-        duration={2000 + i * 200}
-      />
-      <div className="text-sm text-gray-600">{stat.label}</div>
-    </motion.div>
-  ))}
-</div>
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
+              {[
+                { target: 100,    suffix: "+", label: "Locals" },
+                { target: 100000, suffix: "+", label: "Members" },
+                { target: 50000,  suffix: "+", label: "Souls Won/Year" },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + i * 0.1, duration: 0.7 }}
+                  className="text-center p-2 sm:p-4 bg-white rounded-lg shadow-sm"
+                >
+                  <Counter
+                    target={stat.target}
+                    suffix={stat.suffix}
+                    duration={2000 + i * 200}
+                  />
+                  <div className="text-[10px] sm:text-sm text-gray-600 leading-tight">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
 
             <Link
               to="/about"

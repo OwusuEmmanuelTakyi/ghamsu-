@@ -283,7 +283,7 @@ export function GhamsuToday() {
                   to="/contact"
                  className="px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold transition-all shadow-lg hover:scale-105"
                       >
-                    Contact an Executive Near You
+                    Contact an Executive
               </Link>
             </div>
           </div>
