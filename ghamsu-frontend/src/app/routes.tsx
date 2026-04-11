@@ -24,13 +24,13 @@ export const router = createBrowserRouter([
       { path: "events", Component: EventsPage },
       { path: "sermons", Component: SermonsPage },
       { path: "ministries", Component: MinistriesPage },
-      { path: "departments", Component: MinistriesPage }, // Redirect old URL
+      { path: "departments", Component: MinistriesPage },
       { path: "gallery", Component: GalleryPage },
       { path: "testimonials", Component: TestimonialsPage },
       { path: "contact", Component: ContactPage },
       { path: "blog", Component: BlogListPage },
       { path: "blog/:slug", Component: BlogDetailPage },
-      { path: "/boards/:slug", Component: BoardDetailPage  }
+      { path: "boards/:slug", Component: BoardDetailPage }, // ← removed leading slash
     ],
   },
 ]);
