@@ -91,15 +91,15 @@ export function HeroSection() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.9, duration: 0.8 }}
-                  className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center"
+                  className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-8"
                 >
                   <Link to="/about">
-                    <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-md font-semibold transition-all shadow-lg hover:shadow-xl text-sm md:text-base">
+                    <button className="w-full sm:w-auto px-8 py-4 bg-[#FFD700] hover:bg-[#F3C200] text-black rounded-full font-bold transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transform hover:-translate-y-1 text-sm md:text-base tracking-wide">
                       Learn More
                     </button>
                   </Link>
                   <Link to="/events">
-                    <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-md font-semibold transition-all border border-white/30 text-sm md:text-base">
+                    <button className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full font-bold transition-all border border-white/30 hover:border-white/50 shadow-lg text-sm md:text-base tracking-wide">
                       View Events
                     </button>
                   </Link>
