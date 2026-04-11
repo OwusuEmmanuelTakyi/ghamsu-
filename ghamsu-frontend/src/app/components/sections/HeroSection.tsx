@@ -50,18 +50,7 @@ export function HeroSection() {
 
             {/* Content */}
             <div className="relative h-full flex items-center justify-center px-4">
-              <div className="max-w-5xl mx-auto text-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                  className="mb-4 md:mb-6"
-                >
-                  <p className="text-orange-400 font-semibold tracking-wide uppercase text-xs md:text-sm mb-3 md:mb-4">
-                    Ghana Methodist Students' Union
-                  </p>
-                </motion.div>
-
+              <div className="max-w-5xl mx-auto text-center mt-16 md:mt-24">
                 <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}

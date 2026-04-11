@@ -42,8 +42,8 @@ export function Navigation() {
             <motion.div
               className={`flex items-center gap-3 cursor-pointer p-2 pr-6 rounded-full transition-all duration-300 ${
                 isScrolled 
-                  ? "bg-white/95 backdrop-blur-md shadow-lg border border-gray-200/50" 
-                  : "bg-white/40 backdrop-blur-md border border-white/20 shadow-sm"
+                  ? "bg-white/70 backdrop-blur-xl backdrop-saturate-200 shadow-lg border border-gray-200/40" 
+                  : "bg-white/10 backdrop-blur-xl backdrop-saturate-200 border border-white/20 shadow-lg"
               }`}
               whileHover={{ scale: 1.02 }}
             >
@@ -60,8 +60,8 @@ export function Navigation() {
                 })()}
               </div>
               <div>
-                <div className="text-xl font-bold text-slate-900 transition-colors">GHAMSU</div>
-                <div className="text-[10px] font-bold tracking-widest uppercase text-slate-800 transition-colors">Ghana Methodist Students' Union</div>
+                <div className={`text-xl font-bold transition-colors ${isScrolled ? "text-slate-900" : "text-white"}`}>GHAMSU</div>
+                <div className={`text-[10px] font-bold tracking-widest uppercase transition-colors ${isScrolled ? "text-slate-800" : "text-gray-200"}`}>Ghana Methodist Students' Union</div>
               </div>
             </motion.div>
           </Link>
@@ -69,16 +69,16 @@ export function Navigation() {
           {/* Desktop Navigation */}
           <div className={`hidden md:flex items-center gap-6 pl-8 pr-2 py-2 rounded-full transition-all duration-300 ${
             isScrolled 
-              ? "bg-white/95 backdrop-blur-md shadow-lg border border-gray-200/50 text-slate-800" 
-              : "bg-white/40 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.05)] text-slate-800"
+              ? "bg-white/70 backdrop-blur-xl backdrop-saturate-200 shadow-lg border border-gray-200/40 text-slate-800" 
+              : "bg-white/10 backdrop-blur-xl backdrop-saturate-200 border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.15)] text-white"
           }`}>
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
-                className={`font-medium text-sm transition-colors hover:text-black ${
+                className={`font-medium text-sm transition-colors hover:text-orange-300 ${
                   location.pathname === link.href
-                    ? "font-bold text-black"
+                    ? "font-bold text-orange-400"
                     : ""
                 }`}
               >
@@ -100,8 +100,8 @@ export function Navigation() {
           <button
             className={`md:hidden p-3 rounded-full transition-colors shadow-sm border ${
               isScrolled 
-                ? "bg-white/95 backdrop-blur-md text-slate-800 border-gray-200/50" 
-                : "bg-white/40 backdrop-blur-md text-slate-800 border-white/20"
+                ? "bg-white/70 backdrop-blur-xl backdrop-saturate-200 text-slate-800 border-gray-200/40" 
+                : "bg-white/10 backdrop-blur-xl backdrop-saturate-200 text-white border-white/20"
             }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
