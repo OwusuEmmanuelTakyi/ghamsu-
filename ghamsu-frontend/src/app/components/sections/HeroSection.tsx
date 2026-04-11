@@ -1,4 +1,5 @@
-import { motion } from "motion/react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import Slider from "react-slick";
 // @ts-ignore
 import { Link } from "react-router";
@@ -22,77 +23,109 @@ const heroSlides = [
 ];
 
 export function HeroSection() {
+  const [activeSlide, setActiveSlide] = useState(0);
+
   const settings = {
     dots: true,
     infinite: true,
-    speed: 1000,
+    speed: 1200,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 6000,
     fade: true,
     pauseOnHover: false,
+    beforeChange: (current: number, next: number) => setActiveSlide(next),
   };
 
   return (
-    <section id="home" className="relative h-[70vh] md:h-screen overflow-hidden">
+    <section id="home" className="relative h-[70vh] md:h-screen overflow-hidden bg-black">
       <Slider {...settings} className="h-full">
         {heroSlides.map((slide, index) => (
-          <div key={index} className="h-[70vh] md:h-screen relative">
-            {/* Background Image */}
-            <div
-              className="absolute inset-0 bg-cover bg-center"
+          <div key={index} className="h-[70vh] md:h-screen relative overflow-hidden">
+            {/* Cinematic Background Image */}
+            <motion.div
+              initial={{ scale: 1 }}
+              animate={{ scale: activeSlide === index ? 1.15 : 1 }}
+              transition={{ duration: 8, ease: "linear" }}
+              className="absolute inset-0 bg-cover bg-center origin-center"
               style={{ backgroundImage: `url(${slide.image})` }}
             />
             
             {/* Deep Blue Overlay */}
-            <div className="absolute inset-0 hero-overlay" />
+            <div className="absolute inset-0 hero-overlay opacity-80" />
 
             {/* Content */}
             <div className="relative h-full flex items-center justify-center px-4">
               <div className="max-w-5xl mx-auto text-center mt-16 md:mt-24">
-                <motion.h1
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
-                  className="text-3xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white"
-                >
-                  Welcome to <br />
-                  Ghana Methodist Students Union
-                </motion.h1>
+                <AnimatePresence mode="wait">
+                  {activeSlide === index && (
+                    <motion.div
+                      key={`content-${index}`}
+                      className="flex flex-col items-center justify-center"
+                    >
+                      <motion.h1
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -30 }}
+                        transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-8 leading-tight text-white drop-shadow-lg"
+                      >
+                        Welcome to <br />
+                        Ghana Methodist Students Union
+                      </motion.h1>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7, duration: 0.8 }}
-                  className="mb-6 md:mb-8"
-                >
-                  <p className="text-orange-400 text-sm md:text-2xl font-semibold mb-2 md:mb-3">
-                    Ambassadors in unity and love
-                  </p>
-                  <blockquote className="text-base md:text-xl text-white/90 mb-2 italic">
-                    "{slide.quote}"
-                  </blockquote>
-                  <p className="text-blue-200 text-xs md:text-sm"> {slide.reference}</p>
-                </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: 0.6, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        className="mb-6 md:mb-10 max-w-3xl"
+                      >
+                        <p className="text-[#FFD700] text-lg md:text-2xl font-bold mb-4 md:mb-6 tracking-wide drop-shadow-md">
+                          Ambassadors in unity and love
+                        </p>
+                        <div className="overflow-hidden mb-3">
+                          <motion.blockquote 
+                            initial={{ y: "100%" }}
+                            animate={{ y: 0 }}
+                            transition={{ delay: 0.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            className="text-xl md:text-3xl text-white/95 italic font-serif leading-relaxed"
+                          >
+                            "{slide.quote}"
+                          </motion.blockquote>
+                        </div>
+                        <motion.p 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 1.2, duration: 1 }}
+                          className="text-gray-300 text-xs md:text-sm font-semibold uppercase tracking-widest mt-6"
+                        > 
+                          — {slide.reference} —
+                        </motion.p>
+                      </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.9, duration: 0.8 }}
-                  className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-8"
-                >
-                  <Link to="/about">
-                    <button className="w-full sm:w-auto px-8 py-4 bg-[#FFD700] hover:bg-[#F3C200] text-black rounded-full font-bold transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transform hover:-translate-y-1 text-sm md:text-base tracking-wide">
-                      Learn More
-                    </button>
-                  </Link>
-                  <Link to="/events">
-                    <button className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full font-bold transition-all border border-white/30 hover:border-white/50 shadow-lg text-sm md:text-base tracking-wide">
-                      View Events
-                    </button>
-                  </Link>
-                </motion.div>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ delay: 1.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center mt-4"
+                      >
+                        <Link to="/about">
+                          <button className="w-full sm:w-auto px-8 py-4 bg-[#FFD700] hover:bg-[#F3C200] text-black rounded-full font-bold transition-all shadow-[0_0_20px_rgba(255,215,0,0.3)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transform hover:-translate-y-1 text-sm md:text-base tracking-wide">
+                            Learn More
+                          </button>
+                        </Link>
+                        <Link to="/events">
+                          <button className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-full font-bold transition-all border border-white/30 hover:border-white/50 shadow-lg text-sm md:text-base tracking-wide">
+                            View Events
+                          </button>
+                        </Link>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
