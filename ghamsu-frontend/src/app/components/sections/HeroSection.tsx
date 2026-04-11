@@ -7,16 +7,25 @@ import { Link } from "react-router";
 const heroSlides = [
   {
     image: "https://images.unsplash.com/photo-1775847086199-4a541ae87e46?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Mnx8fGVufDB8fHx8fA%3D%3D",
+    headingLine1: "Welcome to",
+    headingLine2: "Ghana Methodist Students' Union",
+    tagline: "Ambassadors in unity and love",
     quote: "We are therefore Christ’s ambassadors, as though God were making his appeal through us. We implore you on Christ’s behalf: Be reconciled to God.",
     reference: "2 Corinthians 5:20",
   },
   {
     image: "https://images.unsplash.com/photo-1775846636949-43aabf5cb8d9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Nnx8fGVufDB8fHx8fA%3D%3D",
+    headingLine1: "Growing Together",
+    headingLine2: "In Faith and Excellence",
+    tagline: "Rooted in the Word",
     quote: " All Scripture is God-breathed (inspired by God) and profitable for teaching, rebuking, correcting, and training in righteousness.",
     reference: "2 Timothy 3:16-17",
   },
   {
     image: "https://images.unsplash.com/photo-1775846986181-aedb2bf687fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NHx8fGVufDB8fHx8fA%3D%3D",
+    headingLine1: "Equipped For",
+    headingLine2: "Every Good Work",
+    tagline: "Transforming our generation",
     quote: "Walking in the Word: Equipped for Every Good Work",
     reference: "THEME FOR THE YEAR",
   },
@@ -62,21 +71,10 @@ export function HeroSection() {
       </div>
 
       {/* FOREGROUND CONTENT (STATIC & SYNCED) */}
-      <div className="relative z-10 h-full flex items-center justify-center px-4 pointer-events-none">
-        <div className="max-w-5xl mx-auto text-center mt-12 md:mt-20 pointer-events-auto w-full">
-          {/* STATIC MAIN TITLE (Animates only once on mount) */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-xl"
-          >
-            Welcome to <br />
-            Ghana Methodist Students Union
-          </motion.h1>
-
+      <div className="relative z-10 h-full flex items-center justify-center px-4 pointer-events-none pt-[80px] md:pt-[100px]">
+        <div className="max-w-5xl mx-auto text-center pointer-events-auto w-full">
           {/* DYNAMIC SLIDE CONTENT (Changes smoothly per slide) */}
-          <div className="min-h-[180px] md:min-h-[220px] flex flex-col justify-center mb-6 md:mb-8">
+          <div className="min-h-[320px] md:min-h-[380px] flex flex-col justify-center mb-6 md:mb-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSlide}
@@ -84,15 +82,26 @@ export function HeroSection() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                className="flex flex-col items-center justify-center max-w-3xl mx-auto w-full"
+                className="flex flex-col items-center justify-center max-w-4xl mx-auto w-full"
               >
+                {/* DYNAMIC MAIN TITLE */}
+                <motion.h1
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-xl"
+                >
+                  {heroSlides[activeSlide].headingLine1} <br />
+                  {heroSlides[activeSlide].headingLine2}
+                </motion.h1>
+
                 <motion.p 
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[#FFD700] text-lg md:text-2xl font-bold mb-4 md:mb-6 tracking-wide drop-shadow-md"
+                  className="text-[#FFD700] text-lg md:text-2xl font-bold mb-6 md:mb-8 tracking-wide drop-shadow-md"
                 >
-                  Ambassadors in unity and love
+                  {heroSlides[activeSlide].tagline}
                 </motion.p>
 
                 <div className="overflow-hidden mb-3 w-full">
@@ -100,7 +109,7 @@ export function HeroSection() {
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    className="text-xl md:text-3xl text-white/95 italic font-serif leading-relaxed"
+                    className="text-xl md:text-3xl text-white/95 italic font-serif leading-relaxed max-w-3xl mx-auto"
                   >
                     "{heroSlides[activeSlide].quote}"
                   </motion.blockquote>
