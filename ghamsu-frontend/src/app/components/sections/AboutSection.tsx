@@ -207,14 +207,14 @@ export function AboutSection() {
             <div className="space-y-4">
               <div className="h-48 rounded-xl overflow-hidden shadow-md">
                 <img
-                  src="https://images.unsplash.com/photo-1775846606933-7935fb012768?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8M3x8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1775846986147-d3b6f1560636?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D"
                   alt="GHAMSU Fellowship"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="h-64 rounded-xl overflow-hidden shadow-md">
                 <img
-                  src="https://images.unsplash.com/photo-1775846986147-d3b6f1560636?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D"
+                  src="https://images.unsplash.com/photo-1775934572106-ab8f05e9cc54?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D"
                   alt="GHAMSU Worship"
                   className="w-full h-full object-cover"
                 />
