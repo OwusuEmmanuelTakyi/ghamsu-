@@ -1,71 +1,83 @@
 import { motion } from "motion/react";
-import { Music, Heart, Megaphone, BookOpen, Users, HandHeart, Lightbulb, Video } from "lucide-react";
+import { Heart, Users, Lightbulb, Church, Smartphone, Tv, Palette, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+
+const boards = [
+  
+  {
+    id: 2,
+    slug: "publication-communication-board",
+    name: "Publication & Communication Board",
+    hostLocal: "UG Local",
+    description: "Managing official publications and communications across the connexion",
+    image: "https://images.unsplash.com/photo-1775926766081-4b8764c05488?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D",
+  },
+  {
+    id: 1,
+    slug: "project-board",
+    name: "Project Board",
+    hostLocal: "UCC Local",
+    description: "Overseeing and coordinating connexional projects and initiatives",
+    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=400&h=300&fit=crop",
+  },
+  {
+    id: 3,
+    slug: "audit-board",
+    name: "Audit Board",
+    hostLocal: "UPSA Local",
+    description: "Ensuring financial accountability and transparency in all operations",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
+  },
+  {
+    id: 4,
+    slug: "medical-board",
+    name: "Medical Board",
+    hostLocal: "KORLE-BU Local",
+    description: "Providing health guidance and welfare support for members",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop",
+  },
+  {
+    id: 5,
+    slug: "prayer-board",
+    name: "Prayer Board",
+    hostLocal: "KNUST Local",
+    description: "Coordinating intercession and spiritual covering for the connexion",
+    image: "https://images.unsplash.com/photo-1438232992991-995b671e4668?w=400&h=300&fit=crop",
+  },
+  {
+    id: 6,
+    slug: "research-education-board",
+    name: "Research & Education Board",
+    hostLocal: "UEW Local",
+    description: "Driving academic excellence, research, and educational development",
+    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=300&fit=crop",
+  },
+];
 
 const ministries = [
   {
     id: 1,
-    name: "Choir & Music Ministry",
-    icon: Music,
-    description: "Leading worship through song and inspiring hearts with melody",
-    members: "250+",
-    image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=300&fit=crop",
+    name: "Students in Church Evangelism",
+    icon: Church,
+    description: "Winning souls and spreading the Gospel within church communities on campus",
   },
   {
     id: 2,
-    name: "Prayer Ministry",
-    icon: Heart,
-    description: "Interceding for our members and campuses in powerful prayer",
-    members: "180+",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+    name: "Students in Digital Evangelism",
+    icon: Smartphone,
+    description: "Leveraging digital platforms to share the Gospel and reach students online",
   },
   {
     id: 3,
-    name: "Evangelism Ministry",
-    icon: Megaphone,
-    description: "Sharing the Gospel and winning souls for Christ on campus",
-    members: "200+",
-    image: "https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=400&h=300&fit=crop",
+    name: "Media & Publications",
+    icon: Tv,
+    description: "Amplifying GHAMSU's voice through media content and published materials",
   },
   {
     id: 4,
-    name: "Bible Study Ministry",
-    icon: BookOpen,
-    description: "Deep diving into God's Word for spiritual growth and maturity",
-    members: "300+",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=300&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Ushering Ministry",
-    icon: Users,
-    description: "Creating welcoming environments and serving with excellence",
-    members: "150+",
-    image: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=400&h=300&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Welfare & Outreach",
-    icon: HandHeart,
-    description: "Caring for members and serving communities in need",
-    members: "120+",
-    image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop",
-  },
-  {
-    id: 7,
-    name: "Creative Arts Ministry",
-    icon: Lightbulb,
-    description: "Expressing faith through drama, poetry, and visual arts",
-    members: "100+",
-    image: "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=400&h=300&fit=crop",
-  },
-  {
-    id: 8,
-    name: "Media & Tech Ministry",
-    icon: Video,
-    description: "Amplifying our message through digital platforms and technology",
-    members: "80+",
-    image: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&h=300&fit=crop",
+    name: "Arts Ministry",
+    icon: Palette,
+    description: "Expressing faith creatively through drama, poetry, music, and visual arts",
   },
 ];
 
@@ -73,23 +85,100 @@ export function MinistriesSection() {
   return (
     <section className="py-20 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+
+        {/* ── BOARDS SECTION ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12"
+        >
+          <p className="text-orange-500 font-semibold uppercase tracking-wide mb-3"></p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+            Connexional Boards
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Supporting the Connexional Executives in discharging their duties effectively
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+          {boards.map((board, index) => (
+            <motion.div
+              key={board.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+            >
+              <Link to={`/boards/${board.slug}`} className="block group">
+                <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  {/* Board Image */}
+                  <div className="h-48 relative overflow-hidden">
+                    <img
+                      src={board.image}
+                      alt={board.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/30 to-transparent" />
+                    {/* Host Local Badge */}
+                    <div className="absolute top-3 right-3 bg-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                      {board.hostLocal}
+                    </div>
+                    {/* "View Details" hover overlay */}
+                    <div className="absolute inset-0 bg-blue-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="flex items-center gap-2 text-white font-semibold text-sm bg-orange-500 px-4 py-2 rounded-full shadow-lg">
+                        View Details <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-orange-500 transition-colors">
+                      {board.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                      {board.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <div className="w-2 h-2 rounded-full bg-orange-500" />
+                        <span className="text-gray-500">Host Local:</span>
+                        <span className="text-orange-500">{board.hostLocal}</span>
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* ── DIVIDER ── */}
+        <div className="flex items-center gap-4 mb-20">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-gray-400 text-sm font-medium uppercase tracking-widest">GHAMSU MAJOR ACTIVITIES</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* ── MINISTRIES SECTION ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
         >
           <p className="text-orange-500 font-semibold uppercase tracking-wide mb-3">Get Involved</p>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gray-900">
-            Our Ministries
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+            Major Connexional Programs
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Discover your calling and serve with your unique gifts and talents
           </p>
         </motion.div>
 
-        {/* Ministries Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {ministries.map((ministry, index) => (
             <motion.div
@@ -98,42 +187,31 @@ export function MinistriesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white rounded-xl shadow-md hover-lift group overflow-hidden border border-gray-100"
+              className="bg-white rounded-xl shadow-md group overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow"
             >
-              {/* Ministry Icon/Image */}
-              <div className="h-48 relative overflow-hidden bg-gradient-to-br from-blue-900 to-blue-800">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20"
-                  >
-                    <ministry.icon className="w-10 h-10 text-white" />
-                  </motion.div>
-                </div>
+              <div className="h-48 relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center">
+                <motion.div
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="w-24 h-24 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg"
+                >
+                  <ministry.icon className="w-12 h-12 text-white" strokeWidth={1.5} />
+                </motion.div>
+                <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+                <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/10" />
               </div>
-
-              {/* Content */}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-500 transition-colors">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-orange-500 transition-colors">
                   {ministry.name}
                 </h3>
-
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+                <p className="text-gray-600 text-sm leading-relaxed">
                   {ministry.description}
                 </p>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-gray-500 text-sm">
-                    <Users className="w-4 h-4 text-orange-500" />
-                    <span>{ministry.members} members</span>
-                  </div>
-                </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Call to Action Section */}
+        {/* ── CALL TO ACTION ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -144,7 +222,7 @@ export function MinistriesSection() {
             Ready to Serve and Make a Difference?
           </h2>
           <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-            Join one of our vibrant ministries and use your gifts to impact lives, 
+            Join one of our vibrant ministries and use your gifts to impact lives,
             grow spiritually, and build God's kingdom on campus.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -161,7 +239,7 @@ export function MinistriesSection() {
           </div>
         </motion.div>
 
-        {/* Ministry Benefits */}
+        {/* ── WHY JOIN ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -173,21 +251,9 @@ export function MinistriesSection() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              {
-                title: "Spiritual Growth",
-                description: "Deepen your faith and relationship with God through active service",
-                icon: Heart,
-              },
-              {
-                title: "Develop Skills",
-                description: "Learn new skills and discover hidden talents while serving",
-                icon: Lightbulb,
-              },
-              {
-                title: "Build Community",
-                description: "Form lasting friendships with like-minded believers",
-                icon: Users,
-              },
+              { title: "Spiritual Growth", description: "Deepen your faith and relationship with God through active service", icon: Heart },
+              { title: "Develop Skills", description: "Learn new skills and discover hidden talents while serving", icon: Lightbulb },
+              { title: "Build Community", description: "Form lasting friendships with like-minded believers", icon: Users },
             ].map((benefit, index) => (
               <motion.div
                 key={benefit.title}
@@ -206,6 +272,7 @@ export function MinistriesSection() {
             ))}
           </div>
         </motion.div>
+
       </div>
     </section>
   );

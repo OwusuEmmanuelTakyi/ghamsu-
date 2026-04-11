@@ -47,7 +47,7 @@ export function AboutSection() {
     {
       icon: Eye,
       title: "Our Vision",
-      description: " •	To develop Ambassadors in unity and love for Christ •To witness Him to the nations •To build on the strong foundation of the church •	To responsible contributors to society",
+      description: " •	To develop Ambassadors in unity and love for Christ •To witness Him to the nations •To build on the strong foundation of the church  •To be responsible contributors to society",
       color: "orange-500",
     },
     {
@@ -198,6 +198,8 @@ export function AboutSection() {
               <p>
                 They were elected as the President and Secretary, respectively, of the group which saw the linking upp with the University of Science and Technology (KNUST) and University of Cape Coast (UCC) into forming the Ghana Inter-University Methodist Union (GIUMU). Eventually, 
                 the Union was extended to include other tertiary institutions and second cycle institutions.
+                On 8th June, 1984 at Annual Conference, it was decided that henceforth, GHAMSU be constituted by all post-elementary school Methodist students. The 23rd Annual Conference held at UCC FROM 14th-17th April, 1938 was very historical. The new GHAMSU emblem was officially unveiled whilst delegates adopted the 
+                GHAMSU anthem which was composed by Bro. Ben Otchere with the tune-name “BENREEN”.
               </p>
             </div>
           </div>

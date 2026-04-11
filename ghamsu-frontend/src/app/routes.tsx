@@ -11,6 +11,7 @@ import { TestimonialsPage } from "./pages/TestimonialsPage";
 import { ContactPage } from "./pages/ContactPage";
 import { BlogListPage } from "./components/blog/BlogListPage";
 import { BlogDetailPage } from "./components/blog/BlogDetailPage";
+import { BoardDetailPage } from "./pages/BoardDetailPage";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: "contact", Component: ContactPage },
       { path: "blog", Component: BlogListPage },
       { path: "blog/:slug", Component: BlogDetailPage },
+      { path: "/boards/:slug", Component: BoardDetailPage  }
     ],
   },
 ]);

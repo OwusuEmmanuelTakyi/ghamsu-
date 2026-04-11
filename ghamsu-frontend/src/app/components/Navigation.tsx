@@ -24,7 +24,7 @@ export function Navigation() {
     { name: "Events", href: "/events" },
     { name: "Blogs", href: "/blogs" },
     { name: "Sermons", href: "/sermons" },
-    { name: "Ministries", href: "/ministries" },
+    { name: "Boards & Major Activities", href: "/ministries" },
     { name: "Gallery", href: "/gallery" },
     { name: "Contact", href: "/contact" },
   ];
