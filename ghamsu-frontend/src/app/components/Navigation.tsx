@@ -33,19 +33,17 @@ export function Navigation() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? "bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100 py-2" 
-          : "bg-transparent py-4"
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-4 pt-6"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/">
             <motion.div
-              className={`flex items-center gap-3 cursor-pointer p-2 rounded-2xl transition-all duration-300 ${
-                !isScrolled ? "bg-white/40 backdrop-blur-md border border-white/20 shadow-sm" : ""
+              className={`flex items-center gap-3 cursor-pointer p-2 pr-6 rounded-full transition-all duration-300 ${
+                isScrolled 
+                  ? "bg-white/95 backdrop-blur-md shadow-lg border border-gray-200/50" 
+                  : "bg-white/40 backdrop-blur-md border border-white/20 shadow-sm"
               }`}
               whileHover={{ scale: 1.02 }}
             >
@@ -62,17 +60,17 @@ export function Navigation() {
                 })()}
               </div>
               <div>
-                <div className={`text-xl font-bold transition-colors ${!isScrolled ? "text-slate-800" : "text-blue-950"}`}>GHAMSU</div>
-                <div className={`text-[10px] font-medium tracking-wide uppercase transition-colors ${!isScrolled ? "text-slate-700" : "text-gray-500"}`}>Ghana Methodist Students' Union</div>
+                <div className="text-xl font-bold text-slate-900 transition-colors">GHAMSU</div>
+                <div className="text-[10px] font-bold tracking-widest uppercase text-slate-800 transition-colors">Ghana Methodist Students' Union</div>
               </div>
             </motion.div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className={`hidden md:flex items-center gap-6 pl-8 pr-2 py-2 rounded-full transition-all duration-300 ${
-            !isScrolled 
-              ? "bg-white/40 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.05)] text-slate-800"
-              : "bg-transparent text-gray-700"
+            isScrolled 
+              ? "bg-white/95 backdrop-blur-md shadow-lg border border-gray-200/50 text-slate-800" 
+              : "bg-white/40 backdrop-blur-md border border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.05)] text-slate-800"
           }`}>
             {navLinks.map((link) => (
               <Link
@@ -100,7 +98,11 @@ export function Navigation() {
 
           {/* Mobile Menu Button */}
           <button
-            className={`md:hidden p-2 rounded-full transition-colors ${!isScrolled ? "bg-white/40 backdrop-blur-md text-slate-800" : "text-gray-900"}`}
+            className={`md:hidden p-3 rounded-full transition-colors shadow-sm border ${
+              isScrolled 
+                ? "bg-white/95 backdrop-blur-md text-slate-800 border-gray-200/50" 
+                : "bg-white/40 backdrop-blur-md text-slate-800 border-white/20"
+            }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
