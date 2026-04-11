@@ -33,8 +33,10 @@ export function Navigation() {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md" : "bg-white"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent ${
+        isScrolled 
+          ? "bg-white/70 backdrop-blur-md shadow-sm border-gray-100" 
+          : "bg-white/95 backdrop-blur-sm"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,7 +108,7 @@ export function Navigation() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-white border-t border-gray-200"
+          className="md:hidden bg-white/95 backdrop-blur-md border-t border-gray-100/50 shadow-lg"
         >
           <div className="px-4 py-6 space-y-4">
             {navLinks.map((link) => (
