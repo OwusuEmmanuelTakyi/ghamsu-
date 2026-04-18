@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Heart, Users, Lightbulb, Church, Smartphone, Tv, Palette, ArrowRight } from "lucide-react";
+import { Heart, Users, Lightbulb, HandHeart,  Globe2, Smartphone, Tv, Radio, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
 
 const boards = [
@@ -57,27 +57,27 @@ const boards = [
 const ministries = [
   {
     id: 1,
-    name: "Students in Church Evangelism",
-    icon: Church,
-    description: "Winning souls and spreading the Gospel within church communities on campus",
+    name: "GHAMSU MISSIONS",
+    icon: Globe2,
+    description: "Outreach and evangelistic initiatives to spread the Gospel and establish new congregations in unreached areas",
   },
   {
     id: 2,
-    name: "Students in Digital Evangelism",
-    icon: Smartphone,
-    description: "Leveraging digital platforms to share the Gospel and reach students online",
+    name: "Students in Church Evangelism",
+    icon: HandHeart,
+    description: "Winning souls and spreading the Gospel within church communities through outreach and evangelistic activities",
   },
   {
     id: 3,
-    name: "Media & Publications",
-    icon: Tv,
-    description: "Amplifying GHAMSU's voice through media content and published materials",
+    name: "CONNEXTIONAL PRAYER CONFERENCE",
+    icon: Radio,
+    description: "Connexional program organized annually to foster spiritual growth and intercession among members",
   },
   {
     id: 4,
-    name: "Arts Ministry",
-    icon: Palette,
-    description: "Expressing faith creatively through drama, poetry, music, and visual arts",
+    name: "Students in Digital Evangelism",
+    icon: Smartphone,
+    description: "Spreading the Gospel through digital platforms, social media, and online content creation to reach a wider audience",
   },
 ];
 
@@ -175,7 +175,7 @@ export function MinistriesSection() {
             Major Connexional Programs
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover your calling and serve with your unique gifts and talents
+            Get to know our major programs and how you can be part of the impact on campus and beyond
           </p>
         </motion.div>
 
@@ -222,13 +222,13 @@ export function MinistriesSection() {
             Ready to Serve and Make a Difference?
           </h2>
           <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-            Join one of our vibrant ministries and use your gifts to impact lives,
-            grow spiritually, and build God's kingdom on campus.
+            Join one of our vibrant programs and use your gifts to impact lives,
+            grow spiritually, and build God's kingdom on campus and beyound.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
               <button className="px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-md font-semibold transition-all shadow-lg hover:shadow-xl">
-                Join a Ministry
+                Join us
               </button>
             </Link>
             <Link to="/about">
@@ -247,12 +247,12 @@ export function MinistriesSection() {
           className="mt-20"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center text-gray-900">
-            Why Join a Ministry?
+            Why Join GHAMSU MISSIONS
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { title: "Spiritual Growth", description: "Deepen your faith and relationship with God through active service", icon: Heart },
-              { title: "Develop Skills", description: "Learn new skills and discover hidden talents while serving", icon: Lightbulb },
+              { title: "Spread the Gospel", description: "Spread chirst in an unreach community by doing your national service there", icon: Lightbulb },
               { title: "Build Community", description: "Form lasting friendships with like-minded believers", icon: Users },
             ].map((benefit, index) => (
               <motion.div

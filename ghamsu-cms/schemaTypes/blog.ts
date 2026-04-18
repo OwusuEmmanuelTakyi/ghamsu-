@@ -92,12 +92,41 @@ export default defineType({
       type: 'boolean',
       initialValue: false,
     }),
+
+    // ── Engagement fields ────────────────────────────────────────────
+    defineField({
+      name: 'likes',
+      title: 'Likes',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // managed by API only, not editable in Studio
+      description: 'Automatically updated when readers like the article.',
+    }),
+    defineField({
+      name: 'views',
+      title: 'Views',
+      type: 'number',
+      initialValue: 0,
+      readOnly: true, // managed by API only, not editable in Studio
+      description: 'Automatically updated each time the article is opened.',
+    }),
   ],
   orderings: [
     {
       title: 'Published Date, Newest First',
       name: 'publishedDateDesc',
       by: [{ field: 'publishedDate', direction: 'desc' }],
+    },
+    // ── Optional: sort by most liked or most viewed in Studio
+    {
+      title: 'Most Liked',
+      name: 'mostLiked',
+      by: [{ field: 'likes', direction: 'desc' }],
+    },
+    {
+      title: 'Most Viewed',
+      name: 'mostViewed',
+      by: [{ field: 'views', direction: 'desc' }],
     },
   ],
   preview: {

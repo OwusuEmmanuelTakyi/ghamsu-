@@ -8,4 +8,8 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
-  
+  npm install @emailjs/browser
+  service_wvhde7l
+  template_segqyud
+
+  PUBLIC KEY   BIWwqf3ulG6-r150u

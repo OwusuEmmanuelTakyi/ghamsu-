@@ -1,14 +1,10 @@
-# Frontend Syntax Error Fixed & Schema Refactored
+# BlogDetailPage Fix - Progress Tracker
 
-## Frontend Fix
-- [x] Create TODO.md
-- [x] Update types.ts: photo → image
-- [x] Update queries.ts: EXECUTIVES_QUERY photo → image
-- [x] npm run dev - syntax error resolved
+## Steps:
+- [x] 1. Fix link renderer in BlogDetailPage.tsx to make target=\"_blank\" conditional for external links only
+- [ ] 2. Verify changes with dev server: cd ghamsu-frontend && npm run dev, test internal/external links
+- [ ] 3. Delete ghamsu-frontend/src/app/components/blog/BlogDetailPage-clean.tsx
+- [ ] 4. Update TODO-BlogDetail-Fix.md to mark complete
+- [ ] 5. Run linter if available: cd ghamsu-frontend && npm run lint
+- [ ] 6. attempt_completion
 
-## Schema Refactor
-- [x] Create schemaTypes/executive.ts (extracted from misc.ts)
-- [x] Clean misc.ts (removed executive default export)
-- [x] Update schemaTypes/index.ts import executive from './executive'
-
-**Next:** Run `cd ghamsu-cms && sanity dev` to test studio. Frontend at localhost:5174.

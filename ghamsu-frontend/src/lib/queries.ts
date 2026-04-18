@@ -1,6 +1,6 @@
 // ─── Scripture Quotes ──────────────────────────────────────────────────────────
 export const SCRIPTURE_QUOTES_QUERY = `
-  *[_type == \"scriptureQuote\" && active == true] | order(displayOrder asc) {
+  *[_type == "scriptureQuote" && active == true] | order(displayOrder asc) {
     _id,
     quoteText,
     reference
@@ -9,7 +9,7 @@ export const SCRIPTURE_QUOTES_QUERY = `
 
 // ─── GHAMSU Today ──────────────────────────────────────────────────────────────
 export const GHAMSU_TODAY_QUERY = `
-  *[_type == \"ghamsuToday\" && active == true][0] {
+  *[_type == "ghamsuToday" && active == true][0] {
     _id,
     themeTitle,
     themeDescription,
@@ -22,7 +22,7 @@ export const GHAMSU_TODAY_QUERY = `
 
 // ─── Events ────────────────────────────────────────────────────────────────────
 export const EVENTS_QUERY = `
-  *[_type == \"event\" && published == true] | order(date desc) {
+  *[_type == "event" && published == true] | order(date desc) {
     _id,
     title,
     date,
@@ -35,7 +35,7 @@ export const EVENTS_QUERY = `
 `
 
 export const EVENTS_PAGINATED_QUERY = (start: number, end: number) => `
-  *[_type == \"event\" && published == true] | order(date desc) [$start...$end] {
+  *[_type == "event" && published == true] | order(date desc) [$start...$end] {
     _id,
     title,
     date,
@@ -49,7 +49,7 @@ export const EVENTS_PAGINATED_QUERY = (start: number, end: number) => `
 
 // ─── Blogs ─────────────────────────────────────────────────────────────────────
 export const BLOGS_QUERY = `
-  *[_type == \"blog\"] | order(publishedDate desc) {
+  *[_type == "blog"] | order(publishedDate desc) {
     _id,
     title,
     slug,
@@ -59,13 +59,15 @@ export const BLOGS_QUERY = `
     publishedDate,
     readTime,
     featured,
-    \"authorName\": author->name,
-    \"authorPhoto\": author->photo
+    likes,
+    views,
+    "authorName": author->name,
+    "authorPhoto": author->photo
   }
 `
 
 export const FEATURED_BLOGS_QUERY = `
-  *[_type == \"blog\" && featured == true] | order(publishedDate desc)[0...3] {
+  *[_type == "blog" && featured == true] | order(publishedDate desc)[0...3] {
     _id,
     title,
     slug,
@@ -74,13 +76,15 @@ export const FEATURED_BLOGS_QUERY = `
     category,
     publishedDate,
     readTime,
-    \"authorName\": author->name,
-    \"authorPhoto\": author->photo
+    likes,
+    views,
+    "authorName": author->name,
+    "authorPhoto": author->photo
   }
 `
 
 export const BLOG_BY_SLUG_QUERY = `
-  *[_type == \"blog\" && slug.current == $slug][0] {
+  *[_type == "blog" && slug.current == $slug][0] {
     _id,
     title,
     slug,
@@ -90,16 +94,18 @@ export const BLOG_BY_SLUG_QUERY = `
     category,
     publishedDate,
     readTime,
-    \"authorName\": author->name,
-    \"authorPhoto\": author->photo,
-    \"authorBio\": author->bio,
-    \"authorPosition\": author->position
+    likes,
+    views,
+    "authorName": author->name,
+    "authorPhoto": author->photo,
+    "authorBio": author->bio,
+    "authorPosition": author->position
   }
 `
 
 // ─── Sermons ───────────────────────────────────────────────────────────────────
 export const SERMONS_QUERY = `
-  *[_type == \"sermon\"] | order(date desc) {
+  *[_type == "sermon"] | order(date desc) {
     _id,
     title,
     preacher,
@@ -117,7 +123,7 @@ export const SERMONS_QUERY = `
 
 // ─── Testimonials ──────────────────────────────────────────────────────────────
 export const TESTIMONIALS_QUERY = `
-  *[_type == \"testimonial\"] | order(date desc) {
+  *[_type == "testimonial"] | order(date desc) {
     _id,
     name,
     photo,
@@ -129,7 +135,7 @@ export const TESTIMONIALS_QUERY = `
 `
 
 export const FEATURED_TESTIMONIALS_QUERY = `
-  *[_type == \"testimonial\" && featured == true] | order(date desc) {
+  *[_type == "testimonial" && featured == true] | order(date desc) {
     _id,
     name,
     photo,
@@ -140,7 +146,7 @@ export const FEATURED_TESTIMONIALS_QUERY = `
 
 // ─── Gallery ───────────────────────────────────────────────────────────────────
 export const GALLERY_QUERY = `
-  *[_type == \"gallery\"] | order(date desc) {
+  *[_type == "gallery"] | order(date desc) {
     _id,
     title,
     description,
@@ -154,7 +160,7 @@ export const GALLERY_QUERY = `
 
 // ─── Executives ────────────────────────────────────────────────────────────────
 export const EXECUTIVES_QUERY = `
-  *[_type == \"executive\"] | order(order asc) {
+  *[_type == "executive"] | order(order asc) {
     _id,
     name,
     position,
@@ -169,7 +175,7 @@ export const EXECUTIVES_QUERY = `
 `
 
 export const EXECUTIVES_BY_CATEGORY_QUERY = (category: string) => `
-  *[_type == \"executive\" && category == \"${category}\"] | order(order asc) {
+  *[_type == "executive" && category == "${category}"] | order(order asc) {
     _id,
     name,
     position,
@@ -185,16 +191,15 @@ export const EXECUTIVES_BY_CATEGORY_QUERY = (category: string) => `
 
 // ─── Departments ───────────────────────────────────────────────────────────────
 export const DEPARTMENTS_QUERY = `
-  *[_type == \"department\"] {
+  *[_type == "department"] {
     _id,
     name,
     image,
     description,
     activities,
     color,
-    \"leaderName\": leader->name,
-    \"leaderPosition\": leader->position,
-    \"leaderPhoto\": leader->photo
+    "leaderName": leader->name,
+    "leaderPosition": leader->position,
+    "leaderPhoto": leader->photo
   }
 `
-

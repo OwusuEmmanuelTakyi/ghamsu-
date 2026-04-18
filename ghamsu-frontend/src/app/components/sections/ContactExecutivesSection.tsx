@@ -1,10 +1,11 @@
 import { motion } from "motion/react";
-import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, Send, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
 import { useExecutives } from "../../../lib/hooks";
 import { imageUrl } from "../../../lib/sanity";
 import type { Executive } from "../../../types/types";
+import emailjs from "@emailjs/browser";
 
 // ── Category tabs — values must match schema option values exactly ─────────────
 const CATEGORIES: { label: string; value: Executive["category"] }[] = [
@@ -15,15 +16,49 @@ const CATEGORIES: { label: string; value: Executive["category"] }[] = [
 ];
 
 // ── Contact form ───────────────────────────────────────────────────────────────
+
+
+// ── Contact form ───────────────────────────────────────────────────────────────
 function ContactForm() {
   const [formData, setFormData] = useState({
-    name: "", email: "", phone: "", subject: "", message: "",
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
   });
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+    setStatus("sending");
+
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          from_name:  formData.name,
+          from_email: formData.email,
+          phone:      formData.phone,
+          subject:    formData.subject,
+          message:    formData.message,
+          reply_to:   formData.email,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
+      setStatus("success");
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+
+      // Reset back to idle after 5 seconds
+      setTimeout(() => setStatus("idle"), 5000);
+
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 5000);
+    }
   };
 
   const handleChange = (
@@ -47,6 +82,34 @@ function ContactForm() {
         Have a question or want to get involved? Fill out the form below and
         we'll get back to you as soon as possible.
       </p>
+
+      {/* ── Success banner ── */}
+      {status === "success" && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 p-4 mb-6 rounded-lg bg-green-50 border border-green-200 text-green-700"
+        >
+          <CheckCircle className="w-5 h-5 shrink-0" />
+          <p className="font-medium">
+            Message sent! We'll get back to you soon.
+          </p>
+        </motion.div>
+      )}
+
+      {/* ── Error banner ── */}
+      {status === "error" && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 p-4 mb-6 rounded-lg bg-red-50 border border-red-200 text-red-700"
+        >
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <p className="font-medium">
+            Failed to send. Please try again or contact us directly.
+          </p>
+        </motion.div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -95,7 +158,7 @@ function ContactForm() {
               <option value="general">General Inquiry</option>
               <option value="membership">Membership</option>
               <option value="events">Events & Programs</option>
-              <option value="ministry">Join a Ministry</option>
+              <option value="testimonies">Testimonies</option>
               <option value="partnership">Partnership</option>
               <option value="other">Other</option>
             </select>
@@ -116,10 +179,20 @@ function ContactForm() {
 
         <button
           type="submit"
-          className="w-full py-4 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-semibold transition-all flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
+          disabled={status === "sending"}
+          className="w-full py-4 rounded-lg bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 disabled:cursor-not-allowed text-white font-semibold transition-all flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
         >
-          <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          Send Message
+          {status === "sending" ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            <>
+              <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Send Message
+            </>
+          )}
         </button>
       </form>
     </motion.div>

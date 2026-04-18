@@ -1,10 +1,17 @@
-import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import {
-  ArrowLeft, Calendar, Clock, User, BookOpen, Share2,
-  Facebook, Twitter, Link2, Loader2, ChevronRight,
-  Heart, Eye,
+  ArrowLeft,
+  Calendar,
+  Clock,
+  User,
+  BookOpen,
+  Share2,
+  Facebook,
+  Twitter,
+  Link2,
+  Loader2,
+  ChevronRight,
 } from "lucide-react";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { useBlogBySlug, useBlogs } from "../../../lib/hooks";
@@ -30,14 +37,12 @@ const ptComponents: PortableTextComponents = {
   },
   marks: {
     link: ({ children, value }) => {
-      const href = value?.href ?? "#";
-      const isExternal = typeof window !== "undefined" && 
-        href.startsWith("http") && 
-        !href.startsWith(window.location.origin);
+      const href = value && value.href ? value.href : "#";
       return (
         <a
           href={href}
-          {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-orange-500 underline hover:text-orange-600 transition-colors"
         >
           {children}
@@ -86,7 +91,7 @@ const ptComponents: PortableTextComponents = {
   },
 };
 
-// ── Category label map ─────────────────────────────────────────────────────────
+// ── Category label map ────────────────────────────────────────────────────────
 const CATEGORY_MAP: Record<string, string> = {
   faith: "Faith",
   leadership: "Leadership",
@@ -94,7 +99,7 @@ const CATEGORY_MAP: Record<string, string> = {
   devotionals: "Devotionals",
 };
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function formatDate(isoString: string | undefined): string {
   if (!isoString) return "";
   return new Date(isoString).toLocaleDateString("en-GH", {
@@ -103,11 +108,6 @@ function formatDate(isoString: string | undefined): string {
     month: "long",
     year: "numeric",
   });
-}
-
-function formatCount(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
-  return n.toString();
 }
 
 function fallbackCopy(text: string): void {
@@ -129,6 +129,7 @@ function fallbackCopy(text: string): void {
 
 async function handleShare(title: string): Promise<void> {
   const url = window.location.href;
+
   if (navigator.share) {
     try {
       await navigator.share({ title, url, text: title });
@@ -137,71 +138,16 @@ async function handleShare(title: string): Promise<void> {
       if (err instanceof Error && err.name === "AbortError") return;
     }
   }
+
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard
-      .writeText(url)
-      .then(() => alert("Link copied to clipboard!"))
-      .catch(() => fallbackCopy(url));
+    navigator.clipboard.writeText(url).then(function() {
+      alert("Link copied to clipboard!");
+    }).catch(function() {
+      fallbackCopy(url);
+    });
   } else {
     fallbackCopy(url);
   }
-}
-
-// ── Likes hook ─────────────────────────────────────────────────────────────────
-function useLikes(docId: string, initialLikes: number = 0) {
-  const storageKey = `liked_${docId}`;
-  const [likes, setLikes] = useState(initialLikes);
-  const [liked, setLiked] = useState(false);
-  const [animating, setAnimating] = useState(false);
-
-  useEffect(() => {
-    setLikes(initialLikes);
-  }, [initialLikes]);
-
-  useEffect(() => {
-    if (!docId) return;
-    setLiked(localStorage.getItem(storageKey) === "true");
-  }, [docId, storageKey]);
-
-  const toggleLike = async () => {
-    if (!docId) return;
-    const newLiked = !liked;
-    const delta = newLiked ? 1 : -1;
-    const newCount = Math.max(0, likes + delta);
-
-    // Optimistic update (local only - no Sanity write)
-    setLiked(newLiked);
-    setLikes(newCount);
-    setAnimating(true);
-    setTimeout(() => setAnimating(false), 400);
-    localStorage.setItem(storageKey, String(newLiked));
-  };
-
-  return { likes, liked, animating, toggleLike };
-}
-
-// ── Views hook ─────────────────────────────────────────────────────────────────
-function useViews(docId: string, initialViews: number = 0) {
-  const [views, setViews] = useState(initialViews);
-  const tracked = useRef(false);
-
-  useEffect(() => {
-    setViews(initialViews);
-  }, [initialViews]);
-
-  useEffect(() => {
-    if (!docId || tracked.current) return;
-    const sessionKey = `viewed_${docId}`;
-    if (sessionStorage.getItem(sessionKey)) return;
-
-    tracked.current = true;
-    sessionStorage.setItem(sessionKey, "true");
-
-// Local views tracking only (no Sanity write)
-    setViews((v) => v + 1);
-  }, [docId]);
-
-  return { views };
 }
 
 // ── Main component ─────────────────────────────────────────────────────────────
@@ -211,31 +157,18 @@ export function BlogDetailPage(): JSX.Element {
   const { data: blog, loading, error } = useBlogBySlug(slug ?? "");
   const { data: allBlogs } = useBlogs();
 
-  const { likes, liked, animating, toggleLike } = useLikes(
-    blog?._id ?? "",
-    blog?.likes ?? 0
-  );
-  const { views } = useViews(blog?._id ?? "", blog?.views ?? 0);
-
   const related = allBlogs
-    ? allBlogs
-        .filter(
-          (p: any) =>
-            p._id !== blog?._id && p.category === blog?.category
-        )
-        .slice(0, 3)
+    ? allBlogs.filter((p: any) => p._id !== (blog?._id) && p.category === blog?.category)
+      .slice(0, 3)
     : [];
 
-  const currentUrl =
-    typeof window !== "undefined" ? window.location.href : "";
-  const hasNativeShare =
-    typeof navigator !== "undefined" &&
-    typeof navigator.share === "function";
+  const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+  const hasNativeShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
 
   return (
     <div className="min-h-screen bg-white">
 
-      {/* ── Sticky back nav ── */}
+      {/* ── Back nav ── */}
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <button
@@ -256,9 +189,7 @@ export function BlogDetailPage(): JSX.Element {
             {blog && (
               <>
                 <ChevronRight className="w-4 h-4" />
-                <span className="text-gray-700 truncate max-w-48">
-                  {blog.title}
-                </span>
+                <span className="text-gray-700 truncate max-w-48">{blog.title}</span>
               </>
             )}
           </div>
@@ -306,24 +237,12 @@ export function BlogDetailPage(): JSX.Element {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-              {/* Views + Likes floating over hero */}
-              <div className="absolute bottom-5 right-5 flex items-center gap-3">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-sm">
-                  <Eye className="w-4 h-4" />
-                  <span>{formatCount(views)}</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-sm">
-                  <Heart className="w-4 h-4 fill-white" />
-                  <span>{formatCount(likes)}</span>
-                </div>
-              </div>
             </div>
           )}
 
           <div className="max-w-4xl mx-auto px-4 py-12">
 
-            {/* Meta row */}
+            {/* Meta */}
             <div className="flex flex-wrap items-center gap-3 mb-6">
               {blog.category && (
                 <span className="px-3 py-1 rounded-lg bg-blue-100 text-blue-900 text-sm font-semibold">
@@ -342,10 +261,6 @@ export function BlogDetailPage(): JSX.Element {
                   {blog.readTime} min read
                 </div>
               )}
-              <div className="flex items-center gap-1.5 text-gray-400 text-sm ml-auto">
-                <Eye className="w-4 h-4" />
-                <span>{formatCount(views)} views</span>
-              </div>
             </div>
 
             {/* Title */}
@@ -375,14 +290,10 @@ export function BlogDetailPage(): JSX.Element {
                 <div>
                   <p className="font-bold text-gray-900">{blog.authorName}</p>
                   {blog.authorPosition && (
-                    <p className="text-orange-500 text-sm font-medium">
-                      {blog.authorPosition}
-                    </p>
+                    <p className="text-orange-500 text-sm font-medium">{blog.authorPosition}</p>
                   )}
                   {blog.authorBio && (
-                    <p className="text-gray-500 text-sm mt-1 line-clamp-2">
-                      {blog.authorBio}
-                    </p>
+                    <p className="text-gray-500 text-sm mt-1 line-clamp-2">{blog.authorBio}</p>
                   )}
                 </div>
               </div>
@@ -390,7 +301,7 @@ export function BlogDetailPage(): JSX.Element {
 
             <hr className="border-gray-100 mb-10" />
 
-            {/* Body */}
+            {/* Portable Text body */}
             {blog.content ? (
               <div className="prose-article">
                 <PortableText value={blog.content} components={ptComponents} />
@@ -401,72 +312,60 @@ export function BlogDetailPage(): JSX.Element {
               </p>
             )}
 
-            {/* ── Likes + Share bar ── */}
+            {/* ── Share ── */}
             <div className="mt-14 pt-8 border-t border-gray-100">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <p className="text-gray-700 font-semibold mb-4 flex items-center gap-2">
+                <Share2 className="w-5 h-5 text-orange-500" />
+                Share this article
+              </p>
+              <div className="flex flex-wrap gap-3">
 
-                {/* Like button + view count */}
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={toggleLike}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 border-2 ${
-                      liked
-                        ? "bg-red-50 border-red-400 text-red-500 shadow-md shadow-red-100"
-                        : "bg-white border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-400"
-                    }`}
-                  >
-                    <AnimatePresence mode="wait">
-                      <motion.span
-                        key={liked ? "liked" : "unliked"}
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: animating ? 1.4 : 1, opacity: 1 }}
-                        exit={{ scale: 0.5, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Heart
-                          className="w-5 h-5"
-                          fill={liked ? "currentColor" : "none"}
-                        />
-                      </motion.span>
-                    </AnimatePresence>
-                    <span>
-                      {formatCount(likes)} {likes === 1 ? "Like" : "Likes"}
-                    </span>
-                  </button>
-
-                  <div className="flex items-center gap-1.5 text-gray-400 text-sm">
-                    <Eye className="w-4 h-4" />
-                    <span>{formatCount(views)} views</span>
-                  </div>
-                </div>
-
-                {/* Share buttons */}
-                <div className="flex flex-wrap gap-2 items-center">
-                  
-
-                  {hasNativeShare && (
-                    <button
-                      onClick={() => handleShare(blog.title)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold transition-colors shadow"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      Share
-                    </button>
-                  )}
-                  
-
+                {/* Native share */}
+                {hasNativeShare && (
                   <button
                     onClick={() => handleShare(blog.title)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold transition-colors"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold transition-colors shadow"
                   >
-                    <Link2 className="w-4 h-4" />
-                    Copy Link
+                    <Share2 className="w-4 h-4" />
+                    Share
                   </button>
-                </div>
+                )}
+
+                {/* Facebook */}
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#1877f2] hover:bg-[#1464d8] text-white text-sm font-semibold transition-colors"
+                >
+                  <Facebook className="w-4 h-4" />
+                  Facebook
+                </a>
+
+                {/* X / Twitter */}
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(blog.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-black hover:bg-gray-800 text-white text-sm font-semibold transition-colors"
+                >
+                  <Twitter className="w-4 h-4" />
+                  X / Twitter
+                </a>
+
+                {/* Copy link */}
+                <button
+                  onClick={() => handleShare(blog.title)}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold transition-colors"
+                >
+                  <Link2 className="w-4 h-4" />
+                  Copy Link
+                </button>
+
               </div>
             </div>
 
-            {/* ── Related articles ── */}
+            {/* Related articles */}
             {related.length > 0 && (
               <div className="mt-16">
                 <h3 className="text-2xl font-bold text-gray-900 mb-8">
@@ -508,7 +407,7 @@ export function BlogDetailPage(): JSX.Element {
               </div>
             )}
 
-            {/* ── Bottom CTA ── */}
+            {/* Bottom CTA */}
             <div className="mt-16 text-center">
               <Link
                 to="/blog"
