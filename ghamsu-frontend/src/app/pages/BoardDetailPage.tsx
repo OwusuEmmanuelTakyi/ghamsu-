@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router";
 import { motion } from "motion/react";
 import { ArrowLeft, MapPin, Users, ArrowRight } from "lucide-react";
 
-// ── Static board data — matches slugs in MinistriesSection exactly ─────────────
+// ── Board data drawn from the GHAMSU Constitution (Articles 19–29) ────────────
 const BOARDS: Record<string, {
   name: string;
   hostLocal: string;
@@ -13,107 +13,123 @@ const BOARDS: Record<string, {
   meetingSchedule?: string;
   contact?: string;
 }> = {
-  "publication-communication-board": {
-    name: "Publication & Communication Board",
-    hostLocal: "UG Local",
-    description: "Managing official publications and communications across the connexion",
-    image: "https://images.unsplash.com/photo-1775926766081-4b8764c05488?w=1200&auto=format&fit=crop&q=80",
-    fullDescription:
-      "The Publication & Communication Board is responsible for managing all official publications, press releases, and communication channels of GHAMSU. It ensures that the voice of the connexion reaches every member accurately and promptly through print, digital, and broadcast media.",
-    responsibilities: [
-      "Producing and distributing GHAMSU newsletters and bulletins",
-      "Managing official social media accounts and digital platforms",
-      "Coordinating press releases and media interactions",
-      "Designing and printing promotional materials for events",
-      "Archiving connexional records and publications",
-    ],
-    meetingSchedule: "First Saturday of every month",
-    contact: "publication@ghamsu.org",
-  },
-  "project-board": {
-    name: "Project Board",
-    hostLocal: "UCC Local",
-    description: "Overseeing and coordinating connexional projects and initiatives",
-    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&auto=format&fit=crop&q=80",
-    fullDescription:
-      "The Project Board plans, coordinates, and supervises all major connexional projects and development initiatives. It ensures that GHAMSU's programmes are executed with excellence, within budget, and in alignment with the union's mission.",
-    responsibilities: [
-      "Planning and executing connexional development projects",
-      "Monitoring project timelines and budgets",
-      "Liaising with external partners and sponsors",
-      "Evaluating project outcomes and reporting to executives",
-      "Identifying new project opportunities that advance GHAMSU's mission",
-    ],
-    meetingSchedule: "Second Saturday of every month",
-    contact: "projects@ghamsu.org",
-  },
-  "audit-board": {
-    name: "Audit Board",
-    hostLocal: "UPSA Local",
-    description: "Ensuring financial accountability and transparency in all operations",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&auto=format&fit=crop&q=80",
-    fullDescription:
-      "The Audit Board upholds the highest standards of financial integrity within GHAMSU. It independently reviews all financial transactions, ensures compliance with the union's financial policies, and provides transparent reports to the connexion.",
-    responsibilities: [
-      "Auditing connexional accounts and financial records",
-      "Reviewing financial reports submitted by local executives",
-      "Ensuring compliance with GHAMSU financial guidelines",
-      "Presenting audit reports at connexional meetings",
-      "Recommending improvements to financial processes",
-    ],
-    meetingSchedule: "Quarterly",
-    contact: "audit@ghamsu.org",
-  },
-  "medical-board": {
-    name: "Medical Board",
-    hostLocal: "KORLE-BU Local",
-    description: "Providing health guidance and welfare support for members",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&auto=format&fit=crop&q=80",
-    fullDescription:
-      "The Medical Board promotes the health and well-being of all GHAMSU members. It provides medical guidance, organises health outreach programmes, and ensures welfare support is available to members facing health challenges.",
-    responsibilities: [
-      "Organising health screening and medical outreach programmes",
-      "Providing first aid and medical support at connexional events",
-      "Educating members on health and wellness",
-      "Supporting members facing medical emergencies",
-      "Liaising with hospitals and health institutions",
-    ],
-    meetingSchedule: "Third Saturday of every month",
-    contact: "medical@ghamsu.org",
-  },
   "prayer-board": {
     name: "Prayer Board",
     hostLocal: "KNUST Local",
-    description: "Coordinating intercession and spiritual covering for the connexion",
+    description: "Constituting the prayer force of the Union and coordinating intercession at all levels",
     image: "https://images.unsplash.com/photo-1438232992991-995b671e4668?w=1200&auto=format&fit=crop&q=80",
     fullDescription:
-      "The Prayer Board is the spiritual engine of GHAMSU. It coordinates intercession, organises prayer retreats, and ensures that the connexion is covered in prayer at every level. It mobilises members to pray for the union, the nation, and the world.",
+      "The Prayer Board constitutes the prayer force of GHAMSU, interceding for all activities and progress of the Union as well as outside bodies — particularly the Methodist Church. It arranges prayer teams for every Methodist Conference, steps up the prayer life of individual members, and organises the National Prayer Conference open to all members of the Union. The Board receives prayer requests from all organs of the Union, issues prayer bulletins, and maintains a vibrant prayer culture across all levels of the connexion.",
     responsibilities: [
-      "Organising connexional and local prayer meetings",
-      "Coordinating the GHAMSU 24-hour prayer chain",
-      "Planning and executing prayer retreats and vigils",
-      "Producing prayer points and devotional materials",
-      "Interceding for leadership, members, and national issues",
+      "Constituting the prayer force of the Union for all activities and progress",
+      "Sending a prayer team to every Methodist Conference",
+      "Suggesting and implementing methods to continually strengthen the prayer life of individual members",
+      "Receiving prayer requests from all organs of the Union and issuing prayer bulletins",
+      "Organising the National Prayer Conference open to all members of the Union",
+      "Taking interest in and supporting the various Student Interest and Community Evangelism (SICE) groups at all levels",
     ],
-    meetingSchedule: "Every Friday evening",
+    meetingSchedule: "As determined by the Board executive",
     contact: "prayer@ghamsu.org",
   },
+
+  "publication-communication-board": {
+    name: "Publication & Communication Board",
+    hostLocal: "UG Local",
+    description: "Managing official publications, communications, and digital platforms of the Union",
+    image: "https://images.unsplash.com/photo-1775926766081-4b8764c05488?w=1200&auto=format&fit=crop&q=80",
+    fullDescription:
+      "The Publication & Communication Board (PCB) serves as the official voice of GHAMSU. It publishes the Wesleyan Student newsletter at least twice a year and produces The Wesleyan Ambassador magazine for the National Biennial Conference. The PCB is the sole publisher of all of the Union's educational materials, the official reporter for all connexional activities, and the manager of the Union's website. It actively motivates members to develop the habit of writing Christian articles and literature.",
+    responsibilities: [
+      "Publishing the Wesleyan Student newsletter at least twice a year",
+      "Producing The Wesleyan Ambassador magazine for the National Biennial Conference",
+      "Serving as the sole publisher of all Union educational materials",
+      "Acting as the official reporter for all activities of the Union and taking minutes at NEC Meetings",
+      "Managing the Union's official website and digital platforms",
+      "Calling for and editing articles from members and outsiders before publication",
+      "Evolving methods to motivate members to write Christian articles and literature",
+      "Serving as proof readers for the Church or any other body when called upon",
+    ],
+    meetingSchedule: "As determined by the Editor-in-Chief",
+    contact: "publication@ghamsu.org",
+  },
+
+  "audit-board": {
+    name: "Audit Board",
+    hostLocal: "UPSA Local",
+    description: "Ensuring financial accountability, transparency, and compliance across the connexion",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&auto=format&fit=crop&q=80",
+    fullDescription:
+      "The Audit Board upholds the highest standards of financial integrity within GHAMSU. It advises the National Executive Group (NEG) on all matters of finance, audits the accounts of the NEG, DEG, and Major Locals annually and before every handover, and coordinates the activities of Diocesan Audit Committees. The Board itself is subject to audit by an auditor appointed by NEC, ensuring independent oversight at every level.",
+    responsibilities: [
+      "Advising NEG on all matters of finance",
+      "Auditing annually and before handover the accounts of NEG, DEG, and Major Locals",
+      "Offering explanation of accounting policies and guidance to Financial Secretaries at all levels",
+      "Ensuring all Locals and Dioceses adhere to GHAMSU accounting policies",
+      "Coordinating the activities of Diocesan Audit Committees",
+      "Reporting non-compliance to DEC and NEC and offering recommendations",
+      "Presenting audit reports at connexional meetings",
+    ],
+    meetingSchedule: "Quarterly and before every handover",
+    contact: "audit@ghamsu.org",
+  },
+
+  "project-board": {
+    name: "Project Board",
+    hostLocal: "UCC Local",
+    description: "Undertaking viable income-generating projects and producing official Union souvenirs",
+    image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&auto=format&fit=crop&q=80",
+    fullDescription:
+      "The Project Board undertakes viable income-generating projects to financially support the Union and its programmes. It is the sole authorised producer of all GHAMSU souvenirs and branded items — no Diocese, Local, or individual may produce any GHAMSU item without its express approval in consultation with NEG. The Board channels financial support to NEC and ensures all products meet consistent quality standards.",
+    responsibilities: [
+      "Undertaking viable income-generating projects to support the Union",
+      "Serving as the sole producer of all official GHAMSU souvenirs and branded items",
+      "Supporting NEC financially through project proceeds",
+      "Approving or declining requests from Dioceses and Locals to produce GHAMSU items",
+      "Purchasing, stocking, and controlling the quality of all Board products",
+      "Supervising the sales and distribution of all Union products",
+    ],
+    meetingSchedule: "As determined by the Chairperson",
+    contact: "projects@ghamsu.org",
+  },
+
   "research-education-board": {
     name: "Research & Education Board",
     hostLocal: "UEW Local",
-    description: "Driving academic excellence, research, and educational development",
+    description: "Educating the Union on Methodist doctrine, history, and contemporary issues",
     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&auto=format&fit=crop&q=80",
     fullDescription:
-      "The Research & Education Board champions academic excellence within GHAMSU. It conducts research on issues affecting student life, produces educational resources, and creates programmes that help members excel both academically and spiritually.",
+      "The Research & Education Board (REB) is the intellectual backbone of GHAMSU. It educates the Union on the doctrines, practices, history, and hymns of the Methodist Church, and researches past and present issues confronting the Church and the Union. The REB also examines the Union's relationship with other Christian bodies, addresses social and political issues in relation to the Church, and makes its research findings available for publication through the PCB. It undertakes research work on behalf of NEG and educates NEG and NEC on relevant issues.",
     responsibilities: [
-      "Conducting research on student welfare and academic challenges",
-      "Producing educational resources and study guides for members",
-      "Organising seminars, workshops, and academic symposia",
-      "Advocating for student rights and academic policies",
-      "Collaborating with universities on educational initiatives",
+      "Educating the Union on the doctrines, practices, and history of the Methodist Church",
+      "Educating members on the history and use of Methodist hymns and liturgy",
+      "Researching past and present issues confronting the Methodist Church and the Union",
+      "Researching the Union's relationship with other Christian bodies",
+      "Researching social and political issues in relation to the Church",
+      "Making research findings available for publication to the PCB",
+      "Undertaking research work for and on behalf of NEG and educating NEG and NEC on relevant issues",
     ],
-    meetingSchedule: "Second and fourth Saturday of every month",
+    meetingSchedule: "As determined by the Board executive",
     contact: "research@ghamsu.org",
+  },
+
+  "medical-board": {
+    name: "Medical Board",
+    hostLocal: "KORLE-BU Local",
+    description: "Promoting the health, welfare, and well-being of members across the connexion",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&auto=format&fit=crop&q=80",
+    fullDescription:
+      "The Medical Board promotes the physical and holistic well-being of all GHAMSU members in fulfilment of the Union's commitment to the total development of its members — spirit, soul, and body. Rooted in the belief that a healthy member is a more effective ambassador for Christ, the Board organises health outreach programmes, provides medical support at connexional events, and ensures that members facing health challenges receive timely guidance and welfare support. Operating under the authority of the National Executive Council (NEC), the Board works in collaboration with medical institutions and health professionals to serve the connexion.",
+    responsibilities: [
+      "Organising health screening and medical outreach programmes for members and communities",
+      "Providing first aid and medical support at all connexional events and conferences",
+      "Educating members on health, wellness, and disease prevention",
+      "Supporting members and their families facing medical emergencies or health challenges",
+      "Liaising with hospitals, clinics, and health institutions on behalf of the Union",
+      "Advising NEG and NEC on health-related matters affecting members",
+      "Promoting the holistic well-being of members in line with GHAMSU's mission",
+    ],
+    meetingSchedule: "As determined by the Board executive",
+    contact: "medical@ghamsu.org",
   },
 };
 

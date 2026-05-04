@@ -57,12 +57,22 @@ export default defineType({
       ],
       validation: (Rule) => Rule.required(),
     }),
+
+    // ── Author Information ───────────────────────────────────────────
     defineField({
-      name: 'author',
-      title: 'Author',
-      type: 'reference',
-      to: [{ type: 'author' }],
+      name: 'authorName',
+      title: 'Author Name',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+      description: 'Name of the person who wrote this blog post',
     }),
+    defineField({
+      name: 'authorLocal',
+      title: 'Author Local / Position',
+      type: 'string',
+      description: 'Local chapter, position, or affiliation (e.g., "UG Local", "Chapel Leader", "Student")',
+    }),
+
     defineField({
       name: 'category',
       title: 'Category',
@@ -99,7 +109,7 @@ export default defineType({
       title: 'Likes',
       type: 'number',
       initialValue: 0,
-      readOnly: true, // managed by API only, not editable in Studio
+      readOnly: true,
       description: 'Automatically updated when readers like the article.',
     }),
     defineField({
@@ -107,7 +117,7 @@ export default defineType({
       title: 'Views',
       type: 'number',
       initialValue: 0,
-      readOnly: true, // managed by API only, not editable in Studio
+      readOnly: true,
       description: 'Automatically updated each time the article is opened.',
     }),
   ],
@@ -117,7 +127,6 @@ export default defineType({
       name: 'publishedDateDesc',
       by: [{ field: 'publishedDate', direction: 'desc' }],
     },
-    // ── Optional: sort by most liked or most viewed in Studio
     {
       title: 'Most Liked',
       name: 'mostLiked',

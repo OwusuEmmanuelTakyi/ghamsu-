@@ -12,6 +12,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { BlogListPage } from "./components/blog/BlogListPage";
 import { BlogDetailPage } from "./components/blog/BlogDetailPage";
 import { BoardDetailPage } from "./pages/BoardDetailPage";
+import { PartnerWithUsPage } from "./pages/Partnerwithuspage";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
       { path: "gallery", Component: GalleryPage },
       { path: "testimonials", Component: TestimonialsPage },
       { path: "contact", Component: ContactPage },
+      {path: "partner-with-us", Component: PartnerWithUsPage},
       { path: "blog", Component: BlogListPage },
       { path: "blog/:slug", Component: BlogDetailPage },
       { path: "boards/:slug", Component: BoardDetailPage }, // ← removed leading slash
