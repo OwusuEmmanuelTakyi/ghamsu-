@@ -1,45 +1,31 @@
-import { Calendar, Clock, MapPin } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
-import { Link } from 'react-router';
+import { Calendar, Clock, MapPin } from 'lucide-react'
+import { AnimatedSection } from './AnimatedSection'
+import { Link } from 'react-router'
+import { useEvents } from '../../../src/lib/hooks'
+import { urlFor } from '../../../src/lib/sanity'
 
 export function UpcomingEvents() {
-  const events = [
-    {
-      title: 'Sunday Worship Service',
-      date: 'May 7, 2026',
-      time: '9:00 AM',
-      location: 'Main Sanctuary',
-      image: 'https://images.unsplash.com/photo-1662151820001-0c8d949304a4?w=800',
-    },
-    {
-      title: 'Youth Night',
-      date: 'May 10, 2026',
-      time: '6:00 PM',
-      location: 'Youth Center',
-      image: 'https://images.unsplash.com/photo-1594913421979-b9399c0cd4f9?w=800',
-    },
-    {
-      title: 'Community Outreach',
-      date: 'May 15, 2026',
-      time: '10:00 AM',
-      location: 'Downtown',
-      image: 'https://images.unsplash.com/photo-1594913495702-0872744c6968?w=800',
-    },
-    {
-      title: 'Prayer Meeting',
-      date: 'May 17, 2026',
-      time: '7:00 PM',
-      location: 'Prayer Room',
-      image: 'https://images.unsplash.com/photo-1569292567777-e5d61a759322?w=800',
-    },
-    {
-      title: 'Family Festival',
-      date: 'May 25, 2026',
-      time: '2:00 PM',
-      location: 'Church Grounds',
-      image: 'https://images.unsplash.com/photo-1713012633197-1426a345ca99?w=800',
-    },
-  ];
+  const { data: events, loading, error } = useEvents()
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+  }
+
+  const displayEvents = events && events.length > 0 ? events.slice(0, 5) : []
 
   return (
     <section className="py-32 px-6 bg-secondary">
@@ -68,44 +54,58 @@ export function UpcomingEvents() {
           </div>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          {events.map((event, index) => (
-            <AnimatedSection key={index} delay={index * 0.1}>
-              <div className="bg-card border border-border hover:border-accent/50 transition-all duration-500 overflow-hidden group">
-                <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                </div>
-                <div className="p-6">
-                  <h3
-                    className="text-lg mb-4 tracking-tight line-clamp-2 min-h-[3.5rem]"
-                    style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                  >
-                    {event.title}
-                  </h3>
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-accent" strokeWidth={1.5} />
-                      <span>{event.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-accent" strokeWidth={1.5} />
-                      <span>{event.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-accent" strokeWidth={1.5} />
-                      <span>{event.location}</span>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading events...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500">Error loading events: {error.message}</p>
+          </div>
+        ) : displayEvents.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No upcoming events at the moment.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {displayEvents.map((event, index) => (
+              <AnimatedSection key={event._id} delay={index * 0.1}>
+                <div className="bg-card border border-border hover:border-accent/50 transition-all duration-500 overflow-hidden group">
+                  <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
+                    <img
+                      src={urlFor(event.flyer).width(400).height(300).url()}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  </div>
+                  <div className="p-6">
+                    <h3
+                      className="text-lg mb-4 tracking-tight line-clamp-2 min-h-[3.5rem]"
+                      style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+                    >
+                      {event.title}
+                    </h3>
+                    <div className="space-y-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-accent" strokeWidth={1.5} />
+                        <span>{formatDate(event.date)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-accent" strokeWidth={1.5} />
+                        <span>{formatTime(event.date)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-accent" strokeWidth={1.5} />
+                        <span>{event.venue}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </AnimatedSection>
-          ))}
-        </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        )}
 
         <div className="mt-8 text-center md:hidden">
           <Link to="/events">
@@ -116,5 +116,5 @@ export function UpcomingEvents() {
         </div>
       </div>
     </section>
-  );
+  )
 }

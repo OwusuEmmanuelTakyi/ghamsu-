@@ -5,6 +5,15 @@ import {
   GHAMSU_TODAY_QUERY,
   EVENTS_QUERY,
   EVENTS_BY_TYPE_QUERY,
+  EVENT_BY_ID_QUERY,
+  NEWS_QUERY,
+  FEATURED_NEWS_QUERY,
+  NEWS_BY_SLUG_QUERY,
+  NEWS_BY_CATEGORY_QUERY,
+  ARTICLES_QUERY,
+  FEATURED_ARTICLES_QUERY,
+  ARTICLE_BY_SLUG_QUERY,
+  ARTICLES_BY_CATEGORY_QUERY,
   BLOGS_QUERY,
   FEATURED_BLOGS_QUERY,
   BLOG_BY_SLUG_QUERY,
@@ -28,6 +37,8 @@ import type {
   ScriptureQuote,
   GhamsuToday,
   Event,
+  News,
+  Article,
   Blog,
   Sermon,
   Testimonial,
@@ -97,11 +108,45 @@ export function useEvents(filters?: { eventType?: string }): SanityFetchState<Ev
 }
 
 export function useEventById(id: string): SanityFetchState<Event | null> {
-  return useSanityData<Event | null>(EVENTS_QUERY, { id })
+  return useSanityData<Event | null>(EVENT_BY_ID_QUERY, { id })
 }
 
 // ────────────────────────────────────────────────────────────────────────────────
-// ─── Blogs ─────────────────────────────────────────────────────────────────────
+// ─── News (Separate) ───────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────
+
+export function useNews(filters?: { newsCategory?: string }): SanityFetchState<News[]> {
+  const query = filters?.newsCategory ? NEWS_BY_CATEGORY_QUERY : NEWS_QUERY
+  return useSanityData<News[]>(query, filters)
+}
+
+export function useFeaturedNews(): SanityFetchState<News[]> {
+  return useSanityData<News[]>(FEATURED_NEWS_QUERY)
+}
+
+export function useNewsBySlug(slug: string): SanityFetchState<News | null> {
+  return useSanityData<News | null>(NEWS_BY_SLUG_QUERY, { slug })
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// ─── Articles (Separate) ───────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────
+
+export function useArticles(filters?: { articleCategory?: string }): SanityFetchState<Article[]> {
+  const query = filters?.articleCategory ? ARTICLES_BY_CATEGORY_QUERY : ARTICLES_QUERY
+  return useSanityData<Article[]>(query, filters)
+}
+
+export function useFeaturedArticles(): SanityFetchState<Article[]> {
+  return useSanityData<Article[]>(FEATURED_ARTICLES_QUERY)
+}
+
+export function useArticleBySlug(slug: string): SanityFetchState<Article | null> {
+  return useSanityData<Article | null>(ARTICLE_BY_SLUG_QUERY, { slug })
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// ─── Blogs (Combined News + Articles) ──────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────
 
 export function useBlogs(filters?: { category?: string }): SanityFetchState<Blog[]> {

@@ -13,6 +13,7 @@ import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
 import Partner from './pages/Partner';
 import BlogDetail from './pages/BlogDetail';
+import BoardDetail from './pages/BoardDetail';
 
 function Layout() {
   return (
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
       { path: 'contact', Component: Contact },
       { path: 'partner', Component: Partner },
       { path: 'blogs/:slug', Component: BlogDetail },
+      {path: 'boards/:slug', Component: BoardDetail }
     ],
   },
 ]);

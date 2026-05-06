@@ -9,7 +9,7 @@ export const SCRIPTURE_QUOTES_QUERY = `
 
 // ─── GHAMSU Today ──────────────────────────────────────────────────────────────
 export const GHAMSU_TODAY_QUERY = `
-  *[_type == "ghamsuToday" && active == true][0] {
+  *[_type == "ghamsuToday" && active == true] | order(date desc)[0] {
     _id,
     themeTitle,
     themeDescription,
@@ -21,8 +21,6 @@ export const GHAMSU_TODAY_QUERY = `
 `
 
 // ─── Events ────────────────────────────────────────────────────────────────────
-// ─── Events ────────────────────────────────────────────────────────────────
-
 export const EVENTS_QUERY = `
   *[_type == "event" && published == true] | order(date asc) {
     _id,
@@ -65,87 +63,297 @@ export const EVENTS_BY_TYPE_QUERY = `
   }
 `
 
-// ─── Blogs ─────────────────────────────────────────────────────────────────────
-// Replace all BLOGS_QUERY related queries with these:
-
-// ─── Blogs ─────────────────────────────────────────────────────────────
-
-export const BLOGS_QUERY = `
-  *[_type == "blog"] | order(publishedDate desc) {
+// ─── News ──────────────────────────────────────────────────────────────────────
+export const NEWS_QUERY = `
+  *[_type == "news"] | order(publishedDate desc) {
     _id,
+    _type,
     title,
     slug,
     featuredImage,
     excerpt,
-    category,
+    newsCategory,
     publishedDate,
-    readTime,
     featured,
     likes,
     views,
-    authorName,
-    authorLocal
+    reporter,
+    reporterPosition,
+    "category": "news",
+    "authorName": reporter,
+    "authorLocal": reporterPosition
   }
 `
 
-export const FEATURED_BLOGS_QUERY = `
-  *[_type == "blog" && featured == true] | order(publishedDate desc)[0...3] {
+export const FEATURED_NEWS_QUERY = `
+  *[_type == "news" && featured == true] | order(publishedDate desc)[0...3] {
     _id,
+    _type,
     title,
     slug,
     featuredImage,
     excerpt,
-    category,
+    newsCategory,
     publishedDate,
-    readTime,
     featured,
     likes,
     views,
-    authorName,
-    authorLocal
+    reporter,
+    reporterPosition,
+    "category": "news",
+    "authorName": reporter,
+    "authorLocal": reporterPosition
   }
 `
 
-export const BLOG_BY_SLUG_QUERY = `
-  *[_type == "blog" && slug.current == $slug][0] {
+export const NEWS_BY_SLUG_QUERY = `
+  *[_type == "news" && slug.current == $slug][0] {
     _id,
+    _type,
     title,
     slug,
     featuredImage,
     excerpt,
     content,
-    category,
+    newsCategory,
     publishedDate,
-    readTime,
     featured,
     likes,
     views,
-    authorName,
-    authorLocal
+    reporter,
+    reporterPosition,
+    "category": "news",
+    "authorName": reporter,
+    "authorLocal": reporterPosition
   }
 `
 
-export const BLOGS_BY_CATEGORY_QUERY = `
-  *[_type == "blog" && category == $category] | order(publishedDate desc) {
+export const NEWS_BY_CATEGORY_QUERY = `
+  *[_type == "news" && newsCategory == $category] | order(publishedDate desc) {
     _id,
+    _type,
     title,
     slug,
     featuredImage,
     excerpt,
-    category,
+    newsCategory,
+    publishedDate,
+    featured,
+    likes,
+    views,
+    reporter,
+    reporterPosition,
+    "category": "news",
+    "authorName": reporter,
+    "authorLocal": reporterPosition
+  }
+`
+
+// ─── Articles ──────────────────────────────────────────────────────────────────
+export const ARTICLES_QUERY = `
+  *[_type == "article"] | order(publishedDate desc) {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    articleCategory,
     publishedDate,
     readTime,
     featured,
     likes,
     views,
     authorName,
-    authorLocal
+    authorLocal,
+    "category": articleCategory
+  }
+`
+
+export const FEATURED_ARTICLES_QUERY = `
+  *[_type == "article" && featured == true] | order(publishedDate desc)[0...3] {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    articleCategory,
+    publishedDate,
+    readTime,
+    featured,
+    likes,
+    views,
+    authorName,
+    authorLocal,
+    "category": articleCategory
+  }
+`
+
+export const ARTICLE_BY_SLUG_QUERY = `
+  *[_type == "article" && slug.current == $slug][0] {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    content,
+    articleCategory,
+    publishedDate,
+    readTime,
+    featured,
+    likes,
+    views,
+    authorName,
+    authorLocal,
+    "category": articleCategory
+  }
+`
+
+export const ARTICLES_BY_CATEGORY_QUERY = `
+  *[_type == "article" && articleCategory == $category] | order(publishedDate desc) {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    articleCategory,
+    publishedDate,
+    readTime,
+    featured,
+    likes,
+    views,
+    authorName,
+    authorLocal,
+    "category": articleCategory
+  }
+`
+
+// ─── Combined Blogs (News + Articles) ──────────────────────────────────────────
+export const BLOGS_QUERY = `
+  *[_type == "news" || _type == "article"] | order(publishedDate desc) {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    publishedDate,
+    featured,
+    likes,
+    views,
+    _type == "news" => {
+      "newsCategory": newsCategory,
+      "reporter": reporter,
+      "reporterPosition": reporterPosition,
+      "category": "news",
+      "authorName": reporter,
+      "authorLocal": reporterPosition
+    },
+    _type == "article" => {
+      "articleCategory": articleCategory,
+      "authorName": authorName,
+      "authorLocal": authorLocal,
+      "category": articleCategory,
+      "readTime": readTime
+    }
+  }
+`
+
+export const FEATURED_BLOGS_QUERY = `
+  *[(_type == "news" || _type == "article") && featured == true] | order(publishedDate desc)[0...3] {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    publishedDate,
+    featured,
+    likes,
+    views,
+    _type == "news" => {
+      "newsCategory": newsCategory,
+      "reporter": reporter,
+      "reporterPosition": reporterPosition,
+      "category": "news",
+      "authorName": reporter,
+      "authorLocal": reporterPosition
+    },
+    _type == "article" => {
+      "articleCategory": articleCategory,
+      "authorName": authorName,
+      "authorLocal": authorLocal,
+      "category": articleCategory,
+      "readTime": readTime
+    }
+  }
+`
+
+export const BLOG_BY_SLUG_QUERY = `
+  *[(_type == "news" || _type == "article") && slug.current == $slug][0] {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    content,
+    publishedDate,
+    featured,
+    likes,
+    views,
+    _type == "news" => {
+      "newsCategory": newsCategory,
+      "reporter": reporter,
+      "reporterPosition": reporterPosition,
+      "category": "news",
+      "authorName": reporter,
+      "authorLocal": reporterPosition
+    },
+    _type == "article" => {
+      "articleCategory": articleCategory,
+      "authorName": authorName,
+      "authorLocal": authorLocal,
+      "category": articleCategory,
+      "readTime": readTime
+    }
+  }
+`
+
+export const BLOGS_BY_CATEGORY_QUERY = `
+  *[(_type == "news" || _type == "article") && (newsCategory == $category || articleCategory == $category)] | order(publishedDate desc) {
+    _id,
+    _type,
+    title,
+    slug,
+    featuredImage,
+    excerpt,
+    publishedDate,
+    featured,
+    likes,
+    views,
+    _type == "news" => {
+      "newsCategory": newsCategory,
+      "reporter": reporter,
+      "reporterPosition": reporterPosition,
+      "category": "news",
+      "authorName": reporter,
+      "authorLocal": reporterPosition
+    },
+    _type == "article" => {
+      "articleCategory": articleCategory,
+      "authorName": authorName,
+      "authorLocal": authorLocal,
+      "category": articleCategory,
+      "readTime": readTime
+    }
   }
 `
 
 // ─── Sermons ───────────────────────────────────────────────────────────────────
-// ─── Sermons ───────────────────────────────────────────────────────────────
-
 export const SERMONS_QUERY = `
   *[_type == "sermon"] | order(date desc) {
     _id,
@@ -203,8 +411,11 @@ export const TESTIMONIALS_QUERY = `
     _id,
     name,
     photo,
+    role,
+    local,
     university,
     testimony,
+    rating,
     date,
     featured
   }
@@ -215,14 +426,60 @@ export const FEATURED_TESTIMONIALS_QUERY = `
     _id,
     name,
     photo,
+    role,
+    local,
     university,
-    testimony
+    testimony,
+    rating,
+    date,
+    featured
+  }
+`
+
+export const TESTIMONIAL_BY_ID_QUERY = `
+  *[_type == "testimonial" && _id == $id][0] {
+    _id,
+    name,
+    photo,
+    role,
+    local,
+    university,
+    testimony,
+    rating,
+    date,
+    featured
   }
 `
 
 // ─── Gallery ───────────────────────────────────────────────────────────────────
 export const GALLERY_QUERY = `
   *[_type == "gallery"] | order(date desc) {
+    _id,
+    title,
+    description,
+    coverImage,
+    photoCount,
+    date,
+    link,
+    category
+  }
+`
+
+export const GALLERY_BY_CATEGORY_QUERY = `
+  *[_type == "gallery" && category == $category] | order(date desc) {
+    _id,
+    title,
+    description,
+    coverImage,
+    photoCount,
+    date,
+    link,
+    category
+  }
+`
+
+export const GALLERY_BY_ID_QUERY = `
+  *[_type == "gallery" && _id == $id][0] {
     _id,
     title,
     description,
@@ -241,27 +498,42 @@ export const EXECUTIVES_QUERY = `
     name,
     position,
     image,
-    universityChapter,
     phone,
     email,
-    bio,
+    whatsapp,
     order,
-    category
+    category,
+    bio
   }
 `
 
-export const EXECUTIVES_BY_CATEGORY_QUERY = (category: string) => `
-  *[_type == "executive" && category == "${category}"] | order(order asc) {
+export const EXECUTIVE_BY_ID_QUERY = `
+  *[_type == "executive" && _id == $id][0] {
     _id,
     name,
     position,
     image,
-    universityChapter,
     phone,
     email,
-    bio,
+    whatsapp,
     order,
-    category
+    category,
+    bio
+  }
+`
+
+export const EXECUTIVES_BY_CATEGORY_QUERY = `
+  *[_type == "executive" && category == $category] | order(order asc) {
+    _id,
+    name,
+    position,
+    image,
+    phone,
+    email,
+    whatsapp,
+    order,
+    category,
+    bio
   }
 `
 
@@ -272,10 +544,28 @@ export const DEPARTMENTS_QUERY = `
     name,
     image,
     description,
+    leader->{
+      _id,
+      name,
+      position
+    },
     activities,
-    color,
-    "leaderName": leader->name,
-    "leaderPosition": leader->position,
-    "leaderPhoto": leader->photo
+    color
+  }
+`
+
+export const DEPARTMENT_BY_ID_QUERY = `
+  *[_type == "department" && _id == $id][0] {
+    _id,
+    name,
+    image,
+    description,
+    leader->{
+      _id,
+      name,
+      position
+    },
+    activities,
+    color
   }
 `

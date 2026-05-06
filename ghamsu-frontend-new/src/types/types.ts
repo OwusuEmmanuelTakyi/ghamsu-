@@ -53,14 +53,12 @@ export interface Event {
   published: boolean
 }
 
-// ─── Blog ──────────────────────────────────────────────────────────────────────
-// Find the Blog interface and replace it with this:
+// ─── News ──────────────────────────────────────────────────────────────────────
+export type NewsCategory = 'announcement' | 'event-coverage' | 'campus-news' | 'union-update'
 
-export type BlogCategory = 'faith' | 'leadership' | 'campus-life' | 'devotionals'
-
-export interface Blog {
+export interface News {
   _id: string
-  _type: 'blog'
+  _type: 'news'
   title: string
   slug: {
     current: string
@@ -68,15 +66,42 @@ export interface Blog {
   featuredImage: SanityImage
   excerpt: string
   content?: PortableTextContent
-  authorName: string           // ← Direct string field
-  authorLocal?: string         // ← Direct string field (optional)
-  category?: BlogCategory
+  reporter: string                  // ← Reporter name (required)
+  reporterPosition?: string         // ← Reporter position/local (optional)
+  newsCategory?: NewsCategory
+  publishedDate?: string
+  featured: boolean
+  likes: number
+  views: number
+  category?: 'news'                 // ← For unified blog filtering
+}
+
+// ─── Article ───────────────────────────────────────────────────────────────────
+export type ArticleCategory = 'faith' | 'leadership' | 'campus-life' | 'devotionals'
+
+export interface Article {
+  _id: string
+  _type: 'article'
+  title: string
+  slug: {
+    current: string
+  }
+  featuredImage: SanityImage
+  excerpt: string
+  content?: PortableTextContent
+  authorName: string               // ← Author name (required)
+  authorLocal?: string             // ← Author position/local (optional)
+  articleCategory?: ArticleCategory
   publishedDate?: string
   readTime?: number
   featured: boolean
   likes: number
   views: number
+  category?: ArticleCategory       // ← For unified blog filtering
 }
+
+// ─── Blog (Legacy - Maps to News or Article) ───────────────────────────────────
+export type Blog = News | Article
 
 // ─── Sermon ────────────────────────────────────────────────────────────────────
 export type MediaType = 'video' | 'audio'
@@ -102,8 +127,11 @@ export interface Testimonial {
   _id: string
   name: string
   photo?: SanityImage
+  role?: string
+  local?: string
   university?: string
   testimony: string
+  rating?: number
   date?: string
   featured?: boolean
 }
@@ -125,7 +153,7 @@ export interface Executive {
   _id: string
   name: string
   position: string
-  image: SanityImage          
+  image: SanityImage
   phone?: string
   email?: string
   whatsapp?: string
@@ -140,9 +168,26 @@ export interface Department {
   name: string
   image?: SanityImage
   description: string
+  leader?: {
+    _id: string
+    name: string
+    position: string
+  }
   activities?: string[]
   color?: string
-  leaderName?: string
-  leaderPosition?: string
-  leaderPhoto?: SanityImage
+}
+
+// ─── Portable Text Content ────────────────────────────────────────────────────
+export type PortableTextContent = Array<{
+  _type: string
+  _key?: string
+  children?: Array<{ _type: string; text: string; [key: string]: unknown }>
+  [key: string]: unknown
+}>
+
+// ─── Fetch State ──────────────────────────────────────────────────────────────
+export interface SanityFetchState<T> {
+  data: T | null
+  loading: boolean
+  error: Error | null
 }

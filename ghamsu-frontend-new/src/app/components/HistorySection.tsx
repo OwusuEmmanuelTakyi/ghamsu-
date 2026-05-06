@@ -1,6 +1,6 @@
-import { AnimatedSection } from './AnimatedSection';
-import { Link } from 'react-router';
-import { ArrowRight } from 'lucide-react';
+import { AnimatedSection } from './AnimatedSection'
+import { Link } from 'react-router'
+import { ArrowRight } from 'lucide-react'
 
 export function HistorySection() {
   return (
@@ -13,7 +13,7 @@ export function HistorySection() {
               <div className="relative overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1569292567773-229e2b7521ee?w=1200"
-                  alt="Church History"
+                  alt="GHAMSU History"
                   className="w-full h-64 sm:h-96 md:h-[500px] lg:h-[600px] object-cover"
                 />
                 {/* Overlay gradient */}
@@ -22,7 +22,9 @@ export function HistorySection() {
 
               {/* Floating year badge */}
               <div className="absolute top-8 right-8 bg-accent text-accent-foreground px-8 py-6">
-                <p className="text-5xl font-bold mb-1" style={{ fontFamily: 'var(--font-heading)' }}>1999</p>
+                <p className="text-5xl font-bold mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                  1965
+                </p>
                 <p className="text-sm tracking-wider uppercase">Founded</p>
               </div>
             </div>
@@ -42,28 +44,29 @@ export function HistorySection() {
                 className="text-4xl md:text-5xl lg:text-6xl mb-8 tracking-tight leading-[1.1]"
                 style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
               >
-                A Legacy of Faith<br />& Community
+                A Legacy of Faith<br />& Ambassadors for Christ
               </h2>
 
               <div className="space-y-6 mb-10">
                 <p className="text-base text-muted-foreground leading-relaxed font-light">
-                  Ghana Methodist Student's Union was founded in 1999 by a small group of passionate believers who shared
-                  a vision to create a welcoming community where people could encounter God's love and
-                  discover their purpose. What began as a handful of families meeting in a living room
-                  has grown into a vibrant congregation of over 5,000 members.
+                  Ghana Methodist Students' Union was founded in 1965 under the name Ghana Inter-University Methodist
+                  Union (GIUMU) by Prof. S.N. Quartey and two vibrant former seminary students, Rt. Rev. Michael Kumi and
+                  Rt. Rev. Blankson. What began as a small fellowship on university campuses has grown into a vibrant
+                  Connexional movement spanning multiple educational institutions.
                 </p>
 
                 <p className="text-base text-muted-foreground leading-relaxed font-light">
-                  Over the past 25 years, we've witnessed countless lives transformed, families restored,
-                  and communities renewed. From our humble beginnings to our current multi-campus presence,
-                  our mission has remained unchanged: to be a beacon of hope and a catalyst for positive
-                  change in our city and beyond.
+                  In 1984, at the Annual Conference, GHAMSU was constituted to include all post-elementary Methodist
+                  students. The historic 23rd Annual Conference at UCC unveiled our official emblem, anthem, and the
+                  defining slogan "Ambassadors for Christ!" This marked a turning point in our identity and mission across
+                  the nation.
                 </p>
 
                 <p className="text-base text-muted-foreground leading-relaxed font-light">
-                  Today, we continue to grow and adapt while staying rooted in timeless biblical truths.
-                  Our journey is marked by faithful service, innovative ministry, and an unwavering
-                  commitment to making disciples who make a difference in the world.
+                  Today, over 60 years later, GHAMSU continues to be a beacon of hope and spiritual guidance for Methodist
+                  students. Our mission remains unchanged: to evangelize, disciple students to a personal faith in Christ,
+                  and train spirit-filled leaders who will impact the church and society at large through faithful service
+                  and Christian witness.
                 </p>
               </div>
 
@@ -78,5 +81,5 @@ export function HistorySection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import { useParams, useNavigate } from 'react-router';
-import { Calendar, User, ArrowLeft } from 'lucide-react';
-import { AnimatedSection } from '../components/AnimatedSection';
-import { useBlogBySlug } from '../../../src/lib/hooks';
-import { urlFor } from '../../../src/lib/sanity';
+import { useParams, useNavigate } from 'react-router'
+import { Calendar, User, ArrowLeft } from 'lucide-react'
+import { AnimatedSection } from '../components/AnimatedSection'
+import { useBlogBySlug } from '../../../src/lib/hooks'
+import { urlFor } from '../../../src/lib/sanity'
 
 export default function BlogDetail() {
-  const { slug } = useParams<{ slug?: string }>();
-  const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>()
+  const navigate = useNavigate()
 
   if (!slug) {
     return (
@@ -20,8 +20,8 @@ export default function BlogDetail() {
             Back to Blog
           </button>
           <div className="text-center">
-            <h1 
-              className="text-4xl mb-4" 
+            <h1
+              className="text-4xl mb-4"
               style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
             >
               Invalid Blog
@@ -30,10 +30,10 @@ export default function BlogDetail() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  const { data: blog, loading, error } = useBlogBySlug(slug);
+  const { data: blog, loading, error } = useBlogBySlug(slug)
 
   if (error) {
     return (
@@ -47,8 +47,8 @@ export default function BlogDetail() {
             Back to Blog
           </button>
           <div className="text-center">
-            <h1 
-              className="text-4xl mb-4" 
+            <h1
+              className="text-4xl mb-4"
               style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
             >
               Error Loading Blog
@@ -57,7 +57,7 @@ export default function BlogDetail() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (loading) {
@@ -67,7 +67,7 @@ export default function BlogDetail() {
           <p className="text-muted-foreground">Loading blog post...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (!blog) {
@@ -82,8 +82,8 @@ export default function BlogDetail() {
             Back to Blog
           </button>
           <div className="text-center">
-            <h1 
-              className="text-4xl mb-4" 
+            <h1
+              className="text-4xl mb-4"
               style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
             >
               Blog Post Not Found
@@ -92,18 +92,23 @@ export default function BlogDetail() {
           </div>
         </div>
       </div>
-    );
+    )
   }
+
+  // Determine if it's news or article
+  const isNews = blog.category === 'news' || blog._type === 'news'
+  const contentType = isNews ? 'News' : 'Article'
+  const authorLabel = isNews ? 'Reporter' : 'Author'
 
   return (
     <div className="pt-32 pb-24">
       {/* Back Button */}
-      <section className="px-4 mb-8">
+      <section className="px-4 sm:px-6 lg:px-8 mb-8">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection>
             <button
               onClick={() => navigate('/blogs')}
-              className="flex items-center gap-2 text-primary hover:text-accent transition-colors font-medium"
+              className="flex items-center gap-2 text-primary hover:text-accent transition-colors font-medium text-sm sm:text-base"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
@@ -113,7 +118,7 @@ export default function BlogDetail() {
       </section>
 
       {/* Article */}
-      <article className="px-4">
+      <article className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <AnimatedSection>
             {/* Featured Image */}
@@ -121,13 +126,13 @@ export default function BlogDetail() {
               <img
                 src={urlFor(blog.featuredImage).width(800).url()}
                 alt={blog.title}
-                className="w-full h-96 object-cover rounded-lg mb-8"
+                className="w-full h-96 object-cover rounded-lg mb-8 sm:mb-10 md:mb-12"
               />
             )}
 
             {/* Title */}
             <h1
-              className="text-5xl md:text-6xl mb-6"
+              className="text-4xl sm:text-5xl md:text-6xl mb-6 sm:mb-8"
               style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
             >
               {blog.title}
@@ -135,12 +140,20 @@ export default function BlogDetail() {
 
             {/* Meta Info */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-muted-foreground mb-8 pb-8 border-b flex-wrap">
-              {/* Author with Local */}
+              {/* Type Badge */}
+              <span className={`inline-block px-3 py-1 rounded text-xs sm:text-sm font-medium ${
+                isNews ? 'bg-red-500/10 text-red-600' : 'bg-blue-500/10 text-blue-600'
+              }`}>
+                {contentType}
+              </span>
+
+              {/* Author/Reporter with Local */}
               {blog.authorName && (
                 <div className="flex items-center gap-3">
                   <User className="w-4 h-4 flex-shrink-0" />
                   <div className="flex flex-col">
-                    <span className="font-semibold text-foreground">{blog.authorName}</span>
+                    <span className="font-semibold text-foreground text-sm sm:text-base">{blog.authorName}</span>
+                    <span className="text-xs text-muted-foreground">{authorLabel}</span>
                     {blog.authorLocal && (
                       <span className="text-xs text-muted-foreground">{blog.authorLocal}</span>
                     )}
@@ -152,38 +165,38 @@ export default function BlogDetail() {
               {blog.publishedDate && (
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>{new Date(blog.publishedDate).toLocaleDateString('en-US', {
+                  <span className="text-xs sm:text-sm">{new Date(blog.publishedDate).toLocaleDateString('en-US', {
                     year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                    month: 'short',
+                    day: 'numeric',
                   })}</span>
                 </div>
               )}
 
               {/* Read Time */}
               {blog.readTime && (
-                <span className="text-sm">
+                <span className="text-xs sm:text-sm">
                   ⏱️ {blog.readTime} min read
                 </span>
               )}
 
               {/* Category */}
-              {blog.category && (
-                <span className="bg-accent text-accent-foreground px-3 py-1 rounded text-sm capitalize">
+              {blog.category && blog.category !== 'news' && (
+                <span className="bg-accent text-accent-foreground px-3 py-1 rounded text-xs sm:text-sm capitalize inline-block">
                   {blog.category.replace('-', ' ')}
                 </span>
               )}
             </div>
 
             {/* Excerpt */}
-            <p className="text-xl text-muted-foreground mb-8 leading-relaxed italic border-l-4 border-accent pl-4">
+            <p className="text-lg sm:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed italic border-l-4 border-accent pl-4">
               {blog.excerpt}
             </p>
 
             {/* Content */}
-            <div className="prose prose-lg max-w-none mb-12">
+            <div className="prose prose-lg max-w-none mb-12 sm:mb-16">
               {blog.content && blog.content.length > 0 ? (
-                <div className="text-lg leading-relaxed text-foreground space-y-6">
+                <div className="text-base sm:text-lg leading-relaxed text-foreground space-y-6">
                   {blog.content.map((block: any, idx: number) => {
                     // Handle text blocks
                     if (block._type === 'block') {
@@ -193,7 +206,7 @@ export default function BlogDetail() {
                             <span key={childIdx}>{child.text}</span>
                           )).join('')}
                         </div>
-                      );
+                      )
                     }
 
                     // Handle image blocks
@@ -211,10 +224,10 @@ export default function BlogDetail() {
                             </figcaption>
                           )}
                         </figure>
-                      );
+                      )
                     }
 
-                    return null;
+                    return null
                   })}
                 </div>
               ) : (
@@ -224,34 +237,34 @@ export default function BlogDetail() {
 
             {/* Stats */}
             {(blog.likes !== undefined || blog.views !== undefined) && (
-              <div className="flex gap-8 py-8 border-t border-b my-8">
+              <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 py-8 border-t border-b my-8 sm:my-10">
                 {blog.likes !== undefined && (
                   <div>
-                    <p className="text-3xl font-bold text-accent">{blog.likes}</p>
-                    <p className="text-sm text-muted-foreground mt-1">👍 Likes</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-accent">{blog.likes}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">👍 Likes</p>
                   </div>
                 )}
                 {blog.views !== undefined && (
                   <div>
-                    <p className="text-3xl font-bold text-accent">{blog.views}</p>
-                    <p className="text-sm text-muted-foreground mt-1">👁️ Views</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-accent">{blog.views}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">👁️ Views</p>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Author Info Section */}
+            {/* Author/Reporter Info Section */}
             {blog.authorName && (
-              <div className="bg-secondary/50 rounded-lg p-8 my-8 border border-border">
-                <h3 
-                  className="text-2xl font-bold mb-2"
+              <div className="bg-secondary/50 rounded-lg p-6 sm:p-8 my-8 sm:my-10 border border-border">
+                <h3
+                  className="text-xl sm:text-2xl font-bold mb-2"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
-                  About the Author
+                  About the {authorLabel}
                 </h3>
-                <p className="font-semibold text-lg mb-1">{blog.authorName}</p>
+                <p className="font-semibold text-base sm:text-lg mb-1">{blog.authorName}</p>
                 {blog.authorLocal && (
-                  <p className="text-accent font-medium">{blog.authorLocal}</p>
+                  <p className="text-accent font-medium text-sm sm:text-base">{blog.authorLocal}</p>
                 )}
               </div>
             )}
@@ -260,12 +273,12 @@ export default function BlogDetail() {
       </article>
 
       {/* Back to Blog */}
-      <section className="px-4 mt-16">
+      <section className="px-4 sm:px-6 lg:px-8 mt-16 sm:mt-20 md:mt-24">
         <div className="max-w-4xl mx-auto text-center">
           <AnimatedSection>
             <button
               onClick={() => navigate('/blogs')}
-              className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg hover:bg-accent/90 transition-colors font-medium"
+              className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:bg-accent/90 transition-colors font-medium text-sm sm:text-base"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to All Blog Posts
@@ -274,5 +287,5 @@ export default function BlogDetail() {
         </div>
       </section>
     </div>
-  );
+  )
 }
