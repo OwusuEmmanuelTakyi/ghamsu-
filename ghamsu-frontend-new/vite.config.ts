@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import sitemap from 'vite-plugin-sitemap'
@@ -23,53 +22,17 @@ export default defineConfig({
     react(),
     tailwindcss(),
     sitemap({
-      baseUrl: 'https://gmsu.org', // Change to your actual domain
-      dynamicRoutes: [
-        {
-          url: '/',
-          changefreq: 'weekly',
-          priority: 1.0,
-        },
-        {
-          url: '/about',
-          changefreq: 'monthly',
-          priority: 0.9,
-        },
-        {
-          url: '/sermons',
-          changefreq: 'weekly',
-          priority: 0.9,
-        },
-        {
-          url: '/events',
-          changefreq: 'weekly',
-          priority: 0.9,
-        },
-        {
-          url: '/boards',
-          changefreq: 'monthly',
-          priority: 0.8,
-        },
-        {
-          url: '/gallery',
-          changefreq: 'weekly',
-          priority: 0.8,
-        },
-        {
-          url: '/blogs',
-          changefreq: 'weekly',
-          priority: 0.9,
-        },
-        {
-          url: '/contact',
-          changefreq: 'monthly',
-          priority: 0.8,
-        },
-        {
-          url: '/partner',
-          changefreq: 'monthly',
-          priority: 0.8,
-        },
+      hostname: 'https://www.ghamsu.org', // Use hostname instead of baseUrl
+      routes: [
+        '/',
+        '/about',
+        '/sermons',
+        '/events',
+        '/boards',
+        '/gallery',
+        '/blogs',
+        '/contact',
+        '/partner',
       ],
     }),
   ],
