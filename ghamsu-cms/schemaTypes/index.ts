@@ -7,6 +7,7 @@ import executive from './executive'
 import { gallery } from './gallery'
 import news from './news'
 import article from './article'
+import subscriber from './subscriber'
 
 export const schemaTypes = [
   // Core content
@@ -16,6 +17,7 @@ export const schemaTypes = [
   sermon,
   news,
   article,
+  subscriber,
   // Supporting content
   testimonial,
   gallery,

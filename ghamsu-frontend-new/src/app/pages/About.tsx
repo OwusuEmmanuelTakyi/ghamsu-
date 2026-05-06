@@ -34,7 +34,7 @@ export default function About() {
       <HeroSection
         title="About Us"
         subtitle="Discover our rich history, mission, and the values that guide our community"
-        backgroundImage="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
+        backgroundImage="https://images.unsplash.com/photo-1778082388137-0b8718468b87?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         isHomePage={false}
       />
 
@@ -108,52 +108,57 @@ export default function About() {
         </section>
 
         {/* Core Values */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 bg-secondary">
-          <div className="max-w-[1400px] mx-auto">
-            <AnimatedSection>
-              <div className="text-center mb-16 sm:mb-20">
-                <div className="mb-4 sm:mb-6">
-                  <div className="h-[1px] w-12 bg-accent mx-auto mb-3 sm:mb-4" />
-                  <p className="text-accent text-xs tracking-[0.3em] uppercase" style={{ fontFamily: 'var(--font-body)' }}>
-                    Our Foundation
-                  </p>
-                </div>
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight"
-                  style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                >
-                  Core Values
-                </h2>
-                <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
-                  The Methodist Faith: All need to be saved, All can be saved, All can know themselves to be saved, All can be
-                  saved to the uttermost
-                </p>
-              </div>
-            </AnimatedSection>
+        <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 bg-[#003D82] dark:bg-[#0a1628]">
+  <div className="max-w-[1400px] mx-auto">
+    <AnimatedSection>
+      <div className="text-center mb-16 sm:mb-20">
+        <div className="mb-4 sm:mb-6">
+          <div className="h-[1px] w-12 bg-[#D4AF37] mx-auto mb-3 sm:mb-4" />
+          <p
+            className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase"
+            style={{ fontFamily: 'var(--font-body)' }}
+          >
+            Our Foundation
+          </p>
+        </div>
+        <h2
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight text-white"
+          style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+        >
+          Core Values
+        </h2>
+        <p className="text-white/70 text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
+          The Methodist Faith: All need to be saved, All can be saved, All can know themselves to be saved, All can be
+          saved to the uttermost
+        </p>
+      </div>
+    </AnimatedSection>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-              {values.map((value, index) => {
-                const Icon = value.icon
-                return (
-                  <AnimatedSection key={index} delay={index * 0.1}>
-                    <div className="border-t-2 border-accent pt-6 sm:pt-8">
-                      <div className="mb-6 sm:mb-8">
-                        <Icon className="w-8 sm:w-10 h-8 sm:h-10 text-accent" strokeWidth={1.5} />
-                      </div>
-                      <h3
-                        className="text-lg sm:text-xl mb-3 sm:mb-4 tracking-tight"
-                        style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                      >
-                        {value.title}
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed text-xs sm:text-sm font-light">{value.description}</p>
-                    </div>
-                  </AnimatedSection>
-                )
-              })}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+      {values.map((value, index) => {
+        const Icon = value.icon
+        return (
+          <AnimatedSection key={index} delay={index * 0.1}>
+            <div className="border-t-2 border-[#D4AF37] pt-6 sm:pt-8">
+              <div className="mb-6 sm:mb-8">
+                <Icon className="w-8 sm:w-10 h-8 sm:h-10 text-[#D4AF37]" strokeWidth={1.5} />
+              </div>
+              <h3
+                className="text-lg sm:text-xl mb-3 sm:mb-4 tracking-tight text-white"
+                style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+              >
+                {value.title}
+              </h3>
+              <p className="text-white/65 leading-relaxed text-xs sm:text-sm font-light">
+                {value.description}
+              </p>
             </div>
-          </div>
-        </section>
+          </AnimatedSection>
+        )
+      })}
+    </div>
+  </div>
+</section>
 
         {/* Motto & Slogan */}
         <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
@@ -279,87 +284,104 @@ export default function About() {
         </section>
 
         {/* Organizational Structure */}
-        <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
-          <div className="max-w-[1400px] mx-auto">
-            <AnimatedSection>
-              <div className="text-center mb-16 sm:mb-20">
-                <div className="mb-4 sm:mb-6">
-                  <div className="h-[1px] w-12 bg-accent mx-auto mb-3 sm:mb-4" />
-                  <p className="text-accent text-xs tracking-[0.3em] uppercase" style={{ fontFamily: 'var(--font-body)' }}>
-                    Organization
-                  </p>
-                </div>
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight"
-                  style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                >
-                  Our Structure
-                </h2>
-                <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
-                  An organized framework structured around Connexional, Diocese, and Local levels
-                </p>
-              </div>
-            </AnimatedSection>
+        <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32 bg-[#003D82] dark:bg-[#0a1628]">
+  <div className="max-w-[1400px] mx-auto">
+    <AnimatedSection>
+      <div className="text-center mb-16 sm:mb-20">
+        <div className="mb-4 sm:mb-6">
+          <div className="h-[1px] w-12 bg-[#D4AF37] mx-auto mb-3 sm:mb-4" />
+          <p
+            className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase"
+            style={{ fontFamily: 'var(--font-body)' }}
+          >
+            Organization
+          </p>
+        </div>
+        <h2
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight text-white"
+          style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+        >
+          Our Structure
+        </h2>
+        <p className="text-white/70 text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
+          An organized framework structured around Connexional, Diocese, and Local levels
+        </p>
+      </div>
+    </AnimatedSection>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {[
-                {
-                  title: 'Connexional Executive',
-                  description:
-                    'The highest decision-making body consisting of Connexional leadership, Diocesan officers, and Board Chairpersons providing overall guidance.',
-                  level: 'Executive',
-                },
-                {
-                  title: 'Connexional Boards',
-                  description:
-                    'Six established boards managing key areas: Prayer, Publications, Audit, Medical, Research & Education, and Projects.',
-                  level: 'Governance',
-                },
-                {
-                  title: 'Diocesan Council',
-                  description:
-                    'Diocesan leadership overseeing circuits and locals, implementing Connexional directives at the diocesan level.',
-                  level: 'Management',
-                },
-                {
-                  title: 'Circuit Coordinators',
-                  description:
-                    'Leaders coordinating local groups within a diocese based on proximity and institutional level, facilitating circuit programs.',
-                  level: 'Coordination',
-                },
-                {
-                  title: 'Local Executives',
-                  description:
-                    'Local chapter leadership managing day-to-day operations, organizing SICE events, and coordinating member activities.',
-                  level: 'Operations',
-                },
-                {
-                  title: 'Members & Wings',
-                  description:
-                    'Dedicated members and specialized departments serving in various capacities, executing the Union\'s mission at grassroots level.',
-                  level: 'Service',
-                },
-              ].map((structure, index) => (
-                <AnimatedSection key={index} delay={index * 0.1}>
-                  <div className="bg-card border border-border hover:border-accent/50 transition-all duration-500 p-6 sm:p-8 h-full">
-                    <div className="mb-4">
-                      <span className="inline-block px-3 py-1 bg-accent/10 text-accent text-xs font-medium uppercase tracking-wider">
-                        {structure.level}
-                      </span>
-                    </div>
-                    <h3
-                      className="text-lg sm:text-xl mb-4 tracking-tight"
-                      style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                    >
-                      {structure.title}
-                    </h3>
-                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-light">{structure.description}</p>
-                  </div>
-                </AnimatedSection>
-              ))}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {[
+        {
+          title: 'Connexional Executive',
+          description:
+            'The highest decision-making body consisting of Connexional leadership, Diocesan officers, and Board Chairpersons providing overall guidance.',
+          level: 'Executive',
+        },
+        {
+          title: 'Connexional Boards',
+          description:
+            'Six established boards managing key areas: Prayer, Publications, Audit, Medical, Research & Education, and Projects.',
+          level: 'Governance',
+        },
+        {
+          title: 'Diocesan Council',
+          description:
+            'Diocesan leadership overseeing circuits and locals, implementing Connexional directives at the diocesan level.',
+          level: 'Management',
+        },
+        {
+          title: 'Circuit Coordinators',
+          description:
+            'Leaders coordinating local groups within a diocese based on proximity and institutional level, facilitating circuit programs.',
+          level: 'Coordination',
+        },
+        {
+          title: 'Local Executives',
+          description:
+            'Local chapter leadership managing day-to-day operations, organizing SICE events, and coordinating member activities.',
+          level: 'Operations',
+        },
+        {
+          title: 'Members & Wings',
+          description:
+            "Dedicated members and specialized departments serving in various capacities, executing the Union's mission at grassroots level.",
+          level: 'Service',
+        },
+      ].map((structure, index) => (
+        <AnimatedSection key={index} delay={index * 0.1}>
+          <div className="
+            bg-white/10 dark:bg-[#0d1f3c]
+            border border-white/20 dark:border-white/10
+            hover:border-[#D4AF37] dark:hover:border-[#D4AF37]/50
+            backdrop-blur-sm
+            transition-all duration-500
+            p-6 sm:p-8 h-full
+          ">
+            <div className="mb-4">
+              <span className="
+                inline-block px-3 py-1
+                bg-[#D4AF37]/20
+                text-[#D4AF37]
+                text-xs font-medium uppercase tracking-wider
+              ">
+                {structure.level}
+              </span>
             </div>
+            <h3
+              className="text-lg sm:text-xl mb-4 tracking-tight text-white"
+              style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+            >
+              {structure.title}
+            </h3>
+            <p className="text-white/65 text-xs sm:text-sm leading-relaxed font-light">
+              {structure.description}
+            </p>
           </div>
-        </section>
+        </AnimatedSection>
+      ))}
+    </div>
+  </div>
+</section>
       </div>
     </div>
   )

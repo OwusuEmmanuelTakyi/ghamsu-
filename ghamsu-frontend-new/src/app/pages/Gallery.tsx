@@ -30,7 +30,7 @@ export default function Gallery() {
       <HeroSection
         title="Our Gallery"
         subtitle="Moments of faith, fellowship, and community captured in time."
-        backgroundImage="https://images.unsplash.com/photo-1511632765486-a01980e01a18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
+        backgroundImage="https://images.unsplash.com/photo-1778082388302-38d8e5e40c7b?q=80&w=1059&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         isHomePage={false}
       />
 

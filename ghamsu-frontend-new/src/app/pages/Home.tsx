@@ -33,7 +33,7 @@ export default function Home() {
         title="GHANA METHODIST"
         titleHighlight="STUDENT'S UNION"
         subtitle={subtitles[currentSubtitleIndex]}
-        backgroundImage="https://images.unsplash.com/photo-1762707222259-8f3afdcf9359?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHw1fHxjaHVyY2glMjBjb21tdW5pdHklMjBwZW9wbGV8ZW58MXx8fHwxNzc3ODU1NzcxfDA&ixlib=rb-4.1.0&q=80&w=1080"
+        backgroundImage="https://images.unsplash.com/photo-1778082388125-c2a1c6a835ba?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         tagline="Welcome Home"
         primaryButtonText="Give Today"
         primaryButtonLink="/partner"

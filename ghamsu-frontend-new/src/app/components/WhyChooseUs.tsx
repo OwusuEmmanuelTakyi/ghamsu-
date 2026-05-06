@@ -30,80 +30,190 @@ export function WhyChooseUs() {
   ]
 
   return (
-    <section className="py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8 bg-background">
-      <div className="max-w-[1400px] mx-auto">
-        {/* Header */}
-        <AnimatedSection>
-          <div className="text-center mb-16 sm:mb-20 lg:mb-24">
-            <div className="mb-4">
-              <p className="text-accent text-xs tracking-[0.3em] uppercase" style={{ fontFamily: 'var(--font-body)' }}>
-                Our Purpose
+    <>
+      <style>{`
+        .why-section {
+          background-color: #003D82;
+        }
+        .why-eyebrow {
+          color: #D4AF37;
+        }
+        .why-heading {
+          color: #FFFFFF;
+        }
+        .why-divider {
+          background-color: #D4AF37;
+        }
+        .why-subtitle {
+          color: rgba(255, 255, 255, 0.65);
+        }
+        .why-card {
+          background-color: #002f6c;
+          border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .why-card:hover {
+          border-color: rgba(212, 175, 55, 0.55);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.15);
+          transform: translateY(-4px);
+        }
+        .why-card-top-bar {
+          background-color: #D4AF37;
+        }
+        .why-card-number {
+          color: rgba(212, 175, 55, 0.35);
+        }
+        .why-icon-box {
+          border: 1px solid rgba(212, 175, 55, 0.35);
+        }
+        .why-card:hover .why-icon-box {
+          border-color: #D4AF37;
+          background-color: rgba(212, 175, 55, 0.08);
+        }
+        .why-icon {
+          color: #D4AF37;
+        }
+        .why-card-title {
+          color: #FFFFFF;
+        }
+        .why-card-micro-divider {
+          background-color: rgba(212, 175, 55, 0.35);
+        }
+        .why-card-desc {
+          color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* Dark mode — restore original CSS variable styles */
+        .dark .why-section {
+          background-color: var(--background);
+        }
+        .dark .why-eyebrow {
+          color: var(--accent);
+        }
+        .dark .why-heading {
+          color: var(--foreground);
+        }
+        .dark .why-divider {
+          background-color: var(--accent);
+        }
+        .dark .why-subtitle {
+          color: var(--muted-foreground);
+        }
+        .dark .why-card {
+          background-color: var(--card);
+          border: 1px solid rgba(var(--border-rgb, 255 255 255 / 0.3));
+        }
+        .dark .why-card:hover {
+          border-color: var(--accent);
+          box-shadow: var(--shadow-lg, 0 10px 30px rgba(0,0,0,0.4));
+          transform: translateY(-4px);
+        }
+        .dark .why-card-top-bar {
+          background-color: var(--accent);
+        }
+        .dark .why-card-number {
+          color: color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+        .dark .why-icon-box {
+          border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+        }
+        .dark .why-card:hover .why-icon-box {
+          border-color: var(--accent);
+          background-color: color-mix(in srgb, var(--accent) 5%, transparent);
+        }
+        .dark .why-icon {
+          color: var(--accent);
+        }
+        .dark .why-card-title {
+          color: var(--foreground);
+        }
+        .dark .why-card-micro-divider {
+          background-color: color-mix(in srgb, var(--accent) 30%, transparent);
+        }
+        .dark .why-card-desc {
+          color: var(--muted-foreground);
+        }
+      `}</style>
+
+      <section className="why-section py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto">
+          {/* Header */}
+          <AnimatedSection>
+            <div className="text-center mb-16 sm:mb-20 lg:mb-24">
+              <div className="mb-4">
+                <p
+                  className="why-eyebrow text-xs tracking-[0.3em] uppercase"
+                  style={{ fontFamily: 'var(--font-body)' }}
+                >
+                  Our Purpose
+                </p>
+              </div>
+              <h2
+                className="why-heading text-4xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight"
+                style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+              >
+                Our Vision
+              </h2>
+              <div className="why-divider h-[2px] w-16 mx-auto mb-6" />
+              <p className="why-subtitle text-sm sm:text-base max-w-3xl mx-auto font-light leading-relaxed">
+                Four foundational pillars guiding our mission and commitment to excellence
               </p>
             </div>
-            <h2
-              className="text-4xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight"
-              style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-            >
-              Our Vision
-            </h2>
-            <div className="h-[2px] w-16 bg-accent mx-auto mb-6" />
-            <p className="text-muted-foreground text-sm sm:text-base max-w-3xl mx-auto font-light leading-relaxed">
-              Four foundational pillars guiding our mission and commitment to excellence
-            </p>
-          </div>
-        </AnimatedSection>
+          </AnimatedSection>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {features.map((feature, index) => {
-            const Icon = feature.icon
-            return (
-              <AnimatedSection key={index} delay={index * 0.1}>
-                <div className="group h-full">
-                  {/* Card Container */}
-                  <div className="relative bg-card border border-border/30 hover:border-accent/50 rounded-lg overflow-hidden transition-all duration-500 hover:shadow-lg h-full flex flex-col p-8 sm:p-10">
-                    {/* Accent Line at Top */}
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-accent" />
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon
+              return (
+                <AnimatedSection key={index} delay={index * 0.1}>
+                  <div className="group h-full">
+                    <div className="why-card relative rounded-lg overflow-hidden transition-all duration-500 h-full flex flex-col p-8 sm:p-10">
+                      {/* Accent Line at Top */}
+                      <div className="why-card-top-bar absolute top-0 left-0 right-0 h-[2px]" />
 
-                    {/* Number in Top Right */}
-                    <div className="absolute top-6 sm:top-8 right-6 sm:right-8">
-                      <span
-                        className="text-2xl sm:text-3xl font-light text-accent/40"
+                      {/* Number */}
+                      <div className="absolute top-6 sm:top-8 right-6 sm:right-8">
+                        <span
+                          className="why-card-number text-2xl sm:text-3xl font-light"
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {feature.number}
+                        </span>
+                      </div>
+
+                      {/* Icon */}
+                      <div className="mb-8 sm:mb-10">
+                        <div className="why-icon-box w-14 h-14 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center transition-all duration-300">
+                          <Icon
+                            className="why-icon w-7 h-7 sm:w-8 sm:h-8"
+                            strokeWidth={1.5}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <h3
+                        className="why-card-title text-lg sm:text-xl mb-3 sm:mb-4 tracking-tight font-semibold"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
-                        {feature.number}
-                      </span>
+                        {feature.title}
+                      </h3>
+
+                      {/* Micro Divider */}
+                      <div className="why-card-micro-divider h-[1px] w-8 mb-4 sm:mb-6" />
+
+                      {/* Description */}
+                      <p className="why-card-desc text-xs sm:text-sm leading-relaxed font-light flex-1">
+                        {feature.description}
+                      </p>
                     </div>
-
-                    {/* Icon in Box */}
-                    <div className="mb-8 sm:mb-10">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 border border-accent/40 rounded-lg flex items-center justify-center group-hover:border-accent group-hover:bg-accent/5 transition-all duration-300">
-                        <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-accent" strokeWidth={1.5} />
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3
-                      className="text-lg sm:text-xl mb-3 sm:mb-4 tracking-tight font-semibold text-foreground"
-                      style={{ fontFamily: 'var(--font-heading)' }}
-                    >
-                      {feature.title}
-                    </h3>
-
-                    {/* Divider */}
-                    <div className="h-[1px] w-8 bg-accent/30 mb-4 sm:mb-6" />
-
-                    {/* Description */}
-                    <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed font-light flex-1">
-                      {feature.description}
-                    </p>
                   </div>
-                </div>
-              </AnimatedSection>
-            )
-          })}
+                </AnimatedSection>
+              )
+            })}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }

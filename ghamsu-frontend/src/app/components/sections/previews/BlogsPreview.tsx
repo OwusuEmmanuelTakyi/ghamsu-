@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Calendar, User, ArrowRight } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
 import { sanityClient, imageUrl } from "../../../../lib/sanity";
-
-// Image builder removed - using lib/sanity imageUrl
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface BlogPost {
@@ -23,7 +21,7 @@ interface BlogPost {
 const BLOGS_QUERY = `*[
   _type == "blog" &&
   defined(publishedDate)
-] | order(publishedDate desc) [0...3] {
+] | order(publishedDate desc) [0...6] {
   _id,
   title,
   slug,
@@ -39,7 +37,7 @@ const BLOGS_QUERY = `*[
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GH", {
     day: "numeric",
-    month: "long",
+    month: "short",
     year: "numeric",
   });
 }
@@ -71,174 +69,198 @@ function useLatestBlogs() {
   return { data, loading, error };
 }
 
-// ── Skeleton ───────────────────────────────────────────────────────────────────
+// ── Skeleton Card ──────────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md animate-pulse">
-      <div className="h-48 bg-gray-200" />
-      <div className="p-6 space-y-3">
-        <div className="h-3 bg-gray-200 rounded w-1/4" />
-        <div className="h-5 bg-gray-200 rounded w-3/4" />
-        <div className="h-4 bg-gray-200 rounded w-full" />
-        <div className="h-4 bg-gray-200 rounded w-5/6" />
-        <div className="h-3 bg-gray-200 rounded w-1/3" />
+    <div className="bg-white animate-pulse border border-gray-200">
+      <div className="h-40 bg-gray-200" />
+      <div className="p-4 space-y-2">
+        <div className="h-4 bg-gray-200 rounded w-2/3" />
+        <div className="h-5 bg-gray-200 rounded w-full" />
+        <div className="space-y-1.5 pt-2">
+          <div className="h-3 bg-gray-200 rounded w-1/2" />
+          <div className="h-3 bg-gray-200 rounded w-1/3" />
+        </div>
       </div>
     </div>
   );
 }
 
-// ── Component ──────────────────────────────────────────────────────────────────
+// ── Blog Card Component ────────────────────────────────────────────────────────
+function BlogCard({ post, index }: { post: BlogPost; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.08 }}
+      className="group bg-white border border-gray-200 flex flex-col h-full transition-all duration-300 hover:shadow-lg"
+    >
+      {/* ── Image ── */}
+      <Link
+        to={`/blogs/${post.slug.current}`}
+        className="block h-40 relative overflow-hidden bg-gradient-to-br from-blue-900 to-blue-700"
+      >
+        {post.featuredImage ? (
+          <img
+            src={imageUrl(post.featuredImage, 400, 300)}
+            alt={post.title}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-white/20 text-4xl font-bold">
+              {post.title.charAt(0)}
+            </span>
+          </div>
+        )}
+      </Link>
+
+      {/* ── Content ── */}
+      <div className="p-4 flex flex-col flex-1">
+        {/* Category Badge */}
+        {post.category && (
+          <span className="inline-block mb-2 text-xs font-semibold uppercase tracking-wide text-orange-600">
+            {formatCategory(post.category)}
+          </span>
+        )}
+
+        {/* Title */}
+        <Link to={`/blogs/${post.slug.current}`}>
+          <h3 className="text-base font-bold text-gray-900 mb-3 group-hover:text-orange-500 transition-colors line-clamp-2 leading-snug">
+            {post.title}
+          </h3>
+        </Link>
+
+        {/* Metadata */}
+        <div className="mt-auto space-y-2 text-sm text-gray-600">
+          {post.publishedDate && (
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-orange-500 flex-shrink-0" />
+              <span>{formatDate(post.publishedDate)}</span>
+            </div>
+          )}
+          
+          {post.readTime && (
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-orange-500 flex-shrink-0" />
+              <span>{post.readTime} min read</span>
+            </div>
+          )}
+
+          {post.author?.name && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0" />
+              <span>{post.author.name}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────────
 export function BlogsPreview() {
   const { data: posts, loading, error } = useLatestBlogs();
 
   return (
-    <section className="py-20 px-4 bg-white">
+    <section className="py-16 px-4 bg-white" aria-labelledby="blogs-heading">
       <div className="max-w-7xl mx-auto">
 
-        {/* ── Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <p className="text-orange-500 font-semibold uppercase tracking-wide mb-3">
-            Resources
-          </p>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-            Latest Blogs & Articles
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Inspiring content to strengthen your faith journey
-          </p>
-        </motion.div>
+        {/* ── Header with Eyebrow & VIEW ALL Button ── */}
+        <div className="mb-12">
+          {/* Eyebrow */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="mb-3 flex items-center gap-2"
+          >
+            <div className="h-px w-8 bg-orange-500" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-orange-600">
+              Resources
+            </span>
+          </motion.div>
 
-        {/* ── Loading ── */}
+          {/* Title + Button Row */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="flex items-end justify-between gap-4"
+          >
+            <div className="flex-1">
+              <h2
+                id="blogs-heading"
+                className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight"
+              >
+                Latest Blogs
+              </h2>
+              <p className="mt-2 text-base text-gray-600">
+                Inspiring content to strengthen your faith journey
+              </p>
+            </div>
+
+            <Link
+              to="/blogs"
+              className="mb-2 px-6 py-3 border-2 border-blue-900 text-blue-900 font-semibold text-sm uppercase tracking-wider transition-all duration-200 hover:bg-blue-900 hover:text-white"
+            >
+              VIEW ALL
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* ── Loading State ── */}
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
+            {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
         )}
 
-        {/* ── Error ── */}
+        {/* ── Error State ── */}
         {error && (
-          <p className="text-center text-red-500 py-10">{error}</p>
-        )}
-
-        {/* ── Empty ── */}
-        {!loading && !error && posts.length === 0 && (
-          <p className="text-center text-gray-400 py-10 text-lg">
-            No posts yet — check back soon.
-          </p>
-        )}
-
-        {/* ── Grid ── */}
-        {!loading && !error && posts.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-            {posts.map((post, index) => (
-              <motion.div
-                key={post._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover-lift group flex flex-col"
-              >
-                {/* ── Image ── */}
-                <Link
-                  to={`/blogs/${post.slug.current}`}
-                  className="block h-48 relative overflow-hidden"
-                >
-                  {post.featuredImage ? (
-                    <img
-src={imageUrl(post.featuredImage, 400, 400)}
-                      alt={post.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center">
-                      <span className="text-white/30 text-5xl font-bold">
-                        {post.title.charAt(0)}
-                      </span>
-                    </div>
-                  )}
-                  {post.category && (
-                    <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1 rounded-md bg-white/95 backdrop-blur-sm text-blue-900 text-xs font-semibold">
-                        {formatCategory(post.category)}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-
-                {/* ── Content ── */}
-                <div className="p-6 bg-white flex flex-col flex-1">
-                  {/* Date + read time */}
-                  <div className="flex items-center gap-3 text-gray-500 text-sm mb-3">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      <span>{post.publishedDate ? formatDate(post.publishedDate) : ""}</span>
-                    </div>
-                    {post.readTime && (
-                      <>
-                        <span className="text-gray-300">·</span>
-                        <span>{post.readTime} min read</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Title */}
-                  <Link to={`/blogs/${post.slug.current}`}>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-500 transition-colors leading-snug">
-                      {post.title}
-                    </h3>
-                  </Link>
-
-                  {/* Excerpt */}
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-1">
-                    {post.excerpt}
-                  </p>
-
-                  {/* Author + Read More */}
-                  <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
-                    {post.author?.name && (
-                      <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <User className="w-4 h-4 shrink-0" />
-                        <span className="text-gray-600">{post.author.name}</span>
-                      </div>
-                    )}
-                    <Link
-                      to={`/blog/${post.slug.current}`}
-                      className="inline-flex items-center gap-1 text-sm font-semibold text-orange-500 hover:text-orange-600 transition-colors group/link ml-auto"
-                    >
-                      Read More
-                      <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform duration-200" />
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {/* ── View All ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <Link
-            to="/blogs"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-md font-semibold transition-all shadow-md"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
           >
-            View All Blogs
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-        </motion.div>
+            <p className="text-red-500 font-semibold">{error}</p>
+          </motion.div>
+        )}
+
+        {/* ── Empty State ── */}
+        {!loading && !error && posts.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <p className="text-gray-400 text-lg">
+              No posts yet — check back soon.
+            </p>
+          </motion.div>
+        )}
+
+        {/* ── Blog Grid (5-6 columns on desktop) ── */}
+        {!loading && !error && posts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 mb-12"
+          >
+            {posts.map((post, index) => (
+              <BlogCard key={post._id} post={post} index={index} />
+            ))}
+          </motion.div>
+        )}
 
       </div>
     </section>

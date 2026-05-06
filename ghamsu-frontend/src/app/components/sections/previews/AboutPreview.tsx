@@ -76,7 +76,6 @@ const MINISTRY_CARDS: MinistryCardData[] = [
   },
 ];
 
-// Original images from the first component
 const PHOTOS: Photo[] = [
   {
     src: "https://images.unsplash.com/photo-1775846986181-aedb2bf687fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NHx8fGVufDB8fHx8fA%3D%3D",
@@ -195,87 +194,7 @@ function MinistryCard({ card, index }: { card: MinistryCardData; index: number }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Photo Panel — uses original images from the first component
-// ─────────────────────────────────────────────────────────────────────────────
-
-function PhotoPanel() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 24 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="relative"
-      aria-label="GHAMSU photo gallery"
-    >
-      {/* Soft background blob */}
-      <div className="pointer-events-none absolute -inset-6 rounded-3xl bg-gradient-to-br from-blue-50 via-white to-orange-50 opacity-80" />
-
-      <div className="relative grid grid-cols-2 gap-4">
-
-        {/* ── Left column ── */}
-        <div className="flex flex-col gap-4">
-          {/* Photo 1 */}
-          <div className="group relative h-52 overflow-hidden rounded-2xl shadow-lg sm:h-60 lg:h-[17rem]">
-            <img
-              src={PHOTOS[0].src}
-              alt={PHOTOS[0].alt}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-blue-950/10 to-transparent" />
-            <span className="absolute bottom-3 left-3 rounded-lg bg-white/20 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-              {PHOTOS[0].label}
-            </span>
-          </div>
-
-          {/* 60 Years info card */}
-          <div className="flex items-center gap-4 rounded-2xl border border-orange-100 bg-white px-4 py-4 shadow-sm">
-            <div className="flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center rounded-xl bg-orange-500 shadow-md">
-              <span className="text-xl font-bold leading-none text-white">60</span>
-              <span className="text-[9px] font-semibold uppercase tracking-widest text-orange-100">Yrs</span>
-            </div>
-            <div>
-              <p className="text-sm font-bold text-gray-900">Six Decades Strong</p>
-              <p className="text-xs leading-snug text-gray-400">Shaping student faith since 1964</p>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Right column (offset down) ── */}
-        <div className="mt-8 flex flex-col gap-4">
-          {/* Photo 2 */}
-          <div className="group relative h-52 overflow-hidden rounded-2xl shadow-lg sm:h-60 lg:h-[17rem]">
-            <img
-              src={PHOTOS[1].src}
-              alt={PHOTOS[1].alt}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-blue-950/10 to-transparent" />
-            <span className="absolute bottom-3 left-3 rounded-lg bg-white/20 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-              {PHOTOS[1].label}
-            </span>
-          </div>
-
-          {/* Live members badge */}
-          <div className="flex items-center gap-3 rounded-2xl bg-blue-900 px-4 py-4 shadow-md">
-            <div className="relative flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white/15">
-              <span className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-white">100k+ Active Members</p>
-              <p className="text-xs text-blue-300">Across campuses nationwide</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Main Export
+// Main Export - NEW LAYOUT
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function AboutPreview() {
@@ -286,46 +205,92 @@ export function AboutPreview() {
     >
       <div className="mx-auto max-w-7xl">
 
-        {/* ── Hero Row: Copy + Photos ── */}
-        <div className="mb-24 grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        {/* ── TOP SECTION: Eyebrow + Heading ── */}
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-12 text-center"
+        >
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-orange-500" aria-hidden="true" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-orange-600">
+              About Us
+            </span>
+          </div>
+          <h2
+            id="about-heading"
+            className="text-3xl font-bold leading-tight text-gray-900 md:text-4xl"
+          >
+            Who We Are
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-gray-500 md:text-base">
+            GHAMSU — shaping student faith for over sixty years across Ghana's campuses
+          </p>
+        </motion.div>
 
-          {/* Left */}
+        {/* ── TOP CARDS: 3 Columns ── */}
+        <div className="mb-20 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {MINISTRY_CARDS.slice(0, 3).map((card, i) => (
+            <MinistryCard key={card.title} card={card} index={i} />
+          ))}
+        </div>
+
+        {/* ── MIDDLE SECTION: Large Image Left + Text Right ── */}
+        <div className="mb-20 grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          
+          {/* Left: Single Large Photo */}
           <motion.div
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="group relative h-80 overflow-hidden rounded-2xl shadow-lg sm:h-96"
           >
-            {/* Eyebrow pill */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-orange-500" aria-hidden="true" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-orange-600">
-                About Us
+            <img
+              src={PHOTOS[0].src}
+              alt={PHOTOS[0].alt}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-950/60 via-blue-950/10 to-transparent" />
+            <span className="absolute bottom-4 left-4 rounded-lg bg-white/20 px-3 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
+              {PHOTOS[0].label}
+            </span>
+          </motion.div>
+
+          {/* Right: Copy + Stats */}
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-600" aria-hidden="true" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-blue-700">
+                Our Foundation
               </span>
             </div>
 
-            <h2
-              id="about-heading"
-              className="mb-5 text-4xl font-bold leading-tight text-gray-900 md:text-5xl lg:text-[3.25rem]"
-            >
-              Who We Are
-            </h2>
+            <h3 className="mb-4 text-2xl font-bold text-gray-900 md:text-3xl">
+              Sixty Years of Impact
+            </h3>
 
-            <p className="mb-4 text-base leading-relaxed text-gray-600 md:text-lg">
-              GHAMSU — the campus ministry of the Methodist Church Ghana — has
-              been shaping student faith for over sixty years. Recognised across
-              campuses by our distinctive colours and uniforms, we stand as a
+            <p className="mb-4 text-base leading-relaxed text-gray-600">
+              Recognised across campuses by our distinctive colours and uniforms, we stand as a
               beacon of discipleship, fellowship, and evangelism.
             </p>
-            <p className="mb-8 text-base leading-relaxed text-gray-600 md:text-lg">
-              From Bible studies to missions outreach, every local chapter
-              equips students to live out the Gospel — on campus and beyond.
+            <p className="mb-6 text-base leading-relaxed text-gray-600">
+              From Bible studies to missions outreach, every local chapter equips students to live
+              out the Gospel — on campus and beyond.
             </p>
 
             {/* Pillars checklist */}
-            <ul className="mb-10 space-y-2.5" role="list">
+            <ul className="mb-8 space-y-2.5" role="list">
               {PILLARS.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm text-gray-700 md:text-base">
+                <li key={item} className="flex items-start gap-3 text-sm text-gray-700">
                   <CheckCircle2
                     className="mt-0.5 h-4 w-4 flex-shrink-0 text-orange-500"
                     aria-hidden="true"
@@ -336,50 +301,59 @@ export function AboutPreview() {
             </ul>
 
             {/* Stats row */}
-            <div className="mb-10 grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {STATS.map((stat, i) => (
                 <StatCard key={stat.label} stat={stat} index={i} />
               ))}
             </div>
-
-            <Link
-              to="/about"
-              className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-8 py-4 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2"
-              aria-label="Learn more about GHAMSU"
-            >
-              Learn More About Us
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
           </motion.div>
-
-          {/* Right: Photos */}
-          <PhotoPanel />
         </div>
 
-        {/* ── Ministries ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-blue-600" aria-hidden="true" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-blue-700">
-              Our Ministries
-            </span>
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900 md:text-3xl">How We Serve</h3>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-gray-500 md:text-base">
-            Every arm of GHAMSU is designed to disciple students and impact communities for Christ.
-          </p>
-        </motion.div>
-
-        <div className="mb-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {MINISTRY_CARDS.map((card, i) => (
-            <MinistryCard key={card.title} card={card} index={i} />
+        {/* ── BOTTOM CARDS: 3 Columns ── */}
+        <div className="mb-20 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {MINISTRY_CARDS.slice(3, 4).map((card, i) => (
+            <MinistryCard key={card.title} card={card} index={i + 3} />
           ))}
+          {/* Community Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.16, duration: 0.5 }}
+            className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="pointer-events-none absolute -top-8 -right-8 h-28 w-28 rounded-full bg-blue-100 blur-2xl transition-opacity duration-300 group-hover:opacity-70 opacity-20" />
+            <div className="relative z-10">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-110 bg-blue-900 text-white">
+                <Globe2 className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <h3 className="mb-0.5 font-bold text-gray-900">Community</h3>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-blue-700">
+                Active Members
+              </p>
+              <p className="text-sm leading-relaxed text-gray-500">Building strong fellowships across all campuses.</p>
+            </div>
+          </motion.div>
+          {/* Unity Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.24, duration: 0.5 }}
+            className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="pointer-events-none absolute -top-8 -right-8 h-28 w-28 rounded-full bg-orange-100 blur-2xl transition-opacity duration-300 group-hover:opacity-70 opacity-20" />
+            <div className="relative z-10">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl shadow-sm transition-transform duration-300 group-hover:scale-110 bg-orange-500 text-white">
+                <Music className="h-6 w-6" aria-hidden="true" />
+              </div>
+              <h3 className="mb-0.5 font-bold text-gray-900">Unity</h3>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-orange-500">
+                Together Strong
+              </p>
+              <p className="text-sm leading-relaxed text-gray-500">One faith, one mission, across the nation.</p>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── Bottom Banner ── */}

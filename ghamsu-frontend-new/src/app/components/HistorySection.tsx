@@ -12,7 +12,7 @@ export function HistorySection() {
             <div className="relative">
               <div className="relative overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1569292567773-229e2b7521ee?w=1200"
+                  src="https://images.unsplash.com/photo-1778082948973-69296a83789f?q=80&w=1034&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                   alt="GHAMSU History"
                   className="w-full h-64 sm:h-96 md:h-[500px] lg:h-[600px] object-cover"
                 />
