@@ -2,13 +2,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "env": {
-    "VITE_SANITY_PROJECT_ID": "@VITE_SANITY_PROJECT_ID",
-    "VITE_SANITY_DATASET": "@VITE_SANITY_DATASET",
-    "VITE_EMAILJS_PUBLIC_KEY": "@VITE_EMAILJS_PUBLIC_KEY",
-    "VITE_EMAILJS_SERVICE_ID": "@VITE_EMAILJS_SERVICE_ID",
-    "VITE_EMAILJS_TEMPLATE_ID": "@VITE_EMAILJS_TEMPLATE_ID"
-  },
   "headers": [
     {
       "source": "/(.*)",
