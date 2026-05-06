@@ -51,7 +51,7 @@ export default function Sermons() {
       <HeroSection
         title="Sermons & Teachings"
         subtitle="Watch or listen to inspiring messages that will strengthen your faith and transform your life."
-        backgroundImage="https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
+        backgroundImage="https://lh3.googleusercontent.com/pw/AP1GczP8NPdxQrLs1q9ypeq09dKga5Hl2dUNFsdrbcNEUJnpVaGucVkEUB-KvdXNdex2fBID4RUTiHchGvZIZrisEV-CODaaCYOrvgDRHKANYfyQrcs_1GnWmgCeKPUJ_ZlXZcu5D-QLJF89z69yko8urRC9=w1107-h963-s-no-gm"
         isHomePage={false}
       />
 

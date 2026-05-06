@@ -66,7 +66,7 @@ export default function Events() {
       <HeroSection
         title="Upcoming Events"
         subtitle="Join us for worship, fellowship, and community events that strengthen faith and build connections."
-        backgroundImage="https://images.unsplash.com/photo-1519167758481-83f19106ae4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
+        backgroundImage="https://lh3.googleusercontent.com/pw/AP1GczPgJ-D9S-fzrJR1is1c7g4gkRHtQbwo1ySL0aM2nqGE7-WqzVj_delsYsLvUbtR_0CE3gXq5pvTnn4fWyWjLVFOx5LdA8EEXWwwWupwRiky7nPt1uXB-gi20uuilw6j9IsBQGKZkkgn4j38aVXNz96n=w1445-h963-s-no-gm"
         isHomePage={false}
       />
 

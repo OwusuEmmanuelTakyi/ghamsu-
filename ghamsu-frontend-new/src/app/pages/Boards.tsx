@@ -51,25 +51,25 @@ export default function Boards() {
 
   const activities = [
     {
-      title: 'Annual Church Retreat',
-      date: 'June 15-17, 2026',
-      location: 'Mountain View Conference Center',
-      description: 'A weekend of fellowship, worship, and spiritual renewal for the entire church family.',
-      image: 'https://images.unsplash.com/photo-1569292567777-e5d61a759322?w=800',
+      title: 'GHAMSU CONNEXIONAL CONFERENCE',
+      date: '2026',
+      location: 'To be communicated',
+      description: 'A conference to bring all ambassadors together for fellowship, training, and strategic planning for the year ahead.',
+      image: 'https://lh3.googleusercontent.com/pw/AP1GczMe29lNS0rbP0Q-68s37jb-9UU_D-n54XCgHEFyMr0J-0x7HVLPEpdp2HLxD7QslltBu1uf3R912KE6YagesJhgDnN-kmP47oxLylsKLd50Bmx5Q1iiyZLUAGNp4GvURi37DkCuS2jxdk3J59htuu37=w1445-h963-s-no-gm',
     },
     {
-      title: 'Community Service Day',
+      title: 'CONNEXIONAL PRAYER CONFERENCE',
       date: 'May 20, 2026',
-      location: 'Various Locations',
-      description: 'Church-wide initiative to serve our community through various projects and programs.',
-      image: 'https://images.unsplash.com/photo-1594913495702-0872744c6968?w=800',
+      location: 'Various Dioceses',
+      description: 'Prayer conference across the connexion to unite in intercession for the church, nation, and global issues.',
+      image: 'https://images.unsplash.com/photo-1778104101737-d9f436018791?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     },
     {
-      title: 'Mission Trip to Honduras',
+      title: 'GHAMSU MISSIONS',
       date: 'July 8-15, 2026',
-      location: 'Tegucigalpa, Honduras',
-      description: 'Medical and construction mission serving local communities.',
-      image: 'https://images.unsplash.com/photo-1594913421979-b9399c0cd4f9?w=800',
+      location: 'To be communicated',
+      description: 'reaching the unreached with the gospel through evangelism, church planting, and humanitarian outreach in strategic locations.',
+      image: 'https://lh3.googleusercontent.com/pw/AP1GczMJHUyBQ5iy7R-xD1mpi3uMT12J3Tjmi2s_LgWhiWaemphbtGftPORhvznjeB_rA0kN_ej0W8bv2Wg4_gSYnmfPSTS2RTMHQKfYAhwsOVl3mZPp1-oDInFPWLPdQyPoTn1J_3hfm97TrLWoLKSK59JU=w1445-h963-s-no-gm',
     },
   ]
 
@@ -77,8 +77,8 @@ export default function Boards() {
     <div>
       <HeroSection
         title="Our Connexional Boards"
-        subtitle="Dedicated leadership serving our community with purpose, vision, and spiritual guidance."
-        backgroundImage="https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
+        subtitle="Six Boards Across the Connexion and Supporting the Connexional Executives in discharging their duties effectively"
+        backgroundImage="https://lh3.googleusercontent.com/pw/AP1GczM-xcSh0NRQjWjjA63q85xh-nEhYVlrXtfhqB0q6x5lmI_AZnzfXUaRlqoO8zwjShsDRx-BBqNCAlQxDxRqL3PR0YjsU66ePSD3kp3wuelWoDIvM4wpPlEmzhguVjSe9BTUIKFGen5RnVQ40oPU_5KU=w1143-h963-s-no-gm"
         isHomePage={false}
       />
 

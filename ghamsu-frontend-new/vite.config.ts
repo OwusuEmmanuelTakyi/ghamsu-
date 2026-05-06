@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-
+import sitemap from 'vite-plugin-sitemap'
 
 function figmaAssetResolver() {
   return {
@@ -19,18 +20,64 @@ function figmaAssetResolver() {
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    sitemap({
+      baseUrl: 'https://gmsu.org', // Change to your actual domain
+      dynamicRoutes: [
+        {
+          url: '/',
+          changefreq: 'weekly',
+          priority: 1.0,
+        },
+        {
+          url: '/about',
+          changefreq: 'monthly',
+          priority: 0.9,
+        },
+        {
+          url: '/sermons',
+          changefreq: 'weekly',
+          priority: 0.9,
+        },
+        {
+          url: '/events',
+          changefreq: 'weekly',
+          priority: 0.9,
+        },
+        {
+          url: '/boards',
+          changefreq: 'monthly',
+          priority: 0.8,
+        },
+        {
+          url: '/gallery',
+          changefreq: 'weekly',
+          priority: 0.8,
+        },
+        {
+          url: '/blogs',
+          changefreq: 'weekly',
+          priority: 0.9,
+        },
+        {
+          url: '/contact',
+          changefreq: 'monthly',
+          priority: 0.8,
+        },
+        {
+          url: '/partner',
+          changefreq: 'monthly',
+          priority: 0.8,
+        },
+      ],
+    }),
   ],
   resolve: {
     alias: {
-      // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
     },
   },
 
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })

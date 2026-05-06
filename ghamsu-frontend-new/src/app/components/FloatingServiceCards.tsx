@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import { useNews, useArticles, useEvents } from '../../../src/lib/hooks'
+import { urlFor } from '../../../src/lib/sanity'
 
 export function FloatingServiceCards() {
   const [scriptureOfDay, setScriptureOfDay] = useState<{ text: string; reference: string } | null>(null)
@@ -13,27 +14,33 @@ export function FloatingServiceCards() {
   const { data: articles } = useArticles()
   const { data: events } = useEvents()
 
-  // Get scripture of the day from Bible API (deterministic based on date)
+  // Get scripture of the day from OurManna API
   useEffect(() => {
     const fetchScriptureOfDay = async () => {
       try {
-        // Create a seed based on today's date for consistent daily scripture
-        const today = new Date()
-        const dateString = today.toISOString().split('T')[0] // YYYY-MM-DD
-        const seed = dateString.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-
-        // Fetch random verse - the seed in the prayer_code makes it deterministic per day
         const response = await fetch(
-          `https://www.bible-api.com/random?prayer_code=${seed}`
+          `https://beta.ourmanna.com/api/v1/get?format=json&order=daily`
         )
         
         if (!response.ok) throw new Error('Failed to fetch')
 
         const data = await response.json()
-        setScriptureOfDay({
-          text: data.text || 'For God so loved the world that he gave his one and only Son...',
-          reference: data.reference || 'John 3:16',
-        })
+        
+        // Log to see the actual structure
+        console.log('Scripture API Response:', data)
+        
+        // Parse the correct structure from OurManna API
+        if (data.result) {
+          const verseData = data.result.verses ? data.result.verses[0] : data.result
+          const reference = `${verseData.bookname} ${verseData.chapter}:${verseData.verse}`
+          
+          setScriptureOfDay({
+            text: verseData.text || 'For God so loved the world that he gave his one and only Son...',
+            reference: reference || 'John 3:16',
+          })
+        } else {
+          throw new Error('Invalid API response structure')
+        }
       } catch (error) {
         console.error('Error fetching scripture:', error)
         // Fallback scripture
@@ -100,6 +107,7 @@ export function FloatingServiceCards() {
       icon: BookOpen,
       title: "Today's News",
       description: latestNews ? truncateText(latestNews.title, 50) : 'No news yet',
+      image: latestNews?.featuredImage ? urlFor(latestNews.featuredImage).width(200).height(200).url() : null,
       link: latestNews ? `/blogs/${latestNews.slug.current}` : '/blogs?category=news',
       active: true,
       readMoreText: 'Read News',
@@ -108,6 +116,7 @@ export function FloatingServiceCards() {
       icon: FileText,
       title: 'Article of the Day',
       description: articleOfDay ? truncateText(articleOfDay.title, 50) : 'Loading article...',
+      image: articleOfDay?.featuredImage ? urlFor(articleOfDay.featuredImage).width(200).height(200).url() : null,
       link: articleOfDay ? `/blogs/${articleOfDay.slug.current}` : '/blogs?category=articles',
       active: false,
       readMoreText: 'Read Article',
@@ -118,6 +127,7 @@ export function FloatingServiceCards() {
       description: upcomingEvent
         ? `${upcomingEvent.title} - ${formatDate(upcomingEvent.date)}`
         : 'No events in next 3 days',
+      image: upcomingEvent?.featuredImage ? urlFor(upcomingEvent.featuredImage).width(200).height(200).url() : null,
       link: '/events',
       active: false,
       readMoreText: 'View Events',
@@ -178,6 +188,17 @@ export function FloatingServiceCards() {
                     >
                       {card.title}
                     </h3>
+
+                    {/* Small Square Flyer */}
+                    {card.image && (
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-border/50 mb-3 sm:mb-4 shadow-md">
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
 
                     {/* Description */}
                     <p

@@ -22,13 +22,13 @@ export function StatsSection() {
     {
       icon: Calendar,
       value: 25,
-      label: 'Connexional Diocese',
+      label: 'Dioceses',
       key: 'diocese',
     },
     {
       icon: Award,
       value: 1000,
-      label: 'Local Groups',
+      label: 'Locals',
       key: 'locals',
     },
   ]

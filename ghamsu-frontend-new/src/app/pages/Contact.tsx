@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { MapPin, Phone, Mail } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useExecutives } from '../../../src/lib/hooks'
@@ -85,161 +85,190 @@ export default function Contact() {
       />
 
       <div className="pb-24">
-
         {/* Contact Information & Form */}
-        <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 md:py-32">
-          <div className="max-w-[1400px] mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
-              <AnimatedSection>
-                <div>
-                  <h2
-                    className="text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8 tracking-tight"
-                    style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                  >
-                    Contact Information
-                  </h2>
-                  <div className="space-y-6 sm:space-y-8">
-                    {[
-                      {
-                        icon: MapPin,
-                        title: 'Address',
-                        content: (
-                          <p className="text-xs sm:text-sm text-muted-foreground">
-                            Accra, Ghana<br />Greater Accra Region<br />Ghana
-                          </p>
-                        ),
-                      },
-                      {
-                        icon: Phone,
-                        title: 'Phone',
-                        content: (
-                          <p className="text-xs sm:text-sm text-muted-foreground">
-                            Main: +233 (0) 123 456 789<br />Office: +233 (0) 123 456 790
-                          </p>
-                        ),
-                      },
-                      {
-                        icon: Mail,
-                        title: 'Email',
-                        content: (
-                          <p className="text-xs sm:text-sm text-muted-foreground">
-                            info@gmsu.org<br />contact@gmsu.org
-                          </p>
-                        ),
-                      },
-                      {
-                        icon: Clock,
-                        title: 'Office Hours',
-                        content: (
-                          <p className="text-xs sm:text-sm text-muted-foreground">
-                            Monday - Friday: 9:00 AM - 5:00 PM<br />
-                            Saturday: 10:00 AM - 2:00 PM<br />
-                            Sunday: Closed (Service Days)
-                          </p>
-                        ),
-                      },
-                    ].map(({ icon: Icon, title, content }, i) => (
-                      <div key={i} className="flex items-start gap-4">
-                        <div className="w-12 h-12 border border-border bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3
-                            className="text-lg sm:text-xl mb-2 tracking-tight"
-                            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                          >
-                            {title}
-                          </h3>
-                          {content}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </AnimatedSection>
+        <section className="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
+  <div className="max-w-6xl mx-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-8 xl:gap-10 items-start">
+      
+      {/* Contact Information */}
+      <AnimatedSection>
+        <div className="w-full h-full">
+          <h2
+            className="text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8 tracking-tight"
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+          >
+            Get in Touch
+          </h2>
 
-              <AnimatedSection delay={0.2}>
-                <div className="bg-card border border-border p-6 sm:p-8">
-                  <h2
-                    className="text-2xl sm:text-3xl md:text-4xl mb-6 tracking-tight"
-                    style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
-                  >
-                    Send Us a Message
-                  </h2>
-
-                  {submitStatus === 'success' && (
-                    <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-600 rounded-lg text-xs sm:text-sm">
-                      ✓ Message sent successfully! We'll get back to you soon.
-                    </div>
-                  )}
-                  {submitStatus === 'error' && (
-                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg text-xs sm:text-sm">
-                      ✕ {errorMessage}
-                    </div>
-                  )}
-
-                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                    {[
-                      { label: 'Full Name', name: 'fullName', type: 'text', placeholder: 'Your name' },
-                      { label: 'Email', name: 'email', type: 'email', placeholder: 'your@email.com' },
-                      { label: 'Phone', name: 'phone', type: 'tel', placeholder: '+233 (0) 123 456 789' },
-                    ].map(({ label, name, type, placeholder }) => (
-                      <div key={name}>
-                        <label className="block mb-2 font-medium text-xs sm:text-sm">{label}</label>
-                        <input
-                          type={type}
-                          name={name}
-                          value={formData[name as keyof typeof formData]}
-                          onChange={handleInputChange}
-                          className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-secondary border border-border focus:border-primary focus:outline-none transition-colors text-xs sm:text-sm"
-                          placeholder={placeholder}
-                          required={name !== 'phone'}
-                        />
-                      </div>
-                    ))}
-
-                    <div>
-                      <label className="block mb-2 font-medium text-xs sm:text-sm">Subject</label>
-                      <select
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleInputChange}
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-secondary border border-border focus:border-primary focus:outline-none transition-colors text-xs sm:text-sm"
-                      >
-                        <option>General Inquiry</option>
-                        <option>Prayer Request</option>
-                        <option>Event Information</option>
-                        <option>Partnership</option>
-                        <option>Other</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block mb-2 font-medium text-xs sm:text-sm">Message</label>
-                      <textarea
-                        name="message"
-                        value={formData.message}
-                        onChange={handleInputChange}
-                        rows={4}
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-secondary border border-border focus:border-primary focus:outline-none transition-colors resize-none text-xs sm:text-sm"
-                        placeholder="How can we help you?"
-                        required
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full bg-accent text-accent-foreground py-3 sm:py-4 text-xs tracking-wider uppercase font-semibold hover:bg-accent/90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          <div className="space-y-5 sm:space-y-6">
+            {[
+              {
+                icon: MapPin,
+                title: 'Address',
+                content: (
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    c/o The Methodist Church Ghana<br />
+                    P.O Box 403 Wesley House, Liberia Road, <br />
+                    Greater Accra Region, Ghana 
+                    
+                  </p>
+                ),
+              },
+              {
+                icon: Phone,
+                title: 'Phone',
+                content: (
+                  <div className="flex flex-col gap-2">
+                    <a
+                      href="tel:+233244123456"
+                      className="text-sm text-muted-foreground hover:text-accent transition-colors"
                     >
-                      {loading ? 'Sending...' : 'Send Message'}
-                    </button>
-                  </form>
+                      CGC: +233 (0) 241 240 907
+                    </a>
+                    <a
+                      href="tel:+233244123457"
+                      className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                    >
+                      Office: +233 (0) 000 000 000
+                    </a>
+                  </div>
+                ),
+              },
+              {
+                icon: Mail,
+                title: 'Email',
+                content: (
+                  <div className="flex flex-col gap-2">
+                    <a
+                      href="mailto:ghamsunationalsec@gmail.com"
+                      className="text-sm text-muted-foreground hover:text-accent transition-colors break-all"
+                    >
+                      ghamsunationalsec@gmail.com
+                    </a>
+                    <a
+                      href="mailto:ghamsupcb@gmail.com"
+                      className="text-sm text-muted-foreground hover:text-accent transition-colors break-all"
+                    >
+                      ghamsupcb@gmail.com
+                    </a>
+                  </div>
+                ),
+              },
+            ].map(({ icon: Icon, title, content }, i) => (
+              <div key={i} className="flex items-start gap-4">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-border bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
-              </AnimatedSection>
-            </div>
+
+                <div className="flex-1 min-w-0">
+                  <h3
+                    className="text-lg sm:text-xl mb-1.5 tracking-tight"
+                    style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+                  >
+                    {title}
+                  </h3>
+                  {content}
+                </div>
+              </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </AnimatedSection>
+
+      {/* Contact Form */}
+      <AnimatedSection delay={0.2}>
+        <div className="w-full bg-card border border-border p-5 sm:p-7 lg:p-8 rounded-lg">
+          <h2
+            className="text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8 tracking-tight"
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+          >
+            Send Message
+          </h2>
+
+          {submitStatus === 'success' && (
+            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-600 rounded-lg text-sm">
+              ✓ Message sent successfully! We'll get back to you soon.
+            </div>
+          )}
+
+          {submitStatus === 'error' && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg text-sm">
+              ✕ {errorMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {[
+              { label: 'Full Name', name: 'fullName', type: 'text', placeholder: 'Your name' },
+              { label: 'Email', name: 'email', type: 'email', placeholder: 'your@email.com' },
+              { label: 'Phone', name: 'phone', type: 'tel', placeholder: '+233 (0) 123 456 789' },
+            ].map(({ label, name, type, placeholder }) => (
+              <div key={name}>
+                <label className="block mb-2 font-medium text-sm">
+                  {label}
+                </label>
+
+                <input
+                  type={type}
+                  name={name}
+                  value={formData[name as keyof typeof formData]}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm"
+                  placeholder={placeholder}
+                  required={name !== 'phone'}
+                />
+              </div>
+            ))}
+
+            <div>
+              <label className="block mb-2 font-medium text-sm">
+                Subject
+              </label>
+
+              <select
+                name="subject"
+                value={formData.subject}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm"
+              >
+                <option>General Inquiry</option>
+                <option>Prayer Request</option>
+                <option>Event Information</option>
+                <option>Membership Inquiry</option>
+                <option>Partnership</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium text-sm">
+                Message
+              </label>
+
+              <textarea
+                name="message"
+                value={formData.message}
+                onChange={handleInputChange}
+                rows={5}
+                className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors resize-none text-sm"
+                placeholder="How can we help you?"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-accent text-accent-foreground py-3 sm:py-4 text-sm tracking-wider uppercase font-semibold hover:bg-accent/90 transition-all duration-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Sending...' : 'Send Message'}
+            </button>
+          </form>
+        </div>
+      </AnimatedSection>
+    </div>
+  </div>
+</section>
 
         {/* Connexional Coordinator */}
         <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-32 bg-[#003D82] dark:bg-[#0a1628]">
@@ -298,12 +327,12 @@ export default function Contact() {
                   </div>
 
                   <div className="space-y-3 sm:space-y-4 mb-6">
-                    <p className="text-white/70 leading-relaxed font-light text-xs sm:text-sm">
+                    <p className="text-white/70 leading-relaxed font-light text-sm">
                       With over 15 years of dedicated service to the Methodist Church and student ministry, John brings
                       visionary leadership and pastoral excellence to GHAMSU. His commitment to spiritual development and
                       youth empowerment has transformed the lives of thousands of students across the Connexion.
                     </p>
-                    <p className="text-white/70 leading-relaxed font-light text-xs sm:text-sm">
+                    <p className="text-white/70 leading-relaxed font-light text-sm">
                       John holds a Master's degree in Theology and has led several transformational initiatives within the
                       Methodist Church. His leadership philosophy centers on developing Ambassadors for Christ who impact
                       their communities with faith, integrity, and service.
@@ -312,15 +341,15 @@ export default function Contact() {
 
                   <div className="mb-6">
                     <p className="text-xs text-[#D4AF37] uppercase tracking-widest font-semibold mb-3">Contact</p>
-                    <div className="flex flex-col gap-2 text-xs">
+                    <div className="flex flex-col gap-2 text-sm">
                       <a href="mailto:john.mensah@gmsu.org" className="text-white/80 hover:text-[#D4AF37] transition-colors break-all">
-                        john.mensah@gmsu.org
+                        anokyeyaw13@gmail.com
                       </a>
                       <a href="tel:+233244123456" className="text-white/80 hover:text-[#D4AF37] transition-colors">
-                        +233 (0) 244 123 456
+                        +233 (0) 241 240 907
                       </a>
                       <a href="https://wa.me/233244123456" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#D4AF37] transition-colors">
-                        WhatsApp: +233 244 123 456
+                        WhatsApp: +233 241 240 907
                       </a>
                     </div>
                   </div>
@@ -346,7 +375,7 @@ export default function Contact() {
         </section>
 
         {/* Leadership Team */}
-        <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 md:py-32 bg-[#003D82] dark:bg-[#0a1628]">
+        <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 lg:py-32 bg-[#003D82] dark:bg-[#0a1628]">
           <div className="max-w-[1400px] mx-auto">
             <AnimatedSection>
               <div className="text-center mb-12 sm:mb-16">
@@ -375,7 +404,7 @@ export default function Contact() {
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 sm:px-6 py-2 sm:py-2.5 font-medium text-xs sm:text-sm transition-all duration-300 border ${
+                    className={`px-4 sm:px-6 py-2 sm:py-2.5 font-medium text-xs sm:text-sm transition-all duration-300 border rounded-lg ${
                       selectedCategory === category
                         ? 'bg-[#D4AF37] text-[#003D82] border-[#D4AF37] shadow-lg scale-105'
                         : 'bg-white/10 border-white/20 text-white hover:bg-[#D4AF37]/20 hover:border-[#D4AF37]/50'
@@ -389,17 +418,17 @@ export default function Contact() {
 
             {executivesLoading ? (
               <div className="text-center py-12">
-                <p className="text-white/60 text-xs sm:text-sm">Loading executives...</p>
+                <p className="text-white/60 text-sm">Loading executives...</p>
               </div>
             ) : !executives || executives.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-white/60 text-xs sm:text-sm">No executives found in this category.</p>
+                <p className="text-white/60 text-sm">No executives found in this category.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
                 {executives.map((executive, index) => (
                   <AnimatedSection key={executive._id} delay={index * 0.1}>
-                    <div className="bg-white/10 dark:bg-[#0d1f3c] border border-white/20 dark:border-white/10 hover:border-[#D4AF37] backdrop-blur-sm overflow-hidden group transition-all duration-500">
+                    <div className="bg-white/10 dark:bg-[#0d1f3c] border border-white/20 dark:border-white/10 hover:border-[#D4AF37] backdrop-blur-sm overflow-hidden group transition-all duration-500 rounded-lg">
                       <div className="relative overflow-hidden">
                         <img
                           src={urlFor(executive.image).width(400).height(500).url()}
@@ -442,7 +471,6 @@ export default function Contact() {
             )}
           </div>
         </section>
-
       </div>
     </div>
   )

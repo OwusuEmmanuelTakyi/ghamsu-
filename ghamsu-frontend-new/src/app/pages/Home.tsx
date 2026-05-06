@@ -14,8 +14,8 @@ export default function Home() {
   const [currentSubtitleIndex, setCurrentSubtitleIndex] = useState(0)
 
   const subtitles = [
-    'Experience authentic worship, meaningful connections, and transformative spiritual growth in a welcoming community.',
-    'Serving students, building faith, and creating lasting impact across Africa and beyond.',
+    '2 Corinthians 5:20 - We are therefore Christ’s ambassadors, as though God were making his appeal through us. We implore you on Christ’s behalf: Be reconciled to God.',
+    'Ambassadors in Unity and Love.',
     'Join us for fellowship, worship, and a journey of faith that transforms lives.',
   ]
 

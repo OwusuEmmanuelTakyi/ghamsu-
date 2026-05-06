@@ -100,6 +100,90 @@ export default function BlogDetail() {
   const contentType = isNews ? 'News' : 'Article'
   const authorLabel = isNews ? 'Reporter' : 'Author'
 
+  // Render Portable Text content properly
+  const renderContent = () => {
+    if (!blog.content || !Array.isArray(blog.content)) {
+      return <p className="text-muted-foreground">No content available for this post.</p>
+    }
+
+    return blog.content.map((block: any, idx: number) => {
+      // Handle text blocks (Portable Text)
+      if (block._type === 'block') {
+        return (
+          <div key={idx} className="mb-6">
+            {block.children?.map((child: any, childIdx: number) => {
+              // Handle different text styles
+              const text = child.text
+              let element = <span key={childIdx}>{text}</span>
+
+              if (child.marks?.includes('strong')) {
+                element = <strong key={childIdx} className="font-semibold">{text}</strong>
+              } else if (child.marks?.includes('em')) {
+                element = <em key={childIdx} className="italic">{text}</em>
+              } else if (child.marks?.includes('code')) {
+                element = <code key={childIdx} className="bg-secondary/50 px-2 py-1 rounded font-mono text-sm">{text}</code>
+              }
+
+              return element
+            })}
+          </div>
+        )
+      }
+
+      // Handle heading blocks
+      if (block._type === 'block' && block.style?.startsWith('h')) {
+        const level = block.style.charAt(1)
+        const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements
+        return (
+          <HeadingTag key={idx} className={`text-${level === '1' ? '3xl' : level === '2' ? '2xl' : 'xl'} font-bold mt-8 mb-4`}>
+            {block.children?.map((child: any) => child.text).join('')}
+          </HeadingTag>
+        )
+      }
+
+      // Handle image blocks
+      if (block._type === 'image') {
+        return (
+          <figure key={idx} className="my-12">
+            <img
+              src={urlFor(block).width(800).url()}
+              alt={block.alt || 'Blog image'}
+              className="w-full rounded-lg"
+            />
+            {block.caption && (
+              <figcaption className="text-center text-sm text-muted-foreground mt-4 italic">
+                {block.caption}
+              </figcaption>
+            )}
+          </figure>
+        )
+      }
+
+      // Handle list blocks
+      if (block.listItem === 'bullet') {
+        return (
+          <ul key={idx} className="list-disc list-inside mb-6 space-y-2">
+            <li>
+              {block.children?.map((child: any) => child.text).join('')}
+            </li>
+          </ul>
+        )
+      }
+
+      if (block.listItem === 'number') {
+        return (
+          <ol key={idx} className="list-decimal list-inside mb-6 space-y-2">
+            <li>
+              {block.children?.map((child: any) => child.text).join('')}
+            </li>
+          </ol>
+        )
+      }
+
+      return null
+    })
+  }
+
   return (
     <div className="pt-32 pb-24">
       {/* Back Button */}
@@ -194,45 +278,8 @@ export default function BlogDetail() {
             </p>
 
             {/* Content */}
-            <div className="prose prose-lg max-w-none mb-12 sm:mb-16">
-              {blog.content && blog.content.length > 0 ? (
-                <div className="text-base sm:text-lg leading-relaxed text-foreground space-y-6">
-                  {blog.content.map((block: any, idx: number) => {
-                    // Handle text blocks
-                    if (block._type === 'block') {
-                      return (
-                        <div key={idx} className="prose prose-lg max-w-none">
-                          {block.children?.map((child: any, childIdx: number) => (
-                            <span key={childIdx}>{child.text}</span>
-                          )).join('')}
-                        </div>
-                      )
-                    }
-
-                    // Handle image blocks
-                    if (block._type === 'image') {
-                      return (
-                        <figure key={idx} className="my-12">
-                          <img
-                            src={urlFor(block).width(800).url()}
-                            alt={block.alt || 'Blog image'}
-                            className="w-full rounded-lg"
-                          />
-                          {block.caption && (
-                            <figcaption className="text-center text-sm text-muted-foreground mt-4 italic">
-                              {block.caption}
-                            </figcaption>
-                          )}
-                        </figure>
-                      )
-                    }
-
-                    return null
-                  })}
-                </div>
-              ) : (
-                <p className="text-muted-foreground">No content available for this blog post.</p>
-              )}
+            <div className="prose prose-lg max-w-none mb-12 sm:mb-16 text-base sm:text-lg leading-relaxed text-foreground space-y-6">
+              {renderContent()}
             </div>
 
             {/* Stats */}

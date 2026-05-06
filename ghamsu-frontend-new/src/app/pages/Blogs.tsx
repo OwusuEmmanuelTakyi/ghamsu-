@@ -73,7 +73,7 @@ export default function Blogs() {
       <HeroSection
         title="News & Articles"
         subtitle="Latest updates, insights, and practical wisdom for your spiritual journey."
-        backgroundImage="https://images.unsplash.com/photo-1499750310107-5fef28a66643?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080"
+        backgroundImage="https://images.unsplash.com/photo-1778088742542-ffe6bab6fe0e?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         isHomePage={false}
       />
 
@@ -240,6 +240,31 @@ export default function Blogs() {
                 ))}
               </div>
             )}
+          </div>
+        </section>
+
+        {/* Reporter Recruitment Section */}
+        <section className="px-4 py-16 sm:py-20 md:py-24 bg-[#003D82]">
+          <div className="max-w-4xl mx-auto text-center">
+            <AnimatedSection>
+              <h2
+                className="text-3xl sm:text-4xl md:text-5xl text-white mb-4 sm:mb-6 tracking-tight"
+                style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+              >
+                Want to be our reporter? or contribute articles?
+              </h2>
+              <p className="text-white/80 text-sm sm:text-base md:text-lg mb-8 sm:mb-10 max-w-2xl mx-auto font-light">
+                Share your stories, cover community events, and spread the word about GHAMSU's inspiring activities. Join our team of reporters today!
+              </p>
+              <div className="h-[2px] w-20 bg-[#D4AF37] mx-auto mb-8 sm:mb-10" />
+              <a
+                href="mailto:ghamsupcb@gmail.com?subject=Reporter%20Application&body=Hello%2C%0A%0AI%20am%20interested%20in%20becoming%20a%20reporter%20for%20GHAMSU.%0A%0APlease%20let%20me%20know%20more%20about%20the%20opportunity.%0A%0AThank%20you!"
+                className="inline-flex items-center gap-3 bg-[#D4AF37] text-[#003D82] px-8 sm:px-10 py-3 sm:py-4 rounded-lg hover:bg-white transition-colors font-semibold text-sm sm:text-base tracking-wide group"
+              >
+                📝 Apply as Reporter
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </AnimatedSection>
           </div>
         </section>
       </div>

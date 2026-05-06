@@ -117,6 +117,31 @@ export default function Gallery() {
             )}
           </div>
         </section>
+
+        {/* Contribution Section */}
+        <section className="px-4 py-16 sm:py-20 md:py-24 bg-[#003D82]">
+          <div className="max-w-4xl mx-auto text-center">
+            <AnimatedSection>
+              <h2
+                className="text-3xl sm:text-4xl md:text-5xl text-white mb-4 sm:mb-6 tracking-tight"
+                style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+              >
+                Do you want to contribute to the gallery?
+              </h2>
+              <p className="text-white/80 text-sm sm:text-base md:text-lg mb-8 sm:mb-10 max-w-2xl mx-auto font-light">
+                Share your moments from our community events and activities. Submit your pictures here and be part of our gallery!
+              </p>
+              <div className="h-[2px] w-20 bg-[#D4AF37] mx-auto mb-8 sm:mb-10" />
+              <a
+                href="mailto:ghamsupcb@gmail.com?subject=Gallery%20Submission&body=Hello%2C%0A%0AI%20would%20like%20to%20submit%20photos%20for%20the%20GHAMSU%20gallery.%0A%0APlease%20find%20attached%20my%20photos.%0A%0AThank%20you!"
+                className="inline-flex items-center gap-3 bg-[#D4AF37] text-[#003D82] px-8 sm:px-10 py-3 sm:py-4 rounded-lg hover:bg-white transition-colors font-semibold text-sm sm:text-base tracking-wide group"
+              >
+                📧 Submit Your Photos
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </AnimatedSection>
+          </div>
+        </section>
       </div>
     </div>
   )
