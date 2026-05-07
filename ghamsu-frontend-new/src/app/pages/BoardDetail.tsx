@@ -1,4 +1,4 @@
-import { Users, ArrowLeft, Heart, BookOpen, TrendingUp, Globe, Music } from 'lucide-react'
+import { Users, ArrowLeft, Heart, BookOpen, TrendingUp, Globe, Music, Activity } from 'lucide-react';
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useNavigate, useParams } from 'react-router'
 
@@ -301,13 +301,13 @@ export default function BoardDetail() {
                 className="text-2xl md:text-3xl mb-4 tracking-tight"
                 style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
               >
-                Interested in Serving?
+                Interested in {board.title} Activity?
               </h2>
               <p className="text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
-                If you have a passion for this ministry and would like to join the {board.title}, we'd love to hear from you!
+                If you have a passion for this ministry and would like to support the {board.title}, we'd love to hear from you!
               </p>
               <button className="border-2 border-primary text-primary px-10 py-4 text-sm tracking-wider uppercase font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300">
-                Get Involved
+                Connect with us
               </button>
             </div>
           </AnimatedSection>
