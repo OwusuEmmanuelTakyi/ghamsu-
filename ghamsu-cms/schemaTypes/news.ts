@@ -141,4 +141,7 @@ export default defineType({
       media: 'featuredImage',
     },
   },
+  
+
+  
 })

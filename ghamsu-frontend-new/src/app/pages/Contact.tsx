@@ -333,7 +333,7 @@ export default function Contact() {
                       youth empowerment has transformed the lives of thousands of students across the Connexion.
                     </p>
                     <p className="text-white/70 leading-relaxed font-light text-sm">
-                      John holds a Master's degree in Theology and has led several transformational initiatives within the
+                      Rev. Anokye holds a Master's degree in Theology and has led several transformational initiatives within the
                       Methodist Church. His leadership philosophy centers on developing Ambassadors for Christ who impact
                       their communities with faith, integrity, and service.
                     </p>
