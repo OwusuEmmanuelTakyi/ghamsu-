@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MapPin, Phone, Mail } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
@@ -30,8 +30,8 @@ export default function Contact() {
     return labels[category] || category
   }
 
-  useState(() => {
-    emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY)
+  useEffect(() => {
+    emailjs.init((import.meta as any).env.VITE_EMAILJS_PUBLIC_KEY)
   }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
