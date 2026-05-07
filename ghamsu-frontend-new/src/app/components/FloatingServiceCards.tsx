@@ -14,35 +14,30 @@ export function FloatingServiceCards() {
   const { data: articles } = useArticles()
   const { data: events } = useEvents()
 
-  // Get scripture of the day from OurManna API
+  // ── Scripture of the Day (OurManna API) ───────────────────────────────────
   useEffect(() => {
     const fetchScriptureOfDay = async () => {
       try {
         const response = await fetch(
-          `https://beta.ourmanna.com/api/v1/get?format=json&order=daily`
+          'https://beta.ourmanna.com/api/v1/get?format=json&order=daily'
         )
-        
-        if (!response.ok) throw new Error('Failed to fetch')
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
         const data = await response.json()
-        
-        // Log to see the actual structure
-        console.log('Scripture API Response:', data)
-        
-        // Parse the correct structure from OurManna API
-        if (data.result) {
-          const verseData = data.result.verses ? data.result.verses[0] : data.result
-          const reference = `${verseData.bookname} ${verseData.chapter}:${verseData.verse}`
-          
+
+        // OurManna API structure: { verse: { details: { text, reference } } }
+        const details = data?.verse?.details
+        if (details?.text && details?.reference) {
           setScriptureOfDay({
-            text: verseData.text || 'For God so loved the world that he gave his one and only Son...',
-            reference: reference || 'John 3:16',
+            text: details.text.trim(),
+            reference: details.reference,
           })
         } else {
-          throw new Error('Invalid API response structure')
+          throw new Error('Unexpected API response structure')
         }
       } catch (error) {
-        console.error('Error fetching scripture:', error)
+        console.error('[FloatingServiceCards] Error fetching scripture:', error)
         // Fallback scripture
         setScriptureOfDay({
           text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
@@ -56,11 +51,10 @@ export function FloatingServiceCards() {
     fetchScriptureOfDay()
   }, [])
 
-  // Get article of the day (deterministic based on date, so same article all day)
+  // ── Article of the Day (deterministic by date) ────────────────────────────
   useEffect(() => {
     if (!articles || articles.length === 0) return
 
-    // Create a seed based on today's date for consistent daily article
     const today = new Date()
     const dateString = today.toISOString().split('T')[0] // YYYY-MM-DD
     const seed = dateString.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
@@ -69,27 +63,29 @@ export function FloatingServiceCards() {
     setArticleOfDay(articles[randomIndex])
   }, [articles])
 
-  // Get most recent news
+  // ── Latest news ───────────────────────────────────────────────────────────
   const latestNews = news && news.length > 0 ? news[0] : null
 
-  // Get upcoming event within 3 days
+  // ── Upcoming event within 3 days ──────────────────────────────────────────
   const getUpcomingEvent = () => {
     if (!events || events.length === 0) return null
 
     const now = new Date()
     const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)
 
-    return events.find((event) => {
-      const eventDate = new Date(event.date)
-      return eventDate >= now && eventDate <= threeDaysFromNow
-    }) || null
+    return (
+      events.find((event) => {
+        const eventDate = new Date(event.date)
+        return eventDate >= now && eventDate <= threeDaysFromNow
+      }) || null
+    )
   }
 
   const upcomingEvent = getUpcomingEvent()
 
+  // ── Helpers ───────────────────────────────────────────────────────────────
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
@@ -98,16 +94,18 @@ export function FloatingServiceCards() {
     })
   }
 
-  const truncateText = (text: string, length: number) => {
-    return text.length > length ? text.substring(0, length) + '...' : text
-  }
+  const truncateText = (text: string, length: number) =>
+    text.length > length ? text.substring(0, length) + '...' : text
 
+  // ── Card definitions ──────────────────────────────────────────────────────
   const cards = [
     {
       icon: BookOpen,
       title: "Today's News",
       description: latestNews ? truncateText(latestNews.title, 50) : 'No news yet',
-      image: latestNews?.featuredImage ? urlFor(latestNews.featuredImage).width(200).height(200).url() : null,
+      image: latestNews?.featuredImage
+        ? urlFor(latestNews.featuredImage).width(200).height(200).url()
+        : null,
       link: latestNews ? `/blogs/${latestNews.slug.current}` : '/blogs?category=news',
       active: true,
       readMoreText: 'Read News',
@@ -116,7 +114,9 @@ export function FloatingServiceCards() {
       icon: FileText,
       title: 'Article of the Day',
       description: articleOfDay ? truncateText(articleOfDay.title, 50) : 'Loading article...',
-      image: articleOfDay?.featuredImage ? urlFor(articleOfDay.featuredImage).width(200).height(200).url() : null,
+      image: articleOfDay?.featuredImage
+        ? urlFor(articleOfDay.featuredImage).width(200).height(200).url()
+        : null,
       link: articleOfDay ? `/blogs/${articleOfDay.slug.current}` : '/blogs?category=articles',
       active: false,
       readMoreText: 'Read Article',
@@ -127,7 +127,7 @@ export function FloatingServiceCards() {
       description: upcomingEvent
         ? `${upcomingEvent.title} - ${formatDate(upcomingEvent.date)}`
         : 'No events in next 3 days',
-      image: upcomingEvent?.featuredImage ? urlFor(upcomingEvent.featuredImage).width(200).height(200).url() : null,
+      image: null,
       link: '/events',
       active: false,
       readMoreText: 'View Events',
@@ -135,19 +135,22 @@ export function FloatingServiceCards() {
     {
       icon: Lightbulb,
       title: 'Scripture of the Day',
-      description: scriptureOfDay 
-        ? `"${truncateText(scriptureOfDay.text, 40)}" - ${scriptureOfDay.reference}`
-        : 'Loading scripture...',
+      description: scriptureLoading
+        ? 'Loading scripture...'
+        : scriptureOfDay
+        ? `"${truncateText(scriptureOfDay.text, 80)}" — ${scriptureOfDay.reference}`
+        : '"For God so loved the world..." — John 3:16',
       link: '/sermons',
       active: true,
       readMoreText: '',
     },
   ]
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="relative -mt-24 md:-mt-32 z-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+    <div className="relative -mt-24 z-20 px-4 sm:px-6 md:-mt-32 lg:px-8">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {cards.map((card, index) => {
             const Icon = card.icon
             return (
@@ -156,32 +159,36 @@ export function FloatingServiceCards() {
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`group relative overflow-hidden transition-all duration-500 h-full cursor-pointer rounded-lg ${
+                  className={`group relative h-full cursor-pointer overflow-hidden rounded-lg transition-all duration-500 ${
                     card.active
-                      ? 'bg-accent text-accent-foreground shadow-xl hover:shadow-2xl hover:-translate-y-1'
-                      : 'bg-card text-card-foreground border border-border hover:border-accent/50 hover:shadow-lg hover:-translate-y-1'
+                      ? 'bg-accent text-accent-foreground shadow-xl hover:-translate-y-1 hover:shadow-2xl'
+                      : 'bg-card text-card-foreground border border-border hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg'
                   }`}
                 >
                   {/* Accent top line */}
-                  <div className={`h-[2px] w-full ${card.active ? 'bg-accent-foreground/20' : 'bg-accent'}`} />
+                  <div
+                    className={`h-[2px] w-full ${
+                      card.active ? 'bg-accent-foreground/20' : 'bg-accent'
+                    }`}
+                  />
 
-                  <div className="p-5 sm:p-6 lg:p-8 flex flex-col h-full">
+                  <div className="flex h-full flex-col p-5 sm:p-6 lg:p-8">
                     {/* Icon */}
                     <div className="mb-4 sm:mb-5 lg:mb-6">
                       <div
-                        className={`w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center transition-all ${
+                        className={`flex h-10 w-10 items-center justify-center transition-all sm:h-12 sm:w-12 ${
                           card.active
                             ? 'text-accent-foreground/80'
                             : 'text-foreground/60 group-hover:text-accent'
                         }`}
                       >
-                        <Icon className="w-5 sm:w-6 h-5 sm:h-6" strokeWidth={1.5} />
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.5} />
                       </div>
                     </div>
 
                     {/* Title */}
                     <h3
-                      className={`text-base sm:text-lg mb-2 sm:mb-3 tracking-tight line-clamp-2 ${
+                      className={`mb-2 line-clamp-2 text-base tracking-tight sm:mb-3 sm:text-lg ${
                         card.active ? 'font-semibold' : 'font-medium'
                       }`}
                       style={{ fontFamily: 'var(--font-heading)' }}
@@ -189,30 +196,31 @@ export function FloatingServiceCards() {
                       {card.title}
                     </h3>
 
-                    {/* Small Square Flyer */}
+                    {/* Thumbnail */}
                     {card.image && (
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-border/50 mb-3 sm:mb-4 shadow-md">
+                      <div className="mb-3 h-16 w-16 overflow-hidden rounded-lg border border-border/50 shadow-md sm:mb-4 sm:h-20 sm:w-20">
                         <img
                           src={card.image}
                           alt={card.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          loading="lazy"
                         />
                       </div>
                     )}
 
                     {/* Description */}
                     <p
-                      className={`text-xs sm:text-sm leading-relaxed line-clamp-2 flex-1 ${
+                      className={`mb-3 line-clamp-3 flex-1 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
                         card.active ? 'text-accent-foreground/70' : 'text-muted-foreground'
-                      } mb-3 sm:mb-4`}
+                      }`}
                     >
                       {card.description}
                     </p>
 
-                    {/* Read More Text Link */}
+                    {/* Read More */}
                     {card.readMoreText && (
                       <span
-                        className={`inline-flex items-center gap-2 text-xs sm:text-sm font-semibold transition-all duration-300 ${
+                        className={`inline-flex items-center gap-2 text-xs font-semibold transition-all duration-300 sm:text-sm ${
                           card.active
                             ? 'text-accent-foreground hover:text-accent-foreground/80'
                             : 'text-accent hover:text-accent/80 group-hover:gap-3'
