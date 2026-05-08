@@ -57,10 +57,10 @@ export function BoardsHomeSection() {
               className="text-4xl md:text-5xl lg:text-6xl mb-6 tracking-tight"
               style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
             >
-              Our Boards
+              Our Connexional Boards
             </h2>
             <p className="text-muted-foreground text-base max-w-2xl mx-auto font-light leading-relaxed">
-              Dedicated leadership serving our community with purpose and vision
+              Six Boards Across the Connexion and Supporting the Connexional Executives in discharging their duties effectively
             </p>
           </div>
         </AnimatedSection>

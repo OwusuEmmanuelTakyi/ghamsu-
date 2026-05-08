@@ -180,7 +180,11 @@ export function Footer() {
         <div className="py-8 sm:py-10 border-t border-b border-border mb-10 sm:mb-12">
           <div className="text-center">
             <p className="text-sm font-semibold text-foreground mb-6">
-              FOLLOW GHAMSU OFFICIAL ON
+                
+              <span className="text-accent ">
+                GHAMSU OFFICIAL  <br/>
+            </span>
+              Connect with us on social media for the latest updates, inspiration, and community engagement.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
               {socialLinks.map((social, index) => {

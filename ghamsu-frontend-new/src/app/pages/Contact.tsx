@@ -328,7 +328,7 @@ export default function Contact() {
 
                   <div className="space-y-3 sm:space-y-4 mb-6">
                     <p className="text-white/70 leading-relaxed font-light text-sm">
-                      With over 15 years of dedicated service to the Methodist Church and student ministry, John brings
+                      With over 15 years of dedicated service to the Methodist Church and student ministry, Rev. Anokye brings
                       visionary leadership and pastoral excellence to GHAMSU. His commitment to spiritual development and
                       youth empowerment has transformed the lives of thousands of students across the Connexion.
                     </p>
@@ -356,9 +356,9 @@ export default function Contact() {
 
                   <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 border-t border-white/15">
                     {[
-                      { value: '15+', label: 'Years Service' },
-                      { value: '5K+', label: 'Lives Impacted' },
-                      { value: '25', label: 'Diocese Led' },
+                      { value: '15+', label: 'Years in Service' },
+                      { value: 'MANY', label: 'Lives Impacted' },
+                      { value: '8+ ', label: 'As Cordinator' },
                     ].map((stat, i) => (
                       <div key={i} className="text-center sm:text-left">
                         <p className="text-xl sm:text-2xl font-bold text-[#D4AF37] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
