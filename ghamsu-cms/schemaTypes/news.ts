@@ -42,23 +42,15 @@ export default defineType({
           type: 'image',
           options: { hotspot: true },
           fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Alt Text',
-            },
-            {
-              name: 'caption',
-              type: 'string',
-              title: 'Caption',
-            },
+            { name: 'alt',     type: 'string', title: 'Alt Text' },
+            { name: 'caption', type: 'string', title: 'Caption'  },
           ],
         },
       ],
       validation: (Rule) => Rule.required(),
     }),
 
-    // ── Reporter Information (News Specific) ──────────────────────
+    // ── Reporter Information ───────────────────────────────────────────────
     defineField({
       name: 'reporter',
       title: 'Reporter Name',
@@ -73,16 +65,80 @@ export default defineType({
       description: 'Reporter position or local chapter (e.g., "UG Local", "Communications Officer")',
     }),
 
+    // ── Media Attachments ─────────────────────────────────────────────────
+    defineField({
+      name: 'mediaAttachments',
+      title: 'Media Attachments',
+      type: 'array',
+      description: 'Add video or audio links related to this news story (YouTube, Vimeo, SoundCloud, etc.)',
+      of: [
+        {
+          type: 'object',
+          name: 'mediaItem',
+          title: 'Media Item',
+          fields: [
+            defineField({
+              name: 'mediaType',
+              title: 'Media Type',
+              type: 'string',
+              options: {
+                list: [
+                  { title: '🎥 Video',  value: 'video' },
+                  { title: '🎵 Audio',  value: 'audio' },
+                ],
+                layout: 'radio',
+              },
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              description: 'Short label shown above the player (e.g. "Watch the Sermon", "Listen to the Report")',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'url',
+              title: 'URL',
+              type: 'url',
+              description: 'Paste a YouTube, Vimeo, SoundCloud, Spotify, or direct media link here',
+              validation: (Rule) => Rule.required().uri({ scheme: ['http', 'https'] }),
+            }),
+            defineField({
+              name: 'description',
+              title: 'Short Description (optional)',
+              type: 'string',
+              description: 'Brief context shown below the player',
+            }),
+          ],
+          preview: {
+            select: {
+              title:    'label',
+              subtitle: 'url',
+              type:     'mediaType',
+            },
+            prepare({ title, subtitle, type }) {
+              return {
+                title:    `${type === 'video' ? '🎥' : '🎵'} ${title}`,
+                subtitle: subtitle,
+              }
+            },
+          },
+        },
+      ],
+    }),
+
+    // ── Classification ────────────────────────────────────────────────────
     defineField({
       name: 'newsCategory',
       title: 'News Category',
       type: 'string',
       options: {
         list: [
-          { title: 'Announcement', value: 'announcement' },
+          { title: 'Announcement',   value: 'announcement'   },
           { title: 'Event Coverage', value: 'event-coverage' },
-          { title: 'Campus News', value: 'campus-news' },
-          { title: 'Union Update', value: 'union-update' },
+          { title: 'Campus News',    value: 'campus-news'    },
+          { title: 'Union Update',   value: 'union-update'   },
         ],
       },
     }),
@@ -99,7 +155,7 @@ export default defineType({
       initialValue: false,
     }),
 
-    // ── Engagement fields ────────────────────────────────────────────
+    // ── Engagement ────────────────────────────────────────────────────────
     defineField({
       name: 'likes',
       title: 'Likes',
@@ -117,6 +173,7 @@ export default defineType({
       description: 'Automatically updated each time the news is opened.',
     }),
   ],
+
   orderings: [
     {
       title: 'Published Date, Newest First',
@@ -134,14 +191,12 @@ export default defineType({
       by: [{ field: 'views', direction: 'desc' }],
     },
   ],
+
   preview: {
     select: {
-      title: 'title',
+      title:    'title',
       subtitle: 'newsCategory',
-      media: 'featuredImage',
+      media:    'featuredImage',
     },
   },
-  
-
-  
 })
