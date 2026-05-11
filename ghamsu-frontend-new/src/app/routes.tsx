@@ -14,6 +14,7 @@ import Contact from './pages/Contact';
 import Partner from './pages/Partner';
 import BlogDetail from './pages/BlogDetail';
 import BoardDetail from './pages/BoardDetail';
+import Notfound from './pages/Notfound';
 
 function Layout() {
   return (
@@ -43,7 +44,9 @@ export const router = createBrowserRouter([
       { path: 'gallery', Component: Gallery },
       { path: 'contact', Component: Contact },
       { path: 'partner', Component: Partner },
+      {path: '*', Component: Notfound },
       { path: 'blogs/:slug', Component: BlogDetail },
+
       {path: 'boards/:slug', Component: BoardDetail }
     ],
   },
