@@ -49,19 +49,31 @@ export function Navigation() {
       }`}
     >
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12">
-        <div className="flex justify-between items-center h-16 sm:h-20 lg:h-24">
-          {/* Logo */}
+        <div className="flex justify-between items-center h-auto sm:h-20 lg:h-24 py-2 sm:py-0">
+          {/* Logo with Text - Matching Reference Image */}
           <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3">
-              <img src={logoImage} alt="GHAMSU Logo" className={`h-10 sm:h-12 w-auto transition-all duration-300 ${isScrolled ? 'opacity-100' : 'opacity-90 hover:opacity-100'}`} />
-              <h1
-                className={`text-xs sm:text-sm tracking-wide font-semibold transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
-                style={{ fontFamily: 'var(--font-heading)', letterSpacing: '0.08em' }}
-              >
-                GHANA METHODIST
-                <br />
-                STUDENT'S UNION
-              </h1>
+            <Link to="/" className="flex items-center gap-3 sm:gap-4">
+              <img 
+                src={logoImage} 
+                alt="GHAMSU Logo" 
+                className={`h-12 sm:h-14 lg:h-16 w-auto transition-all duration-300 ${isScrolled ? 'opacity-100' : 'opacity-90 hover:opacity-100'}`} 
+              />
+              
+              {/* Text stacked vertically */}
+              <div className="flex flex-col gap-0">
+                <h1
+                  className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-blue-900 leading-none"
+                  style={{ fontFamily: 'Drizzle, var(--font-heading)', letterSpacing: '-0.01em', fontWeight: 900 }}
+                >
+                  GHAMSU
+                </h1>
+                <p
+                  className="text-[9px] sm:text-xs lg:text-sm font-bold tracking-wider text-amber-400 leading-none"
+                  style={{ fontFamily: 'var(--font-heading)', letterSpacing: '0.15em', color: '#D4AF37' }}
+                >
+                  GHANA METHODIST STUDENTS' UNION
+                </p>
+              </div>
             </Link>
           </div>
 

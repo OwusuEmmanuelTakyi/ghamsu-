@@ -148,95 +148,135 @@ export function FloatingServiceCards() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="relative -mt-24 z-20 px-4 sm:px-6 md:-mt-32 lg:px-8">
-      <div className="mx-auto max-w-[1400px]">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
-          {cards.map((card, index) => {
-            const Icon = card.icon
-            return (
-              <Link key={index} to={card.link}>
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`group relative h-full cursor-pointer overflow-hidden rounded-lg transition-all duration-500 ${
-                    card.active
-                      ? 'bg-accent text-accent-foreground shadow-xl hover:-translate-y-1 hover:shadow-2xl'
-                      : 'bg-card text-card-foreground border border-border hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg'
-                  }`}
-                >
-                  {/* Accent top line */}
-                  <div
-                    className={`h-[2px] w-full ${
-                      card.active ? 'bg-accent-foreground/20' : 'bg-accent'
+    <>
+      <style>{`
+        /* Mobile: Positioned below hero naturally with margin-top */
+        @media (max-width: 768px) {
+          .floating-cards-container {
+            position: relative;
+            margin-top: 2rem;
+            z-index: 10;
+            padding: 1rem 0;
+            background: white;
+          }
+        }
+
+        /* Tablet: Below hero with spacing */
+        @media (min-width: 769px) and (max-width: 1023px) {
+          .floating-cards-container {
+            position: relative;
+            margin-top: 3rem;
+            z-index: 10;
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+            background: #f9fafb;
+          }
+        }
+
+        /* Large screens and up: Below hero with more spacing */
+        @media (min-width: 1024px) {
+          .floating-cards-container {
+            position: relative;
+            margin-top: 4rem;
+            z-index: 10;
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+            background: #f9fafb;
+          }
+        }
+      `}</style>
+
+      <div className="floating-cards-container px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+            {cards.map((card, index) => {
+              const Icon = card.icon
+              return (
+                <Link key={index} to={card.link}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-100px' }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className={`group relative h-full cursor-pointer overflow-hidden rounded-lg transition-all duration-500 ${
+                      card.active
+                        ? 'bg-gradient-to-br from-blue-900 to-blue-800 text-white shadow-xl hover:-translate-y-1 hover:shadow-2xl'
+                        : 'bg-white text-gray-900 border border-gray-200 hover:-translate-y-1 hover:border-blue-900/30 hover:shadow-lg'
                     }`}
-                  />
+                  >
+                    {/* Accent top line */}
+                    <div
+                      className={`h-[2px] w-full ${
+                        card.active ? 'bg-orange-400/40' : 'bg-orange-500'
+                      }`}
+                    />
 
-                  <div className="flex h-full flex-col p-5 sm:p-6 lg:p-8">
-                    {/* Icon */}
-                    <div className="mb-4 sm:mb-5 lg:mb-6">
-                      <div
-                        className={`flex h-10 w-10 items-center justify-center transition-all sm:h-12 sm:w-12 ${
-                          card.active
-                            ? 'text-accent-foreground/80'
-                            : 'text-foreground/60 group-hover:text-accent'
+                    <div className="flex h-full flex-col p-5 sm:p-6 lg:p-8">
+                      {/* Icon */}
+                      <div className="mb-4 sm:mb-5 lg:mb-6">
+                        <div
+                          className={`flex h-10 w-10 items-center justify-center transition-all sm:h-12 sm:w-12 ${
+                            card.active
+                              ? 'text-orange-300'
+                              : 'text-orange-500 group-hover:text-orange-600'
+                          }`}
+                        >
+                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.5} />
+                        </div>
+                      </div>
+
+                      {/* Title */}
+                      <h3
+                        className={`mb-2 line-clamp-2 text-base tracking-tight sm:mb-3 sm:text-lg ${
+                          card.active ? 'font-semibold text-white' : 'font-medium text-gray-900'
+                        }`}
+                        style={{ fontFamily: 'var(--font-heading)' }}
+                      >
+                        {card.title}
+                      </h3>
+
+                      {/* Thumbnail */}
+                      {card.image && (
+                        <div className="mb-3 h-16 w-16 overflow-hidden rounded-lg border border-gray-200 shadow-md sm:mb-4 sm:h-20 sm:w-20">
+                          <img
+                            src={card.image}
+                            alt={card.title}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+
+                      {/* Description */}
+                      <p
+                        className={`mb-3 line-clamp-3 flex-1 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
+                          card.active ? 'text-white/80' : 'text-gray-600'
                         }`}
                       >
-                        <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.5} />
-                      </div>
+                        {card.description}
+                      </p>
+
+                      {/* Read More */}
+                      {card.readMoreText && (
+                        <span
+                          className={`inline-flex items-center gap-2 text-xs font-semibold transition-all duration-300 sm:text-sm ${
+                            card.active
+                              ? 'text-orange-300 hover:text-orange-200'
+                              : 'text-orange-500 hover:text-orange-600 group-hover:gap-3'
+                          }`}
+                        >
+                          {card.readMoreText}
+                          <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                        </span>
+                      )}
                     </div>
-
-                    {/* Title */}
-                    <h3
-                      className={`mb-2 line-clamp-2 text-base tracking-tight sm:mb-3 sm:text-lg ${
-                        card.active ? 'font-semibold' : 'font-medium'
-                      }`}
-                      style={{ fontFamily: 'var(--font-heading)' }}
-                    >
-                      {card.title}
-                    </h3>
-
-                    {/* Thumbnail */}
-                    {card.image && (
-                      <div className="mb-3 h-16 w-16 overflow-hidden rounded-lg border border-border/50 shadow-md sm:mb-4 sm:h-20 sm:w-20">
-                        <img
-                          src={card.image}
-                          alt={card.title}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-
-                    {/* Description */}
-                    <p
-                      className={`mb-3 line-clamp-3 flex-1 text-xs leading-relaxed sm:mb-4 sm:text-sm ${
-                        card.active ? 'text-accent-foreground/70' : 'text-muted-foreground'
-                      }`}
-                    >
-                      {card.description}
-                    </p>
-
-                    {/* Read More */}
-                    {card.readMoreText && (
-                      <span
-                        className={`inline-flex items-center gap-2 text-xs font-semibold transition-all duration-300 sm:text-sm ${
-                          card.active
-                            ? 'text-accent-foreground hover:text-accent-foreground/80'
-                            : 'text-accent hover:text-accent/80 group-hover:gap-3'
-                        }`}
-                      >
-                        {card.readMoreText}
-                        <span className="transition-transform group-hover:translate-x-0.5">→</span>
-                      </span>
-                    )}
-                  </div>
-                </motion.div>
-              </Link>
-            )
-          })}
+                  </motion.div>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

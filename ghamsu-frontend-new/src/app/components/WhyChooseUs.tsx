@@ -1,7 +1,13 @@
 import { Heart, Globe, Church, Users } from 'lucide-react'
 import { AnimatedSection } from './AnimatedSection'
+import { motion } from 'motion/react'
+import { useRef } from 'react'
+import { useInView } from 'motion/react'
 
 export function WhyChooseUs() {
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 })
+
   const features = [
     {
       icon: Heart,
@@ -134,81 +140,171 @@ export function WhyChooseUs() {
         }
       `}</style>
 
-      <section className="why-section py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8">
+      <section
+        ref={sectionRef}
+        className="why-section py-20 sm:py-28 lg:py-32 px-4 sm:px-6 lg:px-8"
+      >
         <div className="max-w-[1400px] mx-auto">
-          {/* Header */}
-          <AnimatedSection>
-            <div className="text-center mb-16 sm:mb-20 lg:mb-24">
-              <div className="mb-4">
-                <p
-                  className="why-eyebrow text-xs tracking-[0.3em] uppercase"
-                  style={{ fontFamily: 'var(--font-body)' }}
-                >
-                  Our Purpose
-                </p>
-              </div>
-              <h2
-                className="why-heading text-4xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight"
-                style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+          {/* Header with Scroll Animations */}
+          <div className="text-center mb-16 sm:mb-20 lg:mb-24">
+            {/* Eyebrow - slides up */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-4"
+            >
+              <p
+                className="why-eyebrow text-xs tracking-[0.3em] uppercase"
+                style={{ fontFamily: 'var(--font-body)' }}
               >
-                Our Vision
-              </h2>
-              <div className="why-divider h-[2px] w-16 mx-auto mb-6" />
-              <p className="why-subtitle text-sm sm:text-base max-w-3xl mx-auto font-light leading-relaxed">
-                Four foundational pillars guiding our mission and commitment to excellence
+                Our Purpose
               </p>
-            </div>
-          </AnimatedSection>
+            </motion.div>
 
-          {/* Cards Grid */}
+            {/* Main Heading - slides up with delay */}
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="why-heading text-4xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight"
+              style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
+            >
+              Our Vision
+            </motion.h2>
+
+            {/* Divider - scales in */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              whileInView={{ scaleX: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="why-divider h-[2px] w-16 mx-auto mb-6 origin-center"
+            />
+
+            {/* Subtitle - fades in */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="why-subtitle text-sm sm:text-base max-w-3xl mx-auto font-light leading-relaxed"
+            >
+              Four foundational pillars guiding our mission and commitment to excellence
+            </motion.p>
+          </div>
+
+          {/* Cards Grid with Staggered Animations */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon
               return (
-                <AnimatedSection key={index} delay={index * 0.1}>
-                  <div className="group h-full">
-                    <div className="why-card relative rounded-lg overflow-hidden transition-all duration-500 h-full flex flex-col p-8 sm:p-10">
-                      {/* Accent Line at Top */}
-                      <div className="why-card-top-bar absolute top-0 left-0 right-0 h-[2px]" />
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 50, rotateX: 10 }}
+                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.12,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  whileHover={{ y: -8 }}
+                  className="group h-full"
+                >
+                  <div className="why-card relative rounded-lg overflow-hidden transition-all duration-500 h-full flex flex-col p-8 sm:p-10">
+                    {/* Accent Line at Top - expands on scroll */}
+                    <motion.div
+                      className="why-card-top-bar absolute top-0 left-0 right-0 h-[2px]"
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: index * 0.12 + 0.2 }}
+                      style={{ originX: 0 }}
+                    />
 
-                      {/* Number */}
-                      <div className="absolute top-6 sm:top-8 right-6 sm:right-8">
-                        <span
-                          className="why-card-number text-2xl sm:text-3xl font-light"
-                          style={{ fontFamily: 'var(--font-heading)' }}
-                        >
-                          {feature.number}
-                        </span>
-                      </div>
-
-                      {/* Icon */}
-                      <div className="mb-8 sm:mb-10">
-                        <div className="why-icon-box w-14 h-14 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center transition-all duration-300">
-                          <Icon
-                            className="why-icon w-7 h-7 sm:w-8 sm:h-8"
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Title */}
-                      <h3
-                        className="why-card-title text-lg sm:text-xl mb-3 sm:mb-4 tracking-tight font-semibold"
+                    {/* Number - fades and scales in */}
+                    <motion.div
+                      className="absolute top-6 sm:top-8 right-6 sm:right-8"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.12 + 0.1 }}
+                    >
+                      <span
+                        className="why-card-number text-2xl sm:text-3xl font-light"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
-                        {feature.title}
-                      </h3>
+                        {feature.number}
+                      </span>
+                    </motion.div>
 
-                      {/* Micro Divider */}
-                      <div className="why-card-micro-divider h-[1px] w-8 mb-4 sm:mb-6" />
+                    {/* Icon - bounces in with rotation */}
+                    <motion.div
+                      className="mb-8 sm:mb-10"
+                      initial={{ opacity: 0, scale: 0, rotate: -15 }}
+                      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.6,
+                        delay: index * 0.12 + 0.15,
+                        type: 'spring',
+                        stiffness: 100,
+                      }}
+                    >
+                      <div className="why-icon-box w-14 h-14 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center transition-all duration-300">
+                        <Icon
+                          className="why-icon w-7 h-7 sm:w-8 sm:h-8"
+                          strokeWidth={1.5}
+                        />
+                      </div>
+                    </motion.div>
 
-                      {/* Description */}
-                      <p className="why-card-desc text-xs sm:text-sm leading-relaxed font-light flex-1">
-                        {feature.description}
-                      </p>
-                    </div>
+                    {/* Title - slides in from left */}
+                    <motion.h3
+                      className="why-card-title text-lg sm:text-xl mb-3 sm:mb-4 tracking-tight font-semibold"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.5,
+                        delay: index * 0.12 + 0.2,
+                      }}
+                    >
+                      {feature.title}
+                    </motion.h3>
+
+                    {/* Micro Divider - scales in */}
+                    <motion.div
+                      className="why-card-micro-divider h-[1px] w-8 mb-4 sm:mb-6"
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      whileInView={{ scaleX: 1, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.4,
+                        delay: index * 0.12 + 0.25,
+                      }}
+                      style={{ originX: 0 }}
+                    />
+
+                    {/* Description - fades in with word reveal effect */}
+                    <motion.p
+                      className="why-card-desc text-xs sm:text-sm leading-relaxed font-light flex-1"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.6,
+                        delay: index * 0.12 + 0.3,
+                      }}
+                    >
+                      {feature.description}
+                    </motion.p>
                   </div>
-                </AnimatedSection>
+                </motion.div>
               )
             })}
           </div>
