@@ -78,7 +78,7 @@ const HERO_SLIDES = [
     eyebrow: 'Ambassadors for Christ',
     heading: 'Ambassadors\nin Unity & Love',
     subheading:
-      'United across campuses, locals, and generations — one family, one mission, one Lord.',
+      'United across locals,Dioceses and Connexional — one family, one mission, one Lord.',
   },
   {
     image:

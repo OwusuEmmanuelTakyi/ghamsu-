@@ -384,7 +384,7 @@ function HomeHero({
                   style={{
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 900,
-                    color: 'var(--foreground)',
+                    color: '#003D82',
                   }}
                   aria-live="polite"
                 >
@@ -402,7 +402,7 @@ function HomeHero({
                           key={idx}
                           className="block"
                           style={{ 
-                            color: idx > 0 ? '#D4AF37' : 'var(--foreground)'
+                            color: idx > 0 ? '#D4AF37' : '#003D82'
                           }}
                         >
                           {line}

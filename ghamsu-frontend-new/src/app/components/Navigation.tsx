@@ -66,7 +66,7 @@ export function Navigation() {
               <div className="flex flex-col gap-0">
                 <h1
                   className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-none"
-                  style={{ fontFamily: 'Drizzle, var(--font-heading)', letterSpacing: '-0.01em', fontWeight: 900, color: 'var(--foreground)' }}
+                  style={{ fontFamily: 'Drizzle, var(--font-heading)', letterSpacing: '-0.01em', fontWeight: 900, color: '#003D82' }}
                 >
                   GHAMSU
                 </h1>
