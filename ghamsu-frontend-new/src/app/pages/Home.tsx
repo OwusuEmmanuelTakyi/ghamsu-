@@ -67,7 +67,7 @@ const HERO_SLIDES = [
   {
     image:
       'https://images.unsplash.com/photo-1778082388125-c2a1c6a835ba?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
-    eyebrow: 'Welcome Home',
+    eyebrow: '',
     heading: "Ghana Methodist\nStudents' Union",
     subheading:
       "We are therefore Christ's ambassadors, as though God were making his appeal through us. We implore you on Christ's behalf: Be reconciled to God. — 2 Corinthians 5:20",

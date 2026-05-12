@@ -150,7 +150,7 @@ function HomeHero({
   secondaryButtonText?: string
   secondaryButtonLink?: string
 }) {
-  const SLIDE_DURATION = 7000
+  const SLIDE_DURATION = 6000
 
   const [index, setIndex] = useState(0)
   const [dir, setDir] = useState(1)
@@ -228,6 +228,10 @@ function HomeHero({
           overflow: hidden;
         }
 
+        .dark .hero-section {
+          background: var(--background);
+        }
+
         .hero-image-panel {
           background: #003D82;
         }
@@ -279,7 +283,7 @@ function HomeHero({
         }
 
         .hero-dots {
-          background-image: radial-gradient(circle, rgba(0,61,130,0.08) 1px, transparent 1px);
+          background-image: none;
           background-size: 26px 26px;
         }
 
@@ -334,7 +338,7 @@ function HomeHero({
           {/* LEFT TEXT SIDE */}
           <div
             className="hero-dots relative flex flex-col justify-center
-            px-6 pb-8 pt-20 sm:px-10 sm:pt-32 sm:pb-10 md:w-[64%] md:px-12 md:pb-16 md:pt-20 md:min-h-screen
+            px-6 pb-8 pt-32 sm:px-10 sm:pt-40 sm:pb-10 md:w-[64%] md:px-12 md:pb-16 md:pt-20 md:min-h-screen
             lg:w-[66%] lg:px-20 xl:w-[68%] xl:px-28"
           >
             <div
@@ -364,7 +368,7 @@ function HomeHero({
                   <p
                     className="text-[11px] font-bold uppercase tracking-[0.38em] sm:text-xs"
                     style={{
-                      color: '#003D82',
+                      color: 'var(--foreground)',
                       fontFamily: 'var(--font-body)',
                     }}
                   >
@@ -376,13 +380,11 @@ function HomeHero({
               {/* HEADING WITH TYPEWRITER */}
               <div className="mb-6 sm:mb-7">
                 <h1
-                  className="text-left text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[6.3rem] font-black leading-[1.05] tracking-tight
-                  drop-shadow-md sm:drop-shadow-lg"
+                  className="text-left text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[6.3rem] font-black leading-[1.05] tracking-tight"
                   style={{
                     fontFamily: 'var(--font-heading)',
                     fontWeight: 900,
-                    color: '#003D82',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    color: 'var(--foreground)',
                   }}
                   aria-live="polite"
                 >
@@ -399,7 +401,9 @@ function HomeHero({
                         <span
                           key={idx}
                           className="block"
-                          style={{ color: idx > 0 ? '#D4AF37' : '#003D82' }}
+                          style={{ 
+                            color: idx > 0 ? '#D4AF37' : 'var(--foreground)'
+                          }}
                         >
                           {line}
                         </span>
@@ -415,10 +419,7 @@ function HomeHero({
                 <motion.p
                   key={`subheading-${textKey}`}
                   className="mb-8 sm:mb-9 max-w-3xl text-sm sm:text-base md:text-lg lg:text-[1.35rem] leading-relaxed
-                  text-gray-700 sm:text-gray-600 drop-shadow-sm font-medium"
-                  style={{
-                    textShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                  }}
+                  text-foreground/80 font-medium"
                   initial={{ opacity: 0 }}
                   animate={headingDone ? { opacity: 1 } : { opacity: 0 }}
                   exit={{ opacity: 0 }}
@@ -453,17 +454,18 @@ function HomeHero({
                 <Link to={primaryButtonLink}>
                   <button
                     className="group flex items-center gap-2 rounded-full px-8 py-4 text-sm
-                    font-bold text-white shadow-lg transition-all duration-300
-                    hover:gap-3 hover:shadow-xl sm:px-10 sm:py-4 sm:text-base"
+                    font-bold text-white transition-all duration-300
+                    hover:gap-3 sm:px-10 sm:py-4 sm:text-base"
                     style={{
-                      background: '#003D82',
-                      boxShadow: '0 6px 24px rgba(0,61,130,0.25)',
+                      background: 'var(--accent)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#002d61'
+                      e.currentTarget.style.background = 'var(--accent)'
+                      e.currentTarget.style.opacity = '0.9'
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = '#003D82'
+                      e.currentTarget.style.background = 'var(--accent)'
+                      e.currentTarget.style.opacity = '1'
                     }}
                   >
                     {primaryButtonText}
@@ -476,16 +478,16 @@ function HomeHero({
                     className="rounded-full border-2 px-8 py-4 text-sm font-semibold
                     transition-all duration-300 sm:px-10 sm:py-4 sm:text-base"
                     style={{
-                      borderColor: '#003D82',
-                      color: '#003D82',
+                      borderColor: 'var(--accent)',
+                      color: 'var(--accent)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#003D82'
+                      e.currentTarget.style.background = 'var(--accent)'
                       e.currentTarget.style.color = '#fff'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'transparent'
-                      e.currentTarget.style.color = '#003D82'
+                      e.currentTarget.style.color = 'var(--accent)'
                     }}
                   >
                     {secondaryButtonText}
