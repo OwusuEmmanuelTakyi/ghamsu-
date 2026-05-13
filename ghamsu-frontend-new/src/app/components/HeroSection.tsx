@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   },
   {
     image:
-      'https://images.unsplash.com/photo-1778082388302-38d8e5e40c7b?q=80&w=1059&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1778082388302-38d8e5e40c7b?q=80&w=1059&auto=format&fit=crop',
     eyebrow: 'Since 1965',
     heading: "Sixty + Years of\nGod's Faithfulness",
     subheading:
@@ -70,71 +70,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
 ]
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Typewriter Hook
-// ─────────────────────────────────────────────────────────────────────────────
-
-function useTypewriter(text: string, speed = 40) {
-  const [displayed, setDisplayed] = useState('')
-  const [done, setDone] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-    }
-
-    setDisplayed('')
-    setDone(false)
-
-    if (!text) {
-      setDone(true)
-      return
-    }
-
-    let i = 0
-
-    timerRef.current = setInterval(() => {
-      i++
-      setDisplayed(text.slice(0, i))
-
-      if (i >= text.length) {
-        if (timerRef.current) {
-          clearInterval(timerRef.current)
-        }
-
-        setDone(true)
-      }
-    }, speed)
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-      }
-    }
-  }, [text, speed])
-
-  return { displayed, done }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Cursor Component
-// ─────────────────────────────────────────────────────────────────────────────
-
-function WritingCursor() {
-  return (
-    <span
-      className="ml-1 inline-block w-[3px] animate-pulse align-middle"
-      style={{
-        height: '0.85em',
-        background: '#D4AF37',
-      }}
-      aria-hidden="true"
-    />
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Home Hero
+// Home Hero — synced text + image transitions, smooth fade-up heading
 // ─────────────────────────────────────────────────────────────────────────────
 
 function HomeHero({
@@ -155,13 +91,11 @@ function HomeHero({
   const [index, setIndex] = useState(0)
   const [dir, setDir] = useState(1)
   const [paused, setPaused] = useState(false)
-  const [textKey, setTextKey] = useState(0)
 
   const goTo = useCallback(
     (i: number, d: number) => {
       setDir(d)
       setIndex((i + slides.length) % slides.length)
-      setTextKey((key) => key + 1)
     },
     [slides.length],
   )
@@ -176,43 +110,19 @@ function HomeHero({
 
   useEffect(() => {
     if (paused) return
-
     const timer = setInterval(() => {
       next()
     }, SLIDE_DURATION)
-
     return () => clearInterval(timer)
   }, [next, paused])
 
   const slide = slides[index]
 
-  const {
-    displayed: displayedHeading,
-    done: headingDone,
-  } = useTypewriter(slide.heading, 35)
+  // Shared easing for synced motion
+  const ease = [0.22, 1, 0.36, 1] as const
 
-  const {
-    displayed: displayedSubheading,
-    done: subheadingDone,
-  } = useTypewriter(slide.subheading, 18)
-
-  const imageVariants = {
-    enter: (direction: number) => ({
-      opacity: 0,
-      x: direction > 0 ? 50 : -50,
-      scale: 1.04,
-    }),
-    center: {
-      opacity: 1,
-      x: 0,
-      scale: 1,
-    },
-    exit: (direction: number) => ({
-      opacity: 0,
-      x: direction > 0 ? -40 : 40,
-      scale: 0.98,
-    }),
-  }
+  // Heading splits into words for staggered, smooth reveal
+  const headingWords = slide.heading.split('\n').map((line) => line.split(' '))
 
   return (
     <>
@@ -228,62 +138,48 @@ function HomeHero({
           overflow: hidden;
         }
 
-        .dark .hero-section {
-          background: var(--background);
-        }
-
         .hero-image-panel {
           background: #003D82;
         }
 
         .gold-bracket {
           position: absolute;
-          width: 34px;
-          height: 34px;
+          width: 32px;
+          height: 32px;
           pointer-events: none;
         }
 
         @media (min-width: 640px) {
-          .gold-bracket {
-            width: 44px;
-            height: 44px;
-          }
+          .gold-bracket { width: 44px; height: 44px; }
         }
 
         .gold-bracket-tl {
-          top: -2px;
-          left: -2px;
+          top: -2px; left: -2px;
           border-top: 3px solid #D4AF37;
           border-left: 3px solid #D4AF37;
           border-radius: 6px 0 0 0;
         }
-
         .gold-bracket-tr {
-          top: -2px;
-          right: -2px;
+          top: -2px; right: -2px;
           border-top: 3px solid #D4AF37;
           border-right: 3px solid #D4AF37;
           border-radius: 0 6px 0 0;
         }
-
         .gold-bracket-bl {
-          bottom: -2px;
-          left: -2px;
+          bottom: -2px; left: -2px;
           border-bottom: 3px solid #D4AF37;
           border-left: 3px solid #D4AF37;
           border-radius: 0 0 0 6px;
         }
-
         .gold-bracket-br {
-          bottom: -2px;
-          right: -2px;
+          bottom: -2px; right: -2px;
           border-bottom: 3px solid #D4AF37;
           border-right: 3px solid #D4AF37;
           border-radius: 0 0 6px 0;
         }
 
         .hero-dots {
-          background-image: none;
+          background-image: radial-gradient(circle, rgba(0,61,130,0.04) 1px, transparent 1px);
           background-size: 26px 26px;
         }
 
@@ -295,37 +191,11 @@ function HomeHero({
           display: block;
           height: 8px;
           border-radius: 99px;
-          transition:
-            width 0.4s cubic-bezier(0.22,1,0.36,1),
-            background 0.3s ease;
+          transition: width 0.4s cubic-bezier(0.22,1,0.36,1), background 0.3s ease;
         }
-
-        .slide-dot-active {
-          width: 36px;
-          background: #D4AF37;
-        }
-
-        .slide-dot-inactive {
-          width: 8px;
-          background: rgba(0,61,130,0.25);
-        }
-
-        .dark .slide-dot-inactive {
-          background: rgba(255,255,255,0.2);
-        }
-
-        /* Mobile image height reduction */
-        @media (max-width: 767px) {
-          .hero-image-container {
-            min-height: 280px;
-          }
-        }
-
-        @media (min-width: 768px) {
-          .hero-image-container {
-            min-height: auto;
-          }
-        }
+        .slide-dot-active { width: 36px; background: #D4AF37; }
+        .slide-dot-inactive { width: 8px; background: rgba(0,61,130,0.25); }
+        .dark .slide-dot-inactive { background: rgba(255,255,255,0.2); }
       `}</style>
 
       <section
@@ -335,168 +205,185 @@ function HomeHero({
         aria-label="GHAMSU hero slideshow"
       >
         <div className="flex flex-col md:flex-row md:min-h-screen">
-          {/* LEFT TEXT SIDE */}
+          {/* LEFT TEXT SIDE — ~55% on desktop so image gets close to half */}
           <div
             className="hero-dots relative flex flex-col justify-center
-            px-6 pb-8 pt-32 sm:px-10 sm:pt-40 sm:pb-10 md:w-[64%] md:px-12 md:pb-16 md:pt-20 md:min-h-screen
-            lg:w-[66%] lg:px-20 xl:w-[68%] xl:px-28"
+              px-5 pb-10 pt-28
+              sm:px-8 sm:pt-36 sm:pb-12
+              md:w-[55%] md:px-10 md:pt-40 md:pb-20 md:min-h-screen
+              lg:w-[54%] lg:px-16 lg:pt-44
+              xl:w-[53%] xl:px-24 xl:pt-48"
           >
             <div
               className="pointer-events-none absolute -left-24 -top-24 h-72 w-72
-              rounded-full opacity-10 blur-3xl"
+                rounded-full opacity-10 blur-3xl"
               style={{ background: '#003D82' }}
               aria-hidden="true"
             />
 
-            <div className="relative z-10 max-w-4xl">
-              {/* EYEBROW */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`eyebrow-${textKey}`}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -12 }}
-                  transition={{ duration: 0.4 }}
-                  className="mb-5 flex items-center gap-3"
-                >
-                  <div
-                    className="h-px w-10 sm:w-14"
-                    style={{ background: '#D4AF37' }}
-                    aria-hidden="true"
-                  />
-
-                  <p
-                    className="text-[11px] font-bold uppercase tracking-[0.38em] sm:text-xs"
+            <div className="relative z-10 w-full max-w-3xl">
+              {/* SYNCED CONTENT — crossfades in sync with the image (no mode=wait) */}
+              <div className="relative grid">
+                <AnimatePresence initial={false}>
+                  <motion.div
+                    key={`content-${index}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6, ease }}
+                    className="relative"
                     style={{
-                      color: 'var(--foreground)',
-                      fontFamily: 'var(--font-body)',
+                      // Stack old + new during the crossfade so layout doesn't jump
+                      gridArea: '1 / 1',
                     }}
                   >
-                    {slide.eyebrow}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* HEADING WITH TYPEWRITER */}
-              <div className="mb-6 sm:mb-7">
-                <h1
-                  className="text-left text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[6.3rem] font-black leading-[1.05] tracking-tight"
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontWeight: 900,
-                    color: '#003D82',
-                  }}
-                  aria-live="polite"
-                >
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={`heading-${textKey}`}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
-                      transition={{ duration: 0.3 }}
-                      className="block"
+                  {/* EYEBROW */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.5, ease, delay: 0.05 }}
+                    className="mb-4 flex items-center gap-3 sm:mb-5"
+                  >
+                    <div
+                      className="h-px w-8 sm:w-12"
+                      style={{ background: '#D4AF37' }}
+                      aria-hidden="true"
+                    />
+                    <p
+                      className="text-[10px] font-bold uppercase tracking-[0.32em] sm:text-[11px] sm:tracking-[0.38em]"
+                      style={{
+                        color: 'var(--foreground)',
+                        fontFamily: 'var(--font-body)',
+                      }}
                     >
-                      {displayedHeading.split('\n').map((line, idx) => (
-                        <span
-                          key={idx}
-                          className="block"
-                          style={{ 
-                            color: idx > 0 ? '#D4AF37' : '#003D82'
-                          }}
-                        >
-                          {line}
-                        </span>
-                      ))}
-                      {!headingDone && <WritingCursor />}
-                    </motion.span>
-                  </AnimatePresence>
-                </h1>
+                      {slide.eyebrow}
+                    </p>
+                  </motion.div>
+
+                  {/* HEADING — word-by-word fade-up, smaller responsive sizes */}
+                  <h1
+                    className="mb-5 text-left font-black leading-[1.08] tracking-tight
+                      text-[1.85rem]
+                      sm:text-[2.4rem]
+                      md:text-[2.6rem]
+                      lg:text-[3.2rem]
+                      xl:text-[3.75rem]
+                      2xl:text-[4.25rem]
+                      sm:mb-6"
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      fontWeight: 900,
+                      color: '#003D82',
+                    }}
+                    aria-live="polite"
+                  >
+                    {headingWords.map((line, lineIdx) => (
+                      <span
+                        key={lineIdx}
+                        className="block"
+                        style={{ color: lineIdx > 0 ? '#D4AF37' : '#003D82' }}
+                      >
+                        {line.map((word, wordIdx) => {
+                          // Global word index for stagger
+                          const globalIdx =
+                            headingWords
+                              .slice(0, lineIdx)
+                              .reduce((acc, l) => acc + l.length, 0) + wordIdx
+                          return (
+                            <motion.span
+                              key={`${lineIdx}-${wordIdx}`}
+                              initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+                              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                              exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
+                              transition={{
+                                duration: 0.55,
+                                ease,
+                                delay: 0.1 + globalIdx * 0.05,
+                              }}
+                              className="inline-block"
+                              style={{ marginRight: '0.25em' }}
+                            >
+                              {word}
+                            </motion.span>
+                          )
+                        })}
+                      </span>
+                    ))}
+                  </h1>
+
+                  {/* SUBHEADING */}
+                  <motion.p
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.5, ease, delay: 0.3 }}
+                    className="mb-7 max-w-2xl text-[0.92rem] font-medium leading-relaxed
+                      text-foreground/75
+                      sm:text-base sm:mb-8
+                      md:text-[1.05rem]
+                      lg:text-[1.15rem]"
+                  >
+                    {slide.subheading}
+                  </motion.p>
+
+                  {/* BUTTONS */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.5, ease, delay: 0.4 }}
+                    className="flex flex-wrap items-center gap-3 sm:gap-4"
+                  >
+                    <Link to={primaryButtonLink}>
+                      <button
+                        className="group flex items-center gap-2 rounded-full
+                          px-6 py-3 text-[13px] font-bold text-white
+                          transition-all duration-300 hover:gap-3
+                          sm:px-8 sm:py-3.5 sm:text-sm
+                          md:px-9 md:py-4 md:text-base"
+                        style={{ background: 'var(--accent)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.opacity = '0.9'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.opacity = '1'
+                        }}
+                      >
+                        {primaryButtonText}
+                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </button>
+                    </Link>
+
+                    <Link to={secondaryButtonLink}>
+                      <button
+                        className="rounded-full border-2 px-6 py-3 text-[13px] font-semibold
+                          transition-all duration-300
+                          sm:px-8 sm:py-3.5 sm:text-sm
+                          md:px-9 md:py-4 md:text-base"
+                        style={{
+                          borderColor: 'var(--accent)',
+                          color: 'var(--accent)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'var(--accent)'
+                          e.currentTarget.style.color = '#fff'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'transparent'
+                          e.currentTarget.style.color = 'var(--accent)'
+                        }}
+                      >
+                        {secondaryButtonText}
+                      </button>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+                </AnimatePresence>
               </div>
 
-              {/* SUBHEADING WITH TYPEWRITER */}
-              <AnimatePresence mode="wait">
-                <motion.p
-                  key={`subheading-${textKey}`}
-                  className="mb-8 sm:mb-9 max-w-3xl text-sm sm:text-base md:text-lg lg:text-[1.35rem] leading-relaxed
-                  text-foreground/80 font-medium"
-                  initial={{ opacity: 0 }}
-                  animate={headingDone ? { opacity: 1 } : { opacity: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  {displayedSubheading}
-                  {headingDone && !subheadingDone && <WritingCursor />}
-                </motion.p>
-              </AnimatePresence>
-
-              {/* BUTTONS */}
-              <motion.div
-                key={`buttons-${textKey}`}
-                className="flex flex-wrap items-center gap-3 sm:gap-4"
-                initial={{ opacity: 0, y: 16 }}
-                animate={
-                  headingDone
-                    ? {
-                        opacity: 1,
-                        y: 0,
-                      }
-                    : {
-                        opacity: 0,
-                        y: 16,
-                      }
-                }
-                transition={{
-                  duration: 0.5,
-                  delay: 0.3,
-                }}
-              >
-                <Link to={primaryButtonLink}>
-                  <button
-                    className="group flex items-center gap-2 rounded-full px-8 py-4 text-sm
-                    font-bold text-white transition-all duration-300
-                    hover:gap-3 sm:px-10 sm:py-4 sm:text-base"
-                    style={{
-                      background: 'var(--accent)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'var(--accent)'
-                      e.currentTarget.style.opacity = '0.9'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'var(--accent)'
-                      e.currentTarget.style.opacity = '1'
-                    }}
-                  >
-                    {primaryButtonText}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </button>
-                </Link>
-
-                <Link to={secondaryButtonLink}>
-                  <button
-                    className="rounded-full border-2 px-8 py-4 text-sm font-semibold
-                    transition-all duration-300 sm:px-10 sm:py-4 sm:text-base"
-                    style={{
-                      borderColor: 'var(--accent)',
-                      color: 'var(--accent)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'var(--accent)'
-                      e.currentTarget.style.color = '#fff'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'transparent'
-                      e.currentTarget.style.color = 'var(--accent)'
-                    }}
-                  >
-                    {secondaryButtonText}
-                  </button>
-                </Link>
-              </motion.div>
-
-              {/* DOTS */}
-              <div className="mt-10 flex items-center gap-2.5 sm:mt-12">
+              {/* DOTS — not animated with slide content, stays steady */}
+              <div className="mt-9 flex items-center gap-2.5 sm:mt-12">
                 {slides.map((_, i) => (
                   <button
                     key={i}
@@ -507,16 +394,14 @@ function HomeHero({
                   >
                     <span
                       className={`slide-dot ${
-                        i === index
-                          ? 'slide-dot-active'
-                          : 'slide-dot-inactive'
+                        i === index ? 'slide-dot-active' : 'slide-dot-inactive'
                       }`}
                     />
                   </button>
                 ))}
 
                 <span
-                  className="ml-2 text-[11px] font-semibold tracking-[0.2em]"
+                  className="ml-2 text-[10px] font-semibold tracking-[0.2em] sm:text-[11px]"
                   style={{ color: 'rgba(0,61,130,0.4)' }}
                 >
                   {String(index + 1).padStart(2, '0')} /{' '}
@@ -526,29 +411,45 @@ function HomeHero({
             </div>
           </div>
 
-          {/* RIGHT IMAGE SIDE */}
+          {/* RIGHT IMAGE SIDE — close to half on desktop */}
           <div
-            className="hero-image-panel hero-image-container relative w-full overflow-hidden
-            h-[280px] sm:h-[350px] md:h-auto md:w-[36%] lg:w-[34%] xl:w-[32%] md:min-h-screen"
+            className="hero-image-panel relative w-full overflow-hidden
+              h-[300px]
+              sm:h-[380px]
+              md:h-auto md:w-[45%] md:min-h-screen
+              lg:w-[46%]
+              xl:w-[47%]"
           >
-            <AnimatePresence custom={dir} initial={false} mode="wait">
+            <AnimatePresence custom={dir} initial={false}>
               <motion.img
                 key={`image-${index}`}
                 src={slide.image}
                 alt={slide.eyebrow}
                 custom={dir}
-                variants={imageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
+                initial={{
+                  opacity: 0,
+                  scale: 1.08,
+                  x: dir > 0 ? 40 : -40,
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  x: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: 1.04,
+                  x: dir > 0 ? -30 : 30,
+                }}
                 transition={{
-                  duration: 0.75,
-                  ease: [0.22, 1, 0.36, 1],
+                  duration: 0.7,
+                  ease,
                 }}
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </AnimatePresence>
 
+            {/* Gradient overlay */}
             <div
               className="absolute inset-0"
               style={{
@@ -558,6 +459,7 @@ function HomeHero({
               aria-hidden="true"
             />
 
+            {/* Gold brackets */}
             <div className="absolute inset-4 sm:inset-6" aria-hidden="true">
               <div className="gold-bracket gold-bracket-tl" />
               <div className="gold-bracket gold-bracket-tr" />
@@ -565,56 +467,63 @@ function HomeHero({
               <div className="gold-bracket gold-bracket-br" />
             </div>
 
-            <div
-              className="absolute bottom-5 left-5 z-10 flex items-center gap-2
-              rounded-full bg-white/90 px-4 py-2 shadow-lg backdrop-blur-sm"
-            >
-              <span
-                className="h-2 w-2 flex-shrink-0 rounded-full"
-                style={{ background: '#D4AF37' }}
-                aria-hidden="true"
-              />
+            {/* Eyebrow chip — synced with slide */}
+            <AnimatePresence initial={false}>
+              <motion.div
+                key={`chip-${index}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.5, ease, delay: 0.1 }}
+                className="absolute bottom-5 left-5 z-10 flex items-center gap-2
+                  rounded-full bg-white/90 px-3.5 py-2 shadow-lg backdrop-blur-sm sm:px-4"
+              >
+                <span
+                  className="h-2 w-2 flex-shrink-0 rounded-full"
+                  style={{ background: '#D4AF37' }}
+                  aria-hidden="true"
+                />
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-800 sm:text-xs">
+                  {slide.eyebrow}
+                </span>
+              </motion.div>
+            </AnimatePresence>
 
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-800 sm:text-xs">
-                {slide.eyebrow}
-              </span>
-            </div>
-
-            {/* Navigation buttons */}
+            {/* Nav buttons */}
             <div className="absolute bottom-5 right-5 z-10 flex gap-2">
               <button
                 onClick={prev}
                 aria-label="Previous slide"
                 className="flex h-9 w-9 items-center justify-center rounded-full
-                bg-white/20 text-white backdrop-blur-sm transition-all
-                hover:bg-white/40 sm:h-10 sm:w-10"
+                  bg-white/20 text-white backdrop-blur-sm transition-all
+                  hover:bg-white/40 sm:h-10 sm:w-10"
               >
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-
               <button
                 onClick={next}
                 aria-label="Next slide"
                 className="flex h-9 w-9 items-center justify-center rounded-full
-                bg-white/20 text-white backdrop-blur-sm transition-all
-                hover:bg-white/40 sm:h-10 sm:w-10"
+                  bg-white/20 text-white backdrop-blur-sm transition-all
+                  hover:bg-white/40 sm:h-10 sm:w-10"
               >
                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
 
+            {/* Progress bar */}
             <div
               className="absolute bottom-0 left-0 right-0 z-20 h-[3px]"
               style={{ background: 'rgba(255,255,255,0.15)' }}
             >
               <motion.div
-                key={`progress-${index}`}
+                key={`progress-${index}-${paused}`}
                 className="h-full"
                 style={{ background: '#D4AF37' }}
                 initial={{ width: '0%' }}
-                animate={{ width: '100%' }}
+                animate={{ width: paused ? '0%' : '100%' }}
                 transition={{
-                  duration: SLIDE_DURATION / 1000,
+                  duration: paused ? 0 : SLIDE_DURATION / 1000,
                   ease: 'linear',
                 }}
               />
@@ -627,7 +536,7 @@ function HomeHero({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Inner Page Hero
+// Inner Page Hero (unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
 
 function InnerHero({
@@ -646,7 +555,7 @@ function InnerHero({
   return (
     <section
       className="relative flex h-[50vh] min-h-[300px] items-center
-      justify-center overflow-hidden sm:h-[55vh] md:h-[60vh]"
+        justify-center overflow-hidden sm:h-[55vh] md:h-[60vh]"
     >
       <div className="absolute inset-0 z-0">
         <img
@@ -655,7 +564,6 @@ function InnerHero({
           aria-hidden="true"
           className="h-full w-full scale-105 object-cover"
         />
-
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/80" />
       </div>
 
@@ -672,7 +580,6 @@ function InnerHero({
               style={{ background: '#D4AF37' }}
               aria-hidden="true"
             />
-
             <p
               className="text-[11px] font-semibold uppercase tracking-[0.3em] sm:text-xs"
               style={{
@@ -688,19 +595,15 @@ function InnerHero({
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.6,
-            delay: 0.1,
-          }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           className="mb-4 text-3xl font-bold leading-[1.1] tracking-tight text-white
-          sm:text-4xl md:text-5xl"
+            sm:text-4xl md:text-5xl"
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 600,
           }}
         >
           {title}
-
           {titleHighlight && (
             <>
               <br />
@@ -712,12 +615,9 @@ function InnerHero({
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{
-            duration: 0.6,
-            delay: 0.25,
-          }}
+          transition={{ duration: 0.6, delay: 0.25 }}
           className="mx-auto max-w-xl text-xs font-light leading-relaxed
-          text-white/75 sm:text-sm"
+            text-white/75 sm:text-sm"
         >
           {subtitle}
         </motion.p>
