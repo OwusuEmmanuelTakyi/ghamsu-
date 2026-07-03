@@ -5,6 +5,7 @@ import { AnimatedSection } from '../components/AnimatedSection'
 import { useExecutives } from '../../../src/lib/hooks'
 import { urlFor } from '../../../src/lib/sanity'
 import emailjs from '@emailjs/browser'
+import revImage from '../../images/rev.png'
 
 export default function Contact() {
   const [selectedCategory, setSelectedCategory] = useState<string>('connexional')
@@ -297,7 +298,7 @@ export default function Contact() {
               <div className="bg-white/10 dark:bg-[#0d1f3c] border border-white/20 dark:border-white/10 backdrop-blur-sm overflow-hidden grid grid-cols-1 lg:grid-cols-5 gap-0">
                 <div className="relative overflow-hidden h-72 sm:h-96 lg:h-full lg:col-span-2">
                   <img
-                    src="https://lh3.googleusercontent.com/pw/AP1GczNOUzPknvIr79UKl9-8SHsgFnC-ZA2wujvHVpGvc891rmG-Fv7wUNoL5O2uLfRrEfhmtFdn7Sv8ua-ptsqFr-52I9LbNqinZFgCJhb-CxAML9mEf1VSeW-xke1-6i_--wLpFrtHnzCZvhQbqwWivhKr=w771-h963-s-no-gm"
+                    src={revImage}
                     alt="Connexional Coordinator"
                     className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
                   />
@@ -433,7 +434,7 @@ export default function Contact() {
                         <img
                           src={urlFor(executive.image).width(400).height(500).url()}
                           alt={executive.name}
-                          className="w-full h-48 sm:h-56 md:h-64 lg:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
+                          className="w-full h-48 sm:h-56 md:h-64 lg:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-700"
                         />
                       </div>
                       <div className="p-4 sm:p-6 text-center border-t-2 border-[#D4AF37]">

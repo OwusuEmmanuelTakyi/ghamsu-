@@ -2,6 +2,9 @@ import { Link } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useCallback } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import heroImage1 from '../../images/3.jpg'
+import heroImage2 from '../../images/7.jpg'
+import heroImage3 from '../../images/5.jpg'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -36,36 +39,25 @@ interface HeroSectionProps {
 
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
-    image:
-      'https://images.unsplash.com/photo-1778082388125-c2a1c6a835ba?q=80&w=900&auto=format&fit=crop',
+    image: heroImage1,
     eyebrow: 'Welcome Home',
     heading: "Ghana Methodist\nStudents' Union",
     subheading:
       'A vibrant movement of students committed to faith, fellowship, and the transformation of every campus in Ghana for Christ.',
   },
   {
-    image:
-      'https://images.unsplash.com/photo-1778082948973-69296a83789f?q=80&w=900&auto=format&fit=crop',
+    image: heroImage2,
     eyebrow: 'Ambassadors for Christ',
     heading: 'Ambassadors\nin Unity & Love',
     subheading:
       'United across campuses and locals — one family pursuing one mission under one Lord.',
   },
   {
-    image:
-      'https://images.unsplash.com/photo-1778082388067-9203e6db7c59?q=80&w=900&auto=format&fit=crop',
+    image: heroImage3,
     eyebrow: 'Unity and Love',
     heading: 'Ambassadors\nFor Christ',
     subheading:
       'Join us for Spirit-filled worship, deep fellowship, and a journey of faith that transforms lives and nations.',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1778082388302-38d8e5e40c7b?q=80&w=1059&auto=format&fit=crop',
-    eyebrow: 'Since 1965',
-    heading: "Sixty + Years of\nGod's Faithfulness",
-    subheading:
-      'From a handful of students to a Connexional movement — raising Ambassadors for Christ for over six decades.',
   },
 ]
 

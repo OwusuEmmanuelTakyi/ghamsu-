@@ -1,6 +1,7 @@
 import { AnimatedSection } from './AnimatedSection'
 import { Link } from 'react-router'
 import { ArrowRight } from 'lucide-react'
+import historyImage from '../../images/12.jpg'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Gold Frame
@@ -78,10 +79,9 @@ export function HistorySection() {
             <GoldFrame>
               <div className="relative overflow-hidden rounded-xl shadow-2xl">
                 <img
-                  src="https://images.unsplash.com/photo-1778082948973-69296a83789f?q=80&w=1034&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  src={historyImage}
                   alt="GHAMSU History"
                   className="h-60 w-full object-cover xs:h-72 sm:h-96 md:h-[480px] lg:h-[580px]"
-                  loading="lazy"
                 />
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

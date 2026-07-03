@@ -51,20 +51,31 @@ export default function About() {
                   Our History
                 </h2>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-light mb-6">
-                  The Ghana Methodist Students' Union was formed in 1965 under the name Ghana Inter-University Methodist
-                  Union (GIUMU). The birth of the union is credited to Prof. S.N. Quartey, a member of the Methodist Youth
-                  Fellowship branch at Shama in the Western region.
+                  The Union was formed in 1965 under the name Ghana Inter-University Methodist Union (GIUMU). GHAMSU is
+                  61yrs old. The birth of our union is credited to Prof. S.N. Quartey. He was a member of the Methodist
+                  Youth Fellowship (MYF) branch at Shama in the Western region. There was nothing like a Christian
+                  denominational fellowship on the university campus; Students Christian Movement (SCM) and Scripture
+                  Union (SU) were the Christian organizations who held meetings on Saturdays.
                 </p>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-light mb-6">
-                  Two vibrant former students of Trinity Theological Seminary, Rt. Rev. Michael Kumi and Rt. Rev. Blankson,
-                  enrolled at the University of Ghana and were elected as President and Secretary respectively. They linked
-                  the University of Science and Technology (KNUST) and University of Cape Coast (UCC) into forming GIUMU.
-                  Eventually, the Union was extended to include other tertiary institutions and second cycle institutions.
+                  Two vibrant former students of Trinity Theological Seminary, Rt. Rev. Michael Kumi and Rt. Rev.
+                  Blankson enrolled at University of Ghana during the next academic year of 1966. They were elected as
+                  the President and Secretary, respectively, of the Group which saw the linking up with the University
+                  of Science and Technology and University of Cape Coast into forming the Ghana Inter-University
+                  Methodist Union (GIUMU). Eventually, the Union was extended to include other tertiary institutions
+                  and second cycle institutions.
+                </p>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-light mb-6">
+                  On 8th June, 1984 at Annual Conference, it was decided that henceforth, GHAMSU be constituted by all
+                  post-elementary school Methodist students.
                 </p>
                 <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-light">
-                  On 8th June 1984, at Annual Conference, it was decided that GHAMSU be constituted by all post-elementary
-                  school Methodist students. The 23rd Annual Conference held at UCC was particularly historic, officially
-                  unveiling the new GHAMSU emblem and adopting the anthem and slogan "Ambassadors for Christ!"
+                  The 23rd Annual Conference held at UCC from 14th-17th April, 1988 was very historical. The new
+                  GHAMSU emblem was officially unveiled whilst delegates adopted the GHAMSU anthem which was composed
+                  by our own Bro. Ben Otchere with the tune-name "BENREEN". Conference again adopted the slogan
+                  "AMBASSADORS - FOR CHRIST!" as common greeting to be used by all members. The Conference also agreed
+                  that the Union should provide a common certificate with the GHAMSU emblem on it for all member
+                  branches.
                 </p>
               </div>
             </AnimatedSection>
@@ -329,12 +340,7 @@ export default function About() {
             'Diocesan leadership overseeing circuits and locals, implementing Connexional directives at the diocesan level.',
           level: 'Management',
         },
-        {
-          title: 'Circuit Coordinators',
-          description:
-            'Leaders coordinating local groups within a diocese based on proximity and institutional level, facilitating circuit programs.',
-          level: 'Coordination',
-        },
+        
         {
           title: 'Local Executives',
           description:

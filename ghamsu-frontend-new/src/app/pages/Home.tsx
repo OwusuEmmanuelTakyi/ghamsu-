@@ -10,6 +10,9 @@ import { DarkSection } from '../components/DarkSection'
 import { StatsSection } from '../components/StatsSection'
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
+import heroImage1 from '../../images/3.jpg'
+import heroImage2 from '../../images/7.jpg'
+import heroImage3 from '../../images/5.jpg'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Scroll Animation Wrapper
@@ -65,36 +68,25 @@ function ScrollReveal({
 
 const HERO_SLIDES = [
   {
-    image:
-      'https://images.unsplash.com/photo-1778082388125-c2a1c6a835ba?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
+    image: heroImage1,
     eyebrow: 'GHAMSU - Since 1965',
     heading: "Ghana Methodist\nStudents' Union",
     subheading:
       "We are therefore Christ's ambassadors, as though God were making his appeal through us. We implore you on Christ's behalf: Be reconciled to God. — 2 Corinthians 5:20",
   },
   {
-    image:
-      'https://images.unsplash.com/photo-1778082948973-69296a83789f?q=80&w=1034&auto=format&fit=crop&ixlib=rb-4.1.0',
+    image: heroImage2,
     eyebrow: 'Ambassadors for Christ',
     heading: 'Ambassadors\nin Unity & Love',
     subheading:
       'United across locals,Dioceses and Connexional — one family, one mission, one Lord.',
   },
   {
-    image:
-      'https://images.unsplash.com/photo-1778082388067-9203e6db7c59?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0',
+    image: heroImage3,
     eyebrow: 'Ambassadors in Unity & Love',
     heading: 'Fellowship,\nWorship & Purpose',
     subheading:
       'Join us for fellowship, worship, and a journey of faith that transforms lives, campuses, and nations.',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1778082388302-38d8e5e40c7b?q=80&w=1059&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    eyebrow: 'Since 1965',
-    heading: "Sixty Years\nof God's Faithfulness",
-    subheading:
-      'From a handful of students to a Connexional movement — GHAMSU has been raising Ambassadors for Christ for over six decades.',
   },
 ]
 

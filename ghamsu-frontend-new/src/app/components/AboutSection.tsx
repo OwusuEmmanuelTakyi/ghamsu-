@@ -1,6 +1,7 @@
 import { AnimatedSection } from './AnimatedSection'
 import { Link } from 'react-router'
 import { CheckCircle2 } from 'lucide-react'
+import aboutImage from '../../images/3.jpg'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data
@@ -141,10 +142,9 @@ export function AboutSection() {
               <GoldFrame>
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                   <img
-                    src="https://images.unsplash.com/photo-1778082388067-9203e6db7c59?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src={aboutImage}
                     alt="GHAMSU community gathering"
                     className="h-60 w-full object-cover xs:h-72 sm:h-96 lg:h-[580px]"
-                    loading="lazy"
                   />
                   {/* Dark gradient for badge readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />

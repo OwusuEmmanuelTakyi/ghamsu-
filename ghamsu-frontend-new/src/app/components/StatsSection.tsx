@@ -9,19 +9,19 @@ export function StatsSection() {
   const stats = [
     {
       icon: Users,
-      value: 5000,
+      value: 50000,
       label: 'Active Members',
       key: 'members',
     },
     {
       icon: Globe,
-      value: 60,
+      value: 61,
       label: 'Years of Service',
       key: 'events',
     },
     {
       icon: Calendar,
-      value: 25,
+      value: 24,
       label: 'Dioceses',
       key: 'diocese',
     },
@@ -65,8 +65,8 @@ export function StatsSection() {
           let dioceseCount = 0
           const dioceseInterval = setInterval(() => {
             dioceseCount += 1
-            if (dioceseCount >= 25) {
-              dioceseCount = 25
+            if (dioceseCount >= 24) {
+              dioceseCount = 24
               clearInterval(dioceseInterval)
             }
             setCounts((prev) => ({ ...prev, diocese: dioceseCount }))

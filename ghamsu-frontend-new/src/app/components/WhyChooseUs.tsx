@@ -3,6 +3,7 @@ import { AnimatedSection } from './AnimatedSection'
 import { motion } from 'motion/react'
 import { useRef } from 'react'
 import { useInView } from 'motion/react'
+import whyImage from '../../images/13.jpg'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Gold Frame (mirrored from AboutSection)
@@ -164,10 +165,9 @@ export function WhyChooseUs() {
               <GoldFrame>
                 <div className="relative overflow-hidden rounded-xl shadow-2xl">
                   <img
-                    src="https://lh3.googleusercontent.com/pw/AP1GczNUNG-ZFXVI3NR6SnOJhW25LeNN6DQy_Ei9RPt7BHQ-Gx81_KjFlE977gdpfk1VY9mgY4z3AgqGJ7mZjHadmFuh6E1BF71FxPdyO5yllPhF1pgyRSRSBWjjan-8SD1oO5Np-eb7YRj4HyHD-XgwH_dQ=w1265-h948-s-no-gm?authuser=0"
+                    src={whyImage}
                     alt="GHAMSU vision gathering"
                     className="h-60 w-full object-cover xs:h-72 sm:h-96 lg:h-[580px]"
-                    loading="lazy"
                   />
                   {/* Dark gradient for badge readability */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
