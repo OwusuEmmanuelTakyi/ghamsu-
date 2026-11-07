@@ -3,7 +3,7 @@ import { MapPin, Phone, Mail, type LucideIcon } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useExecutives, useSiteSetting } from '../../lib/hooks'
-import { imageProps, mediaUrl } from '../../lib/media'
+import { thumbProps, mediaUrl } from '../../lib/media'
 import type { ContactDetailsSetting, CoordinatorSetting } from '../../types/types'
 import emailjs from '@emailjs/browser'
 
@@ -453,7 +453,7 @@ export default function Contact() {
                     <div className="bg-white/10 dark:bg-[#0d1f3c] border border-white/20 dark:border-white/10 hover:border-[#D4AF37] backdrop-blur-sm overflow-hidden group transition-all duration-500 rounded-lg">
                       <div className="relative overflow-hidden">
                         <img
-                          {...imageProps(executive.image, executive.name)}
+                          {...thumbProps(executive.image, executive.name)}
                           alt={executive.name}
                           loading="lazy"
                           decoding="async"

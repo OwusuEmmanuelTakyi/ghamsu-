@@ -520,6 +520,9 @@ function InnerHero({
 }) {
   const { data: hero } = usePageHero(pageKey)
   const backgroundImage = hero?.imageUrl ?? ''
+  // Titles edited in /admin win; the text passed in is shown until data loads.
+  const shownTitle = hero?.title || title
+  const shownSubtitle = hero?.subtitle ?? subtitle
 
   return (
     <section
@@ -574,7 +577,7 @@ function InnerHero({
             fontWeight: 600,
           }}
         >
-          {title}
+          {shownTitle}
           {titleHighlight && (
             <>
               <br />
@@ -590,7 +593,7 @@ function InnerHero({
           className="mx-auto max-w-xl text-xs font-light leading-relaxed
             text-white/75 sm:text-sm"
         >
-          {subtitle}
+          {shownSubtitle}
         </motion.p>
       </div>
     </section>

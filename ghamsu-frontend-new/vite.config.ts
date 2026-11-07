@@ -34,6 +34,8 @@ export default defineConfig({
         '/contact',
         '/partner',
       ],
+      // The admin dashboard must not be indexed.
+      robots: [{ userAgent: '*', allow: '/', disallow: '/admin' }],
     }),
   ],
   resolve: {

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, SyntheticEvent } from 'react'
 import { supabaseUrl } from './supabase'
 import type { ImageFocus, MediaImage } from '../types/types'
 
@@ -29,11 +29,46 @@ export function focusStyle(focus?: ImageFocus | null): CSSProperties | undefined
   return { objectPosition: `${pct(spot.x)} ${pct(spot.y)}` }
 }
 
-/** src, alt and style for an <img>, in one spread. */
+/** src, alt and style for an <img>, in one spread. Uses the full-size image. */
 export function imageProps(image: MediaImage | null | undefined, fallbackAlt: string) {
   return {
     src: mediaUrl(image?.path),
     alt: image?.alt || fallbackAlt,
     style: focusStyle(image?.focus),
+  }
+}
+
+// ─── Thumbnails ────────────────────────────────────────────────────────────────
+// Every uploaded image has a smaller copy (at most 800 px wide) stored at
+// thumbs/<same path>. Cards and lists use it; detail pages use the full image.
+
+export function thumbPath(path: string): string {
+  return `thumbs/${path.replace(/^\/+/, '')}`
+}
+
+/** Thumbnail URL for a stored path. External URLs are returned unchanged. */
+export function thumbUrl(pathOrUrl?: string | null): string {
+  if (!pathOrUrl) return ''
+  if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl
+  return mediaUrl(thumbPath(pathOrUrl))
+}
+
+/** If a thumbnail is missing, swap to the full image once (never loops). */
+export function fallbackToFull(fullUrl: string) {
+  return (event: SyntheticEvent<HTMLImageElement>) => {
+    const img = event.currentTarget
+    if (!fullUrl || img.dataset.fullTried) return
+    img.dataset.fullTried = '1'
+    img.src = fullUrl
+  }
+}
+
+/** Like imageProps, but loads the thumbnail and falls back to the full image. */
+export function thumbProps(image: MediaImage | null | undefined, fallbackAlt: string) {
+  return {
+    src: thumbUrl(image?.path),
+    alt: image?.alt || fallbackAlt,
+    style: focusStyle(image?.focus),
+    onError: fallbackToFull(mediaUrl(image?.path)),
   }
 }

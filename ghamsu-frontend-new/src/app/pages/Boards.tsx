@@ -4,6 +4,7 @@ import { AnimatedSection } from '../components/AnimatedSection'
 import { boardIcon } from '../components/boardStyles'
 import { useBoards, useMajorActivities } from '../../lib/hooks'
 import { Link } from 'react-router'
+import { fallbackToFull } from '../../lib/media'
 
 export default function Boards() {
   const { data: boards, loading: boardsLoading } = useBoards()
@@ -105,7 +106,8 @@ export default function Boards() {
             {activity.imageUrl && (
               <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden">
                 <img
-                  src={activity.imageUrl}
+                  src={activity.thumbnailUrl}
+                  onError={fallbackToFull(activity.imageUrl)}
                   alt={activity.imageAlt || activity.title}
                   loading="lazy"
                   decoding="async"

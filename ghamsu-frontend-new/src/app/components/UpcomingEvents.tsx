@@ -2,7 +2,7 @@ import { Calendar, Clock, MapPin } from 'lucide-react'
 import { AnimatedSection } from './AnimatedSection'
 import { Link } from 'react-router'
 import { useEvents } from '../../lib/hooks'
-import { imageProps } from '../../lib/media'
+import { thumbProps } from '../../lib/media'
 
 export function UpcomingEvents() {
   const { data: allEvents, loading, error } = useEvents()
@@ -76,7 +76,7 @@ export function UpcomingEvents() {
                 <div className="bg-card border border-border hover:border-accent/50 transition-all duration-500 overflow-hidden group">
                   <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
                     <img
-                      {...imageProps(event.flyer, event.title)}
+                      {...thumbProps(event.flyer, event.title)}
                       alt={event.title}
                       loading="lazy"
                       decoding="async"

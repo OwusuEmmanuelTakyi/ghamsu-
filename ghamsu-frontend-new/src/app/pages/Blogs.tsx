@@ -3,7 +3,7 @@ import { Calendar, User, ArrowRight } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useBlogs } from '../../lib/hooks'
-import { imageProps } from '../../lib/media'
+import { thumbProps } from '../../lib/media'
 import { useNavigate, useLocation } from 'react-router'
 
 export default function Blogs() {
@@ -168,7 +168,7 @@ export default function Blogs() {
                       {/* Featured Image */}
                       <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
                         <img
-                          {...imageProps(post.featuredImage, post.title)}
+                          {...thumbProps(post.featuredImage, post.title)}
                           alt={post.title}
                           loading="lazy"
                           decoding="async"

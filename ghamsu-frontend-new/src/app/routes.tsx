@@ -18,6 +18,16 @@ const Partner = lazy(() => import('./pages/Partner'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail'));
 const BoardDetail = lazy(() => import('./pages/BoardDetail'));
 const Notfound = lazy(() => import('./pages/Notfound'));
+// The admin dashboard is a separate chunk with its own layout.
+const AdminApp = lazy(() => import('./admin/AdminApp'));
+
+function AdminRoot() {
+  return (
+    <Suspense fallback={<PageLoader show={true} />}>
+      <AdminApp />
+    </Suspense>
+  );
+}
 
 function Layout() {
   const navigation = useNavigation();
@@ -40,6 +50,8 @@ function Layout() {
 }
 
 export const router = createBrowserRouter([
+  // Outside the public Layout: no site navigation or footer.
+  { path: '/admin/*', Component: AdminRoot },
   {
     path: '/',
     Component: Layout,

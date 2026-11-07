@@ -2,7 +2,7 @@ import { Users, ArrowLeft } from 'lucide-react';
 import { AnimatedSection } from '../components/AnimatedSection'
 import { boardColors, boardIcon } from '../components/boardStyles'
 import { useBoard } from '../../lib/hooks'
-import { imageProps } from '../../lib/media'
+import { thumbProps } from '../../lib/media'
 import { useNavigate, useParams } from 'react-router'
 
 export default function BoardDetail() {
@@ -182,7 +182,7 @@ export default function BoardDetail() {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {board.members.map((member) => {
-                  const photo = imageProps(member.image, member.name)
+                  const photo = thumbProps(member.image, member.name)
                   return (
                     <div key={member.id} className="bg-card border border-border rounded-lg overflow-hidden text-center">
                       {photo.src && (

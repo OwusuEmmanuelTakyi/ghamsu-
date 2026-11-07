@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { supabase } from './supabase'
-import { mediaUrl } from './media'
+import { mediaUrl, thumbUrl } from './media'
 import type {
   Article,
   Blog,
@@ -28,6 +28,13 @@ import type {
 
 const pending = new Map<string, Promise<unknown>>()
 const resolved = new Map<string, unknown>()
+
+/** Forget cached public data, so the next page view refetches. The admin calls
+ *  this after every change, so its edits show when moving to the public site. */
+export function clearPublicDataCache() {
+  pending.clear()
+  resolved.clear()
+}
 
 function runQuery<T>(key: string, fetcher: (db: SupabaseClient) => Promise<T>): Promise<T> {
   if (!supabase) return Promise.reject(new Error('The site is not connected to its database.'))
@@ -349,6 +356,7 @@ export function useMajorActivities(): FetchState<MajorActivity[]> {
       location: row.location,
       description: row.description,
       imageUrl: mediaUrl(row.image_path) || mediaUrl(row.image_url),
+      thumbnailUrl: thumbUrl(row.image_path) || mediaUrl(row.image_url),
       imageAlt: row.image_alt,
     })),
   )

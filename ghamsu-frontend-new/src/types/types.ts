@@ -173,6 +173,8 @@ export interface MajorActivity {
   location: string | null
   description: string | null
   imageUrl: string
+  /** Smaller copy for cards; falls back to imageUrl if missing. */
+  thumbnailUrl: string
   imageAlt: string | null
 }
 

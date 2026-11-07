@@ -3,7 +3,7 @@ import { Play, Calendar, User, Headphones } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useSermons } from '../../lib/hooks'
-import { imageProps } from '../../lib/media'
+import { thumbProps } from '../../lib/media'
 
 export default function Sermons() {
   const [selectedType, setSelectedType] = useState<string | undefined>()
@@ -104,7 +104,7 @@ export default function Sermons() {
                       <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
                         {sermon.thumbnail ? (
                           <img
-                            {...imageProps(sermon.thumbnail, sermon.title)}
+                            {...thumbProps(sermon.thumbnail, sermon.title)}
                             alt={sermon.title}
                             loading="lazy"
                             decoding="async"

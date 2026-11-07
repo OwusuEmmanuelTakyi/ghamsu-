@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useGallery } from '../../lib/hooks'
-import { imageProps } from '../../lib/media'
+import { thumbProps } from '../../lib/media'
 
 export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
@@ -91,7 +91,7 @@ export default function Gallery() {
                       className="group relative aspect-square border border-border overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 block"
                     >
                       <img
-                        {...imageProps(gallery.coverImage, gallery.title)}
+                        {...thumbProps(gallery.coverImage, gallery.title)}
                         alt={gallery.title}
                         loading="lazy"
                         decoding="async"

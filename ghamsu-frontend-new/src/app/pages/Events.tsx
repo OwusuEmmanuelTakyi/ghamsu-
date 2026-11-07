@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useEvents } from '../../lib/hooks'
-import { imageProps } from '../../lib/media'
+import { thumbProps } from '../../lib/media'
 import type { Event } from '../../types/types'
 
 export default function Events() {
@@ -110,7 +110,7 @@ export default function Events() {
                     <div className="bg-card border border-border overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-full flex flex-col group">
                       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
                         <img
-                          {...imageProps(event.flyer, event.title)}
+                          {...thumbProps(event.flyer, event.title)}
                           alt={event.title}
                           loading="lazy"
                           decoding="async"

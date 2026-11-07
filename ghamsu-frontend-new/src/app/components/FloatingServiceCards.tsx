@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
 import { useNews, useArticles, useEvents } from '../../lib/hooks'
-import { mediaUrl } from '../../lib/media'
+import { thumbUrl } from '../../lib/media'
 
 export function FloatingServiceCards() {
   const [scriptureOfDay, setScriptureOfDay] = useState<{ text: string; reference: string } | null>(null)
@@ -103,7 +103,7 @@ export function FloatingServiceCards() {
       icon: BookOpen,
       title: "Today's News",
       description: latestNews ? truncateText(latestNews.title, 50) : 'No news yet',
-      image: mediaUrl(latestNews?.featuredImage?.path) || null,
+      image: thumbUrl(latestNews?.featuredImage?.path) || null,
       link: latestNews ? `/blogs/${latestNews.slug.current}` : '/blogs?category=news',
       active: true,
       readMoreText: 'Read News',
@@ -112,7 +112,7 @@ export function FloatingServiceCards() {
       icon: FileText,
       title: 'Article of the Day',
       description: articleOfDay ? truncateText(articleOfDay.title, 50) : 'Loading article...',
-      image: mediaUrl(articleOfDay?.featuredImage?.path) || null,
+      image: thumbUrl(articleOfDay?.featuredImage?.path) || null,
       link: articleOfDay ? `/blogs/${articleOfDay.slug.current}` : '/blogs?category=articles',
       active: false,
       readMoreText: 'Read Article',
