@@ -3,6 +3,8 @@ import { supabase } from '../../lib/supabase'
 import { DIGITS_RULE, SLUG_RULE, formatDate } from './lib/forms'
 import type { FieldDef, Values } from './components/fields'
 import { BoardMembers } from './components/BoardMembers'
+import { ActivityQuestions } from './components/ActivityQuestions'
+import { ActivityShareActions } from './components/ActivityShareActions'
 
 export interface ResourceContext {
   isAdmin: boolean
@@ -49,6 +51,8 @@ export interface ResourceConfig {
   listToggle?: { column: string; onLabel: string; offLabel: string; onMessage: string; offMessage: string }
   /** Extra links on each list row. */
   rowLinks?: { label: string; to: (row: Values) => string }[]
+  /** Extra buttons on each list row (replaces the plain "view on site" icon). */
+  rowActions?: ComponentType<{ row: Values }>
 }
 
 // ─── Shared options ────────────────────────────────────────────────────────────
@@ -350,6 +354,8 @@ export const majorActivities: ResourceConfig = {
     offMessage: 'Registration is now closed.',
   },
   rowLinks: [{ label: 'Registrations', to: (row) => `/admin/activities/${row.id}/registrations` }],
+  rowActions: ActivityShareActions,
+  extraSection: ActivityQuestions,
   fields: [
     { name: 'title', label: 'Title', type: 'text', required: true },
     {

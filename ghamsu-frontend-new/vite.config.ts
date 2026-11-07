@@ -23,11 +23,13 @@ export default defineConfig({
     tailwindcss(),
     sitemap({
       hostname: 'https://www.ghamsu.org', // Use hostname instead of baseUrl
-      routes: [
-        '/',
+      // The plugin only reads dynamicRoutes; this list was previously passed as
+      // "routes", which it ignores, so the sitemap only contained "/".
+      dynamicRoutes: [
         '/about',
         '/sermons',
         '/events',
+        '/activities',
         '/boards',
         '/gallery',
         '/blogs',

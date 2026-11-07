@@ -57,6 +57,44 @@ Executives submit their own profile through a link an admin shares. Nothing appe
 - Photos from abandoned forms, or from submissions later deleted, stay in the private bucket until an admin removes them. They are never public.
 - Signed-in staff can still read every executive's raw phone and email. Sign-ups are disabled, so only staff accounts exist.
 
+### Change: Extra registration questions and sharing (migration 0006)
+
+Admins can add their own questions to any activity's registration form, and activities can be shared with proper link previews. Also on `supabase-switch`.
+
+**Order:** run 0004, 0005, then 0006 before deploying this code. 0006 was already applied on the live project on 2026-11-07, when `node --env-file=.env.migration scripts/test-activity-custom-fields.mjs` passed 30 of 30 checks and deleted its test data. Run `npm run build` in `ghamsu-frontend-new` first: the script tests the link-preview function against the built `index.html`. The form keeps working without 0006, as long as no activity has extra questions.
+
+**What 0006 adds:**
+- **`activity_form_fields`:** label, type (short text, long text, number, dropdown, checkboxes, yes/no, date, phone, email), options for dropdowns and checkboxes, required, help text, display order and `deleted_at`. Visitors can read the live questions of published activities. Editors and admins manage them.
+- **`activity_registrations.custom_answers`:** a JSON object of answers keyed by question id, not label, so renaming a question keeps old answers. Visitors may insert it, as with the other registration columns.
+- **Trigger `validate_activity_custom_answers`:** runs after the 0004 checks on every registration. It refuses:
+  - a missing required answer;
+  - a dropdown or checkbox value that isn't one of the options;
+  - the wrong kind of value, such as text for yes/no, an impossible date or a non-Ghana phone number;
+  - over-long text;
+  - answers to questions that don't exist or were removed.
+
+  It tidies what it accepts: text is trimmed, phone numbers become `+233…`, emails are lowercased, and checkboxes are de-duplicated. Each error names the question, and carries its id so the form can highlight it.
+
+**Admin:**
+- The activity editor has a **Registration questions** section to add, edit and drag to reorder questions (then Save order). **Preview form** shows the visitor's form with these questions and sends nothing.
+- If anyone has registered, removing a question shows a warning, and the question is only marked removed. Old answers stay in the registrations list and the CSV under "(removed question)", and the question can be added back. With no registrations it is deleted outright.
+- The registrations list and CSV have one column per question in display order, then removed questions. CSV cells that a spreadsheet could read as a formula are prefixed, as before.
+- Each activity in the list has **Copy link**, **Share on WhatsApp** and **Open page** buttons, once published.
+
+**Public site:**
+- `/activities/:slug` has a share card: the phone's own share sheet where available, plus WhatsApp, Facebook, X and Copy link. The shared text includes the title, date, venue and link.
+- **New `/activities` page:** upcoming activities first (soonest first, undated after them), then past ones marked "Ended". Cards on `/events` show "Ended" too and link to `/activities`.
+- **Sitemap:** `/activities` is in it. The sitemap previously contained only `/`, because the page list was passed as `routes`, which `vite-plugin-sitemap` ignores. It is now passed as `dynamicRoutes`.
+
+**Link previews (`ghamsu-frontend-new/api/activity-preview.js`):**
+- **What it does:** `vercel.json` rewrites `/activities/:slug` to this function, ahead of the catch-all. It returns the deployed `index.html` with that activity's title, description, Open Graph and Twitter tags, and canonical link filled in. The description combines the date, venue and short summary. The image is the banner as a full URL. The rest of the page is unchanged, so visitors get the full app.
+- **Data:** it reads the activity with the anon key (published rows only), from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, which Vercel also gives to functions.
+- **Caching:** Vercel's CDN keeps each response for 5 minutes (`s-maxage=300`). Browsers always revalidate.
+- **Unknown slugs:** they get a 404 status with the default site tags, and the app shows "Activity not found".
+- **Fallback:** if `index.html` can't be fetched, the function redirects to `/activities/<slug>?spa=1`. The rewrite skips requests carrying `?spa`, so they get the plain app.
+- **Image formats:** banners uploaded through the admin are WebP. Facebook and X show WebP. WhatsApp's support for WebP previews varies by app version, so some WhatsApp previews may show no image.
+- **Default image:** the default `og:image` in `index.html` points to `/src/images/logo.png`, which doesn't exist in the built site. Pages without a banner of their own therefore share without an image. This predates this change.
+
 **Before deploying Phase 3:** add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to Vercel (otherwise the site shows its "temporarily unavailable" page), and run `--stats-only` just before the switch so likes and views collected on the old site carry over.
 
 **Owner decisions (answers to the Phase 1 questions):**

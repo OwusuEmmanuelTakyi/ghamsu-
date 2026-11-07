@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { motion } from 'motion/react'
 import {
   ArrowLeft, Calendar, CheckCircle2, Clock, Hourglass, Loader2, MapPin, Phone, Ticket, User, Users,
 } from 'lucide-react'
 import { AnimatedSection } from '../components/AnimatedSection'
+import { ActivityRegistrationForm } from '../components/ActivityRegistrationForm'
 import { RichText } from '../components/RichText'
+import { ShareButtons } from '../components/ShareButtons'
 import { useActivityBySlug } from '../../lib/hooks'
 import { focusStyle } from '../../lib/media'
 import {
-  activityDate, activityTime, fetchRegistrationStatus, formatDeadline, HEARD_OPTIONS, isRegistrationOpen,
-  normalizeGhanaPhone, ROLE_OPTIONS, submitRegistration, telHref, validateRegistration,
-  type RegistrationInput, type RegistrationStatus,
+  activityDate, activityShareText, activityTime, fetchCustomFields, fetchRegistrationStatus, formatDeadline, hasEnded,
+  isRegistrationOpen, telHref, type CustomField, type RegistrationStatus,
 } from '../../lib/activities'
 import type { MajorActivity } from '../../types/types'
 
@@ -67,8 +68,9 @@ export default function ActivityDetail() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-12">
           {/* DOM order is details, form, description: on phones that is the
               reading order; on desktop the form sits in its own column. */}
-          <div className="lg:col-start-1 lg:row-start-1">
+          <div className="space-y-6 lg:col-start-1 lg:row-start-1">
             <DetailsPanel activity={activity} />
+            <ShareSection activity={activity} />
           </div>
           <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2">
             <div className="lg:sticky lg:top-28">
@@ -212,6 +214,21 @@ function DetailsPanel({ activity }: { activity: MajorActivity }) {
   )
 }
 
+function ShareSection({ activity }: { activity: MajorActivity }) {
+  const url = `${window.location.origin}/activities/${activity.slug}`
+  return (
+    <section aria-labelledby="share-heading" className="rounded-xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      <h2 id="share-heading" className="mb-1 text-lg tracking-tight" style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+        Share this activity
+      </h2>
+      <p className="mb-4 text-sm text-muted-foreground">
+        {hasEnded(activity) ? 'Let others know what happened.' : 'Invite friends and members of your local.'}
+      </p>
+      <ShareButtons title={activity.title} text={activityShareText(activity, url)} url={url} />
+    </section>
+  )
+}
+
 function AboutSection({ activity }: { activity: MajorActivity }) {
   const hasBody = Boolean(activity.body?.content?.length)
   if (!hasBody && !activity.description) return null
@@ -231,24 +248,19 @@ function AboutSection({ activity }: { activity: MajorActivity }) {
 
 // ─── Registration ──────────────────────────────────────────────────────────────
 
-const EMPTY: RegistrationInput = {
-  full_name: '', phone: '', email: '', gender: '', local: '', diocese: '', level: '', role: '', how_did_you_hear: '', notes: '',
-}
-
-const inputClass =
-  'w-full rounded-lg border bg-secondary px-4 py-2.5 text-sm transition-colors focus:border-primary focus:outline-none sm:py-3'
-
 function RegistrationPanel({ activity }: { activity: MajorActivity }) {
   const [status, setStatus] = useState<RegistrationStatus | null>(null)
+  const [fields, setFields] = useState<CustomField[]>([])
   const [checked, setChecked] = useState(false)
   const [done, setDone] = useState(false)
   const top = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let cancelled = false
-    fetchRegistrationStatus(activity.id).then((result) => {
+    Promise.all([fetchRegistrationStatus(activity.id), fetchCustomFields(activity.id)]).then(([result, extra]) => {
       if (cancelled) return
       setStatus(result)
+      setFields(extra)
       setChecked(true)
     })
     return () => { cancelled = true }
@@ -274,8 +286,9 @@ function RegistrationPanel({ activity }: { activity: MajorActivity }) {
         ) : done ? (
           <Success activity={activity} onAnother={() => { setDone(false); top.current?.scrollIntoView({ behavior: 'smooth' }) }} />
         ) : open ? (
-          <RegistrationForm
-            activity={activity}
+          <ActivityRegistrationForm
+            activityId={activity.id}
+            fields={fields}
             onSuccess={() => { setDone(true); top.current?.scrollIntoView({ behavior: 'smooth' }) }}
             onClosed={(next) => setStatus(next)}
           />
@@ -326,130 +339,5 @@ function Success({ activity, onAnother }: { activity: MajorActivity; onAnother: 
         </Link>
       </div>
     </div>
-  )
-}
-
-function RegistrationForm({ activity, onSuccess, onClosed }: {
-  activity: MajorActivity
-  onSuccess: () => void
-  onClosed: (status: RegistrationStatus) => void
-}) {
-  const [values, setValues] = useState<RegistrationInput>(EMPTY)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [formError, setFormError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const honeypot = useRef<HTMLInputElement>(null)
-
-  const set = (name: keyof RegistrationInput, value: string) => {
-    setValues((prev) => ({ ...prev, [name]: value }))
-    setErrors((prev) => { const next = { ...prev }; delete next[name]; return next })
-  }
-
-  const submit = async (event: FormEvent) => {
-    event.preventDefault()
-    setFormError(null)
-
-    // Bots fill every field, including this hidden one. Pretend it worked.
-    if (honeypot.current?.value) return onSuccess()
-
-    const found = validateRegistration(values)
-    setErrors(found)
-    if (Object.keys(found).length) {
-      setFormError('Please check the highlighted fields.')
-      document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus()
-      return
-    }
-
-    setSubmitting(true)
-    const result = await submitRegistration(activity.id, values)
-    setSubmitting(false)
-    if (result.ok) {
-      setValues(EMPTY)
-      return onSuccess()
-    }
-    if (result.closed) {
-      const reason = /full/.test(result.message) ? 'full' : /deadline/.test(result.message) ? 'deadline' : 'closed'
-      return onClosed({ isOpen: false, reason, spotsLeft: reason === 'full' ? 0 : null })
-    }
-    if (result.field) setErrors((prev) => ({ ...prev, [result.field!]: result.message }))
-    setFormError(result.message)
-  }
-
-  const field = (name: keyof RegistrationInput, label: string, control: ReactNode, required = true, hint?: string) => (
-    <div className="space-y-1.5">
-      <label htmlFor={`reg-${name}`} className="block text-sm font-medium">
-        {label}{required && <span className="text-destructive"> *</span>}
-      </label>
-      {control}
-      {hint && !errors[name] && <p className="text-xs text-muted-foreground">{hint}</p>}
-      {errors[name] && <p id={`reg-${name}-error`} className="text-sm text-destructive">{errors[name]}</p>}
-    </div>
-  )
-
-  const props = (name: keyof RegistrationInput) => ({
-    id: `reg-${name}`,
-    name,
-    value: values[name],
-    'aria-invalid': errors[name] ? true : undefined,
-    'aria-describedby': errors[name] ? `reg-${name}-error` : undefined,
-    className: `${inputClass} ${errors[name] ? 'border-destructive' : 'border-border'}`,
-    onChange: (event: { target: { value: string } }) => set(name, event.target.value),
-  })
-
-  const phoneOk = values.phone && normalizeGhanaPhone(values.phone)
-
-  return (
-    <form onSubmit={submit} noValidate className="space-y-4">
-      {/* Honeypot: hidden from people and screen readers, filled by bots. */}
-      <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
-        <label htmlFor="reg-website">Website</label>
-        <input ref={honeypot} id="reg-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
-      </div>
-
-      {field('full_name', 'Full name', <input {...props('full_name')} autoComplete="name" maxLength={120} />)}
-      {field('phone', 'Phone number',
-        <input {...props('phone')} type="tel" autoComplete="tel" inputMode="tel" placeholder="024 123 4567" />,
-        true, phoneOk ? `Saved as ${phoneOk}` : 'A Ghana number, for example 024 123 4567 or +233 24 123 4567.')}
-      {field('email', 'Email', <input {...props('email')} type="email" autoComplete="email" inputMode="email" maxLength={254} />)}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {field('gender', 'Gender',
-          <select {...props('gender')}>
-            <option value="">Choose…</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>)}
-        {field('role', 'I am a',
-          <select {...props('role')}>
-            <option value="">Choose…</option>
-            {ROLE_OPTIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-          </select>)}
-      </div>
-      {field('local', 'Local, campus or institution', <input {...props('local')} maxLength={150} placeholder="UG Local" />)}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {field('diocese', 'Diocese', <input {...props('diocese')} maxLength={100} placeholder="Accra" />)}
-        {field('level', 'Level or year', <input {...props('level')} maxLength={60} placeholder="Level 200" />)}
-      </div>
-      {field('how_did_you_hear', 'How did you hear about this?',
-        <select {...props('how_did_you_hear')}>
-          <option value="">Choose…</option>
-          {HEARD_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>, false)}
-      {field('notes', 'Anything we should know?', <textarea {...props('notes')} rows={3} maxLength={1000} className={`${props('notes').className} resize-none`} />, false,
-        'For example, dietary or accessibility needs.')}
-
-      {formError && <p className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive" role="alert">{formError}</p>}
-
-      <button
-        type="submit"
-        disabled={submitting}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent py-3.5 text-sm font-semibold uppercase tracking-wider text-accent-foreground transition-colors hover:bg-accent/90 disabled:opacity-60"
-      >
-        {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-        {submitting ? 'Registering…' : 'Register'}
-      </button>
-      <p className="text-center text-xs text-muted-foreground">
-        Your details are only shared with the GHAMSU organisers of this activity.
-      </p>
-    </form>
   )
 }

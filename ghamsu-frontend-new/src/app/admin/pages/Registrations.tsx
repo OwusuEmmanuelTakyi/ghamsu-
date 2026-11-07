@@ -11,6 +11,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState, Loading, PageHeader } from '../components/ui'
 import { friendlyError } from '../lib/errors'
 import { formatDateTime } from '../lib/forms'
+import { formatAnswer, type CustomField } from '../../../lib/activities'
 
 interface Registration {
   id: string
@@ -24,7 +25,20 @@ interface Registration {
   role: string
   how_did_you_hear: string | null
   notes: string | null
+  custom_answers?: Record<string, unknown> | null
   created_at: string
+}
+
+/** A column for an extra question. Removed questions keep their answers, marked as such. */
+interface Question { id: string; label: string }
+
+function questionColumns(fields: Pick<CustomField, "id" | "label" | "deleted_at">[]): Question[] {
+  const live = fields.filter((f) => !f.deleted_at)
+  const removed = fields.filter((f) => f.deleted_at)
+  return [
+    ...live.map((f) => ({ id: f.id, label: f.label })),
+    ...removed.map((f) => ({ id: f.id, label: `${f.label} (removed question)` })),
+  ]
 }
 
 const COLUMNS: [keyof Registration, string][] = [
@@ -49,7 +63,7 @@ const capitalise = (text: string) => text.charAt(0).toUpperCase() + text.slice(1
  * Phone numbers are always "+233" and digits, checked by the database, so
  * they are left as they are.
  */
-function csvCell(value: unknown, column: keyof Registration): string {
+function csvCell(value: unknown, column: keyof Registration | 'custom'): string {
   let text = value === null || value === undefined ? '' : String(value)
   if (column === 'created_at' && text) text = new Date(text).toLocaleString('en-GB')
   const isPhone = column === 'phone' && /^\+\d+$/.test(text)
@@ -57,10 +71,13 @@ function csvCell(value: unknown, column: keyof Registration): string {
   return `"${text.replace(/"/g, '""')}"`
 }
 
-function downloadCsv(rows: Registration[], slug: string) {
+function downloadCsv(rows: Registration[], slug: string, questions: Question[]) {
   const lines = [
-    COLUMNS.map(([, label]) => `"${label}"`).join(','),
-    ...rows.map((row) => COLUMNS.map(([key]) => csvCell(row[key], key)).join(',')),
+    [...COLUMNS.map(([, label]) => label), ...questions.map((q) => q.label)].map((label) => csvCell(label, 'custom')).join(','),
+    ...rows.map((row) => [
+      ...COLUMNS.map(([key]) => csvCell(row[key], key)),
+      ...questions.map((q) => csvCell(formatAnswer(row.custom_answers?.[q.id]), 'custom')),
+    ].join(',')),
   ]
   // The byte-order mark makes Excel read names with accents correctly.
   const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' })
@@ -79,16 +96,21 @@ export function Registrations() {
   const { isAdmin } = useAuth()
   const [activity, setActivity] = useState<{ id: string; title: string; slug: string; status: string; registration_open: boolean; capacity: number | null } | null>(null)
   const [rows, setRows] = useState<Registration[] | null>(null)
+  const [questions, setQuestions] = useState<Question[]>([])
   const [missing, setMissing] = useState(false)
   const [search, setSearch] = useState('')
   const [toDelete, setToDelete] = useState<Registration | null>(null)
 
   const load = useCallback(async () => {
     if (!supabase || !id) return
-    const [{ data: act, error: actError }, { data, error }] = await Promise.all([
+    const [{ data: act, error: actError }, { data, error }, { data: fields }] = await Promise.all([
       supabase.from('major_activities').select('id, title, slug, status, registration_open, capacity').eq('id', id).maybeSingle(),
       supabase.from('activity_registrations').select('*').eq('activity_id', id).order('created_at', { ascending: false }),
+      // Fails harmlessly (no extra columns) before migration 0006.
+      supabase.from('activity_form_fields').select('id, label, sort_order, deleted_at, created_at').eq('activity_id', id)
+        .order('sort_order').order('created_at'),
     ])
+    setQuestions(questionColumns(fields ?? []))
     if (actError || error) toast.error(friendlyError(actError ?? error))
     if (!act) setMissing(true)
     setActivity(act)
@@ -140,7 +162,7 @@ export function Registrations() {
           </span>
         }
         actions={
-          <Button onClick={() => downloadCsv(rows, activity.slug)} disabled={rows.length === 0}>
+          <Button onClick={() => downloadCsv(rows, activity.slug, questions)} disabled={rows.length === 0}>
             <Download /> Download CSV
           </Button>
         }
@@ -190,6 +212,17 @@ export function Registrations() {
                       {r.how_did_you_hear && <>Heard via {r.how_did_you_hear}. </>}
                       {r.notes && <>Note: “{r.notes}”</>}
                     </p>
+                  )}
+                  {questions.some((q) => formatAnswer(r.custom_answers?.[q.id])) && (
+                    <dl className="mt-2 grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[minmax(0,14rem)_1fr]">
+                      {questions.map((q) => {
+                        const answer = formatAnswer(r.custom_answers?.[q.id])
+                        return answer ? [
+                          <dt key={`${q.id}-q`} className="text-muted-foreground">{q.label}</dt>,
+                          <dd key={`${q.id}-a`} className="whitespace-pre-line break-words">{answer}</dd>,
+                        ] : null
+                      })}
+                    </dl>
                   )}
                   <p className="mt-2 text-xs text-muted-foreground">Registered {formatDateTime(r.created_at)}</p>
                 </div>

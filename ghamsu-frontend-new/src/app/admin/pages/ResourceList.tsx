@@ -232,7 +232,8 @@ export function ResourceList({ config }: { config: ResourceConfig }) {
                           <Link to={link.to(row)}><ListChecks /> {link.label}</Link>
                         </Button>
                       ))}
-                      {publicPath && (
+                      {config.rowActions && <config.rowActions row={row} />}
+                      {publicPath && !config.rowActions && (
                         <Button variant="ghost" size="sm" asChild>
                           <a href={publicPath} target="_blank" rel="noopener noreferrer" aria-label="View on site"><ExternalLink /></a>
                         </Button>

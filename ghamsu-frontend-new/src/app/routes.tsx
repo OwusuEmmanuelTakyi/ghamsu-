@@ -17,6 +17,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Partner = lazy(() => import('./pages/Partner'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail'));
 const BoardDetail = lazy(() => import('./pages/BoardDetail'));
+const Activities = lazy(() => import('./pages/Activities'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const ExecutiveForm = lazy(() => import('./pages/ExecutiveForm'));
 const Notfound = lazy(() => import('./pages/Notfound'));
@@ -71,6 +72,7 @@ export const router = createBrowserRouter([
       { path: 'blogs/:slug', Component: BlogDetail },
 
       { path: 'boards/:slug', Component: BoardDetail },
+      { path: 'activities', Component: Activities },
       { path: 'activities/:slug', Component: ActivityDetail },
       { path: 'executive-form/:token', Component: ExecutiveForm },
     ],
