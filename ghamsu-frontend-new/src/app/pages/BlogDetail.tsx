@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router'
 import { Calendar, User, ArrowLeft, Heart, Eye, Share2, Play, Music } from 'lucide-react'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { RichText } from '../components/RichText'
+import { CommentsSection } from '../components/CommentsSection'
 import { useBlogBySlug } from '../../lib/hooks'
 import { imageProps } from '../../lib/media'
 import { useLikesAndViews } from '../../lib/useLikesAndViews'
@@ -433,6 +434,9 @@ export default function BlogDetail() {
             )}
 
           </AnimatedSection>
+
+          {/* Not animated: the form must be usable straight away. */}
+          <CommentsSection postId={blog._id} />
         </div>
       </article>
 

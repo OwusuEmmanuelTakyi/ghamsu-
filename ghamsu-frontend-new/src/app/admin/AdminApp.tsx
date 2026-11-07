@@ -6,6 +6,7 @@ import { Toaster } from '../components/ui/sonner'
 import { AuthProvider } from './auth'
 import { AdminLayout } from './AdminLayout'
 import { ForgotPasswordPage, LoginPage, RequireAdmin, RequireStaff, ResetPasswordPage } from './pages/AuthPages'
+import { Comments } from './pages/Comments'
 import { Dashboard } from './pages/Dashboard'
 import { ExecutiveLinks } from './pages/ExecutiveLinks'
 import { ExecutiveSubmissionReview, ExecutiveSubmissions } from './pages/ExecutiveSubmissions'
@@ -70,6 +71,7 @@ export default function AdminApp() {
             />,
           ])}
           <Route path="activities/:id/registrations" element={<Registrations />} />
+          <Route path="comments" element={<Comments />} />
           <Route path="executive-links" element={<RequireAdmin><ExecutiveLinks /></RequireAdmin>} />
           <Route path="executive-submissions" element={<RequireAdmin><ExecutiveSubmissions /></RequireAdmin>} />
           <Route path="executive-submissions/:id" element={<RequireAdmin><ExecutiveSubmissionReview /></RequireAdmin>} />

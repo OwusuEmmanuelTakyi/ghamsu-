@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Calendar, User, ArrowRight } from 'lucide-react'
+import { Calendar, User, ArrowRight, MessageCircle } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
 import { useBlogs } from '../../lib/hooks'
+import { fetchCommentCounts } from '../../lib/comments'
 import { thumbProps } from '../../lib/media'
 import { useNavigate, useLocation } from 'react-router'
 
@@ -11,6 +12,13 @@ export default function Blogs() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
   const navigate = useNavigate()
   const location = useLocation()
+  // null until loaded, or when comments aren't available; then no count is shown.
+  const [commentCounts, setCommentCounts] = useState<Record<string, number> | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    fetchCommentCounts().then((counts) => { if (!cancelled) setCommentCounts(counts) })
+    return () => { cancelled = true }
+  }, [])
 
   // Handle hash anchor scrolling
   useEffect(() => {
@@ -219,13 +227,21 @@ export default function Blogs() {
                             </div>
                           )}
 
-                          {/* Date */}
-                          {post.publishedDate && (
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4 flex-shrink-0" />
-                              <span>{new Date(post.publishedDate).toLocaleDateString()}</span>
-                            </div>
-                          )}
+                          {/* Date and comments */}
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                            {post.publishedDate && (
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4 flex-shrink-0" />
+                                <span>{new Date(post.publishedDate).toLocaleDateString()}</span>
+                              </div>
+                            )}
+                            {commentCounts !== null && (
+                              <div className="flex items-center gap-1.5" title="Comments">
+                                <MessageCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                                <span>{commentCounts[post._id] ?? 0}<span className="sr-only"> comments</span></span>
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         {/* Read More Link */}

@@ -20,7 +20,9 @@ const UNIQUE_MESSAGES: [RegExp, string][] = [
 ]
 
 const CHECK_MESSAGES: [RegExp, string][] = [
-  [/posts_publish_requirements/, 'To publish a post, add an excerpt, content, a featured image and an author.'],
+  [/posts_published_author_name/, 'Add the reporter or author name before publishing.'],
+  [/posts_author_name_length|posts_author_detail_length/, 'The name and the position or local must each be at most 120 characters.'],
+  [/posts_publish_requirements/,'To publish a post, add an excerpt, content, a featured image and an author.'],
   [/posts_category_valid/, "That category doesn't match the post type."],
   [/posts_content_check/, 'The post content could not be saved. Please try again.'],
   [/events_publish_requirements/, 'To publish an event, add a date, a venue and a flyer.'],

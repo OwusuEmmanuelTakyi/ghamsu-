@@ -95,6 +95,46 @@ Admins can add their own questions to any activity's registration form, and acti
 - **Image formats:** banners uploaded through the admin are WebP. Facebook and X show WebP. WhatsApp's support for WebP previews varies by app version, so some WhatsApp previews may show no image.
 - **Default image:** the default `og:image` in `index.html` points to `/src/images/logo.png`, which doesn't exist in the built site. Pages without a banner of their own therefore share without an image. This predates this change.
 
+### Change: Required author names and public comments (migration 0007)
+
+**Order:** run 0001–0006, then 0007, before deploying this code. 0007 was already applied on the live project on 2026-11-07, when `node --env-file=.env.migration scripts/test-comments-and-authors.mjs` passed 31 of 31 checks and deleted its test data. The public site still works without 0007: the comments section and counts are simply hidden. The post editor only sends `comments_open` once the column exists.
+
+**Author names:**
+- In the post editor the name is labelled "Reporter" for news and "Author" for articles, with an optional "Position / Local" field. As you type, the editor suggests names used on earlier posts, with their position, and picking one fills in the position if it's empty. Choosing an author profile fills in the name if it's empty.
+- **Required to publish.** The form blocks publishing without a name. The database constraint `posts_published_author_name` rejects any published post whose name is missing or only spaces. An author profile alone no longer counts. Drafts may have no author. Both fields are limited to 120 characters.
+- **When the migration runs:** published posts that had only an author profile get the profile's name first. If any published post would still have no name, the migration stops and lists the posts, and changes nothing. On the live site both published posts already had names.
+
+**Comments:**
+- **`post_comments` table:** post, parent (replies are one level deep, enforced by a trigger), name, email (never public), body, staff-reply flag, status (`visible`, `pending` or `hidden`), a hash of the visitor's IP address (never public), and the time.
+- **Adding comments:** visitors can only add comments through `add_post_comment()`. It checks that:
+  - the post is published and comments are open on it;
+  - the name is 2–60 characters, the email is valid, and the body is 2–1,500 characters;
+  - there are no links in the name or body (`http`, `www.`, `wa.me/`, `bit.ly/`, or a word followed directly by a common domain ending such as `.com` or `.org`);
+  - the same email has posted at most 3 comments on the same post in the last 10 minutes;
+  - at most 20 comments have come from the same IP address in 10 minutes. This is generous because students often share a campus connection. The live test confirmed Supabase passes the IP to the database.
+
+  Endings like `.me` and `.co` are left out on purpose, so "I came.Me too" isn't refused. A reply to a reply goes under the top-level comment.
+- **Status of new comments:** they are `visible`, or `pending` when "Require approval for new comments" is on. That setting is the `comments` row in `site_settings` (`{"require_approval": false}` by default).
+- **Privacy:** visitors are granted none of the table's sensitive columns (`author_email`, `author_user_id`, `ip_hash`), and cannot insert into, change or delete the table. They read `post_comments_public`, a `security_invoker` view with no email column. It shows only visible comments on published posts, and drops replies whose parent is hidden. `post_comment_counts` gives the per-post counts. Signed-in accounts see comments only if they are staff, so an account without a role can't read emails either. The tests checked this directly: asking for `author_email` in any way (direct, `select=*`, filtering by it, or embedding comments in a post query) is refused.
+- **Staff replies:** staff reply through `add_staff_reply()`. The reply appears under their profile name with the GHAMSU badge, straight away, but only under comments that are visible.
+- **Moderation:** staff (editors and admins) can approve, hide and delete. They can change a comment's status but not its text. Deleting a comment deletes its replies. Deleting a post deletes its comments.
+
+**Public site:**
+- Posts have a comments section with the count, newest comments first, and replies indented under their comment, oldest first.
+- The form has name, email ("Won't be published"), the comment, and a hidden spam-trap field. It shows clear success and error messages, says "Comments are reviewed before they appear" when approval is on, and shows "Comments are closed on this post" when they are.
+- Comment text is always plain text with its line breaks kept. HTML typed into a comment shows as text and never runs.
+- The cards on `/blogs` show each post's comment count.
+
+**Admin:**
+- **Comments page** with tabs (All, Waiting, Visible, Hidden), a filter by post, and search by name, email or text. Actions: Approve, Hide, Delete, and Reply as GHAMSU.
+- The menu shows a badge with the number of comments waiting for approval, for editors and admins.
+- Each post's editor has a "Comments open" switch and the comment count, linking to that post's comments.
+- **Site settings → Comments** has "Require approval for new comments".
+
+**Known limits:**
+- There's no CAPTCHA. The spam-trap field, the link ban and the rate limits stop casual spam, but not a determined attacker using many emails and connections. Turn on approval if spam gets through.
+- The IP is hashed with a fixed salt that is in the code, so the hash can't be reversed by reading it, but a known IP can be checked against it. Only staff can read it.
+
 **Before deploying Phase 3:** add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to Vercel (otherwise the site shows its "temporarily unavailable" page), and run `--stats-only` just before the switch so likes and views collected on the old site carry over.
 
 **Owner decisions (answers to the Phase 1 questions):**

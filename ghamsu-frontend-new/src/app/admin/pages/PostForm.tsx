@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import type { JSONContent } from '@tiptap/react'
-import { ArrowLeft, CheckCircle2, ExternalLink, Eye, Heart, Loader2, Trash2, XCircle } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, ExternalLink, Eye, Heart, Loader2, MessageCircle, Trash2, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '../../../lib/supabase'
 import { clearPublicDataCache } from '../../../lib/hooks'
@@ -37,12 +37,13 @@ function buildFields(postType: string, authors: { value: string; label: string }
     { name: 'title', label: 'Title', type: 'text', required: true },
     { name: 'excerpt', label: 'Excerpt', type: 'textarea', rows: 3, publishRequired: true, help: 'A short summary shown on cards and at the top of the post.' },
     { name: 'cover_image', label: 'Featured image', type: 'image', publishRequired: true, withCaption: true },
-    { name: 'author_name', label: postType === 'news' ? 'Reporter' : 'Author', type: 'text', help: 'Needed before publishing, unless an author profile is chosen below.' },
-    { name: 'author_detail', label: postType === 'news' ? 'Reporter position or local' : 'Author position or local', type: 'text', placeholder: 'UG Local' },
+    { name: 'author_name', label: postType === 'news' ? 'Reporter' : 'Author', type: 'text', publishRequired: true, maxLength: 120 },
+    { name: 'author_detail', label: 'Position / Local', type: 'text', placeholder: 'UG Local or Communications Officer', maxLength: 120 },
     ...(authors.length ? [{ name: 'author_id', label: 'Author profile (optional)', type: 'select' as const, options: authors, placeholder: 'None' }] : []),
     { name: 'category', label: 'Category', type: 'select', options: CATEGORIES[postType] ?? [] },
     ...(postType === 'article' ? [{ name: 'read_time_minutes', label: 'Read time (minutes)', type: 'number' as const, integer: true, min: 0 }] : []),
     { name: 'featured', label: 'Featured', type: 'switch' },
+    { name: 'comments_open', label: 'Comments open', type: 'switch', help: 'Visitors can comment on this post. Existing comments stay visible when closed.' },
     { name: 'published_at', label: 'Publish date', type: 'datetime', help: 'Filled in automatically the first time the post is published.' },
     ...(postType === 'news'
       ? [{
@@ -72,6 +73,11 @@ export function PostForm() {
   const [slugEdited, setSlugEdited] = useState(false)
   const [slugTaken, setSlugTaken] = useState<boolean | null>(null)
   const [authors, setAuthors] = useState<{ value: string; label: string }[]>([])
+  // Names already used on posts, with their latest position, for suggestions.
+  const [writers, setWriters] = useState<{ name: string; detail: string }[]>([])
+  // Comments need migration 0007; before it, the toggle is hidden and not sent.
+  const [commentsAvailable, setCommentsAvailable] = useState(false)
+  const [commentCount, setCommentCount] = useState<{ total: number; pending: number } | null>(null)
   const [errors, setErrors] = useState<Errors>({})
   const [loading, setLoading] = useState(true)
   const [missing, setMissing] = useState(false)
@@ -80,19 +86,34 @@ export function PostForm() {
   const [editorKey, setEditorKey] = useState(0)
 
   const postType = values.post_type === 'article' ? 'article' : 'news'
-  const fields = useMemo(() => buildFields(postType, authors), [postType, authors])
+  const fields = useMemo(
+    () => buildFields(postType, authors).filter((f) => f.name !== 'comments_open' || commentsAvailable),
+    [postType, authors, commentsAvailable],
+  )
 
   useEffect(() => {
     let cancelled = false
     async function load() {
       if (!supabase) return
-      const { data: authorRows } = await supabase.from('authors').select('id, name').order('name')
+      const [{ data: authorRows }, { data: writerRows }, probe] = await Promise.all([
+        supabase.from('authors').select('id, name').order('name'),
+        supabase.from('posts').select('author_name, author_detail, updated_at').not('author_name', 'is', null).order('updated_at', { ascending: false }).limit(500),
+        supabase.from('posts').select('comments_open').limit(1),
+      ])
       if (cancelled) return
       setAuthors((authorRows ?? []).map((a) => ({ value: a.id, label: a.name })))
+      const seen = new Map<string, { name: string; detail: string }>()
+      for (const w of writerRows ?? []) {
+        const name = String(w.author_name).trim()
+        if (name && !seen.has(name.toLowerCase())) seen.set(name.toLowerCase(), { name, detail: String(w.author_detail ?? '').trim() })
+      }
+      setWriters([...seen.values()].sort((a, b) => a.name.localeCompare(b.name)))
+      setCommentsAvailable(!probe.error)
 
       if (creating) {
         setRow(null)
-        setValues({ post_type: 'news', featured: false, media: [] })
+        setValues({ post_type: 'news', featured: false, media: [], comments_open: true })
+        setCommentCount(null)
         setContent(null)
         setSlugEdited(false)
         setLoading(false)
@@ -113,8 +134,16 @@ export function PostForm() {
       }
       const media = [...(data.post_media_attachments ?? [])].sort((a, b) => a.sort_order - b.sort_order)
       const all = buildFields(data.post_type, [])
+      if (!probe.error) {
+        const [total, pending] = await Promise.all([
+          supabase.from('post_comments').select('id', { count: 'exact', head: true }).eq('post_id', data.id),
+          supabase.from('post_comments').select('id', { count: 'exact', head: true }).eq('post_id', data.id).eq('status', 'pending'),
+        ])
+        if (cancelled) return
+        setCommentCount(total.error ? null : { total: total.count ?? 0, pending: pending.count ?? 0 })
+      }
       setRow(data)
-      setValues({ ...toFormValues(all, data), slug: data.slug, media: toFormValues(buildFields('news', []), { media }).media, author_id: data.author_id ?? '' })
+      setValues({ ...toFormValues(all, data), comments_open: data.comments_open !== false, slug: data.slug, media: toFormValues(buildFields('news', []), { media }).media, author_id: data.author_id ?? '' })
       setContent(data.content ?? null)
       setSlugEdited(true)
       setSlugTaken(false)
@@ -144,6 +173,10 @@ export function PostForm() {
     setValues((prev) => {
       const next = { ...prev, ...changes }
       if ('title' in changes && !slugEdited) next.slug = slugify(changes.title ?? '')
+      // Choosing an author profile fills in the (required) name if it's empty.
+      if ('author_id' in changes && changes.author_id && !cleanText(prev.author_name)) {
+        next.author_name = authors.find((a) => a.value === changes.author_id)?.label ?? ''
+      }
       if ('post_type' in changes) {
         const allowed = (CATEGORIES[next.post_type] ?? []).map((c) => c.value)
         if (!allowed.includes(next.category)) next.category = ''
@@ -174,7 +207,7 @@ export function PostForm() {
 
     if (publishing) {
       if (contentIsEmpty(content)) found.content = 'Write the post before publishing.'
-      if (!cleanText(values.author_name) && !values.author_id) found.author_name = 'Add an author before publishing.'
+      if (!cleanText(values.author_name)) found.author_name = `Add the ${postType === 'news' ? 'reporter' : 'author'}'s name before publishing.`
     }
     if (postType === 'news') {
       const incomplete = (values.media ?? []).some((m: Values) =>
@@ -200,6 +233,8 @@ export function PostForm() {
         author_id: values.author_id || null,
         category: values.category || null,
       }
+      if (commentsAvailable) payload.comments_open = values.comments_open !== false
+      else delete payload.comments_open
       if (postType !== 'article') payload.read_time_minutes = null
 
       const query = creating
@@ -279,6 +314,12 @@ export function PostForm() {
             {row?.updated_at && <span>Last edited {formatDateTime(row.updated_at)}</span>}
             <span className="inline-flex items-center gap-1" title="Likes (read-only)"><Heart className="h-3.5 w-3.5" /> {row?.like_count ?? 0}</span>
             <span className="inline-flex items-center gap-1" title="Views (read-only)"><Eye className="h-3.5 w-3.5" /> {row?.view_count ?? 0}</span>
+            {commentCount && (
+              <Link to={`/admin/comments?post=${row?.id}`} className="inline-flex items-center gap-1 text-primary hover:underline" title="Comments">
+                <MessageCircle className="h-3.5 w-3.5" /> {commentCount.total} {commentCount.total === 1 ? 'comment' : 'comments'}
+                {commentCount.pending > 0 && ` (${commentCount.pending} waiting)`}
+              </Link>
+            )}
             {isPublished && (
               <a href={`/blogs/${row?.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
                 View on site <ExternalLink className="h-3.5 w-3.5" />
@@ -331,12 +372,34 @@ export function PostForm() {
 
         <div className="space-y-5 rounded-xl border border-border bg-card p-4 sm:p-6 lg:self-start">
           {renderField('cover_image')}
-          {renderField('author_name')}
+          <div className="space-y-1.5">
+            <Label htmlFor="f-author_name">
+              {postType === 'news' ? 'Reporter' : 'Author'} <span className="text-xs font-normal text-muted-foreground">(needed to publish)</span>
+            </Label>
+            <Input
+              id="f-author_name" list="author-suggestions" autoComplete="off" maxLength={120} value={values.author_name ?? ''}
+              aria-invalid={Boolean(errors.author_name) || undefined}
+              aria-describedby={errors.author_name ? 'f-author_name-error' : undefined}
+              onChange={(event) => {
+                const name = event.target.value
+                const known = writers.find((w) => w.name === name)
+                // Picking a known writer fills in their position, unless one is already typed.
+                change(known && known.detail && !cleanText(values.author_detail) ? { author_name: name, author_detail: known.detail } : { author_name: name })
+              }}
+            />
+            <datalist id="author-suggestions">
+              {writers.map((w) => <option key={w.name} value={w.name} label={w.detail || undefined} />)}
+            </datalist>
+            {errors.author_name
+              ? <p id="f-author_name-error" className="text-sm text-destructive">{errors.author_name}</p>
+              : <p className="text-xs text-muted-foreground">Start typing to pick someone who has written before.</p>}
+          </div>
           {renderField('author_detail')}
           {renderField('author_id')}
           {renderField('category')}
           {renderField('read_time_minutes')}
           {renderField('featured')}
+          {renderField('comments_open')}
           {renderField('published_at')}
         </div>
       </div>

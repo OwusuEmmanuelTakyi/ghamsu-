@@ -104,6 +104,17 @@ const SETTINGS: SettingDef[] = [
       { name: 'receipt_note', label: 'Receipt note', type: 'text' },
     ],
   },
+  {
+    key: 'comments',
+    title: 'Comments',
+    description: 'Comments on news and articles. Each post can also be closed to new comments from its edit page.',
+    fields: [
+      {
+        name: 'require_approval', label: 'Require approval for new comments', type: 'switch',
+        help: 'When on, new comments wait in Comments until someone approves them. Staff replies always appear straight away.',
+      },
+    ],
+  },
 ]
 
 function SettingForm({ def }: { def: SettingDef }) {
