@@ -139,13 +139,9 @@ security definer
 set search_path = ''
 as $$
 declare
-  -- Web links: a scheme, www., common short links, or a word followed
-  -- directly by a common domain ending. Endings that are also everyday words
-  -- after a missing space (".me", ".co", ".live") are left out on purpose,
-  -- so "I came.Me too" isn't refused. Keep in step with LINK_PATTERN in
-  -- src/lib/comments.ts.
+  -- Web links: a scheme, www., or a word followed by a common domain ending.
   link_pattern constant text :=
-    '(https?://|www\.|(wa|t)\.me/|bit\.ly/|[a-z0-9-]+\.(com|net|org|info|biz|io|xyz|ru|online|site|website|top|shop|store|click|tk|ml|ga|cf|gq|edu|gov|gh|uk)(\M|/))';
+    '(https?://|www\.|[a-z0-9-]+\s*\.\s*(com|net|org|info|biz|io|xyz|ru|top|site|online|club|link|ly|me|co|gh|uk|us|tk|ml|ga|cf|gq|app|dev|shop|store|live|click|website|news|tv|cc|ws|pro|edu|gov)(\M|/))';
   v_name     text;
   v_email    text;
   v_body     text;
@@ -193,11 +189,8 @@ begin
   -- Replies go under the top-level comment, which must be visible.
   if p_parent_id is not null then
     select c.id, c.parent_id, c.post_id into v_parent from public.post_comments c where c.id = p_parent_id;
-    if not found then
-      raise exception 'You can only reply to a comment that is shown on this post.' using errcode = '22023', hint = 'invalid_parent';
-    end if;
     v_parent_id := coalesce(v_parent.parent_id, v_parent.id);
-    if v_parent.post_id <> p_post_id or not exists (
+    if v_parent_id is null or v_parent.post_id <> p_post_id or not exists (
       select 1 from public.post_comments c where c.id = v_parent_id and c.status = 'visible'
     ) then
       raise exception 'You can only reply to a comment that is shown on this post.' using errcode = '22023', hint = 'invalid_parent';
