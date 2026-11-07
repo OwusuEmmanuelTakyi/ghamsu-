@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Play, Calendar, User, Headphones } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
-import { useSermons } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
+import { useSermons } from '../../lib/hooks'
+import { imageProps } from '../../lib/media'
 
 export default function Sermons() {
   const [selectedType, setSelectedType] = useState<string | undefined>()
@@ -51,7 +51,7 @@ export default function Sermons() {
       <HeroSection
         title="Sermons & Teachings"
         subtitle="Watch or listen to inspiring messages that will strengthen your faith and transform your life."
-        backgroundImage="https://lh3.googleusercontent.com/pw/AP1GczP8NPdxQrLs1q9ypeq09dKga5Hl2dUNFsdrbcNEUJnpVaGucVkEUB-KvdXNdex2fBID4RUTiHchGvZIZrisEV-CODaaCYOrvgDRHKANYfyQrcs_1GnWmgCeKPUJ_ZlXZcu5D-QLJF89z69yko8urRC9=w1107-h963-s-no-gm"
+        pageKey="sermons"
         isHomePage={false}
       />
 
@@ -104,8 +104,10 @@ export default function Sermons() {
                       <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
                         {sermon.thumbnail ? (
                           <img
-                            src={urlFor(sermon.thumbnail).width(600).height(300).url()}
+                            {...imageProps(sermon.thumbnail, sermon.title)}
                             alt={sermon.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                         ) : (

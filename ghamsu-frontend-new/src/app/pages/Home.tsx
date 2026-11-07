@@ -10,9 +10,7 @@ import { DarkSection } from '../components/DarkSection'
 import { StatsSection } from '../components/StatsSection'
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
-import heroImage1 from '../../images/3.jpg'
-import heroImage2 from '../../images/7.jpg'
-import heroImage3 from '../../images/5.jpg'
+import { useHeroSlides } from '../../lib/hooks'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Scroll Animation Wrapper
@@ -63,44 +61,18 @@ function ScrollReveal({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Hero Slides
-// ─────────────────────────────────────────────────────────────────────────────
-
-const HERO_SLIDES = [
-  {
-    image: heroImage1,
-    eyebrow: 'GHAMSU - Since 1965',
-    heading: "Ghana Methodist\nStudents' Union",
-    subheading:
-      "We are therefore Christ's ambassadors, as though God were making his appeal through us. We implore you on Christ's behalf: Be reconciled to God. — 2 Corinthians 5:20",
-  },
-  {
-    image: heroImage2,
-    eyebrow: 'Ambassadors for Christ',
-    heading: 'Ambassadors\nin Unity & Love',
-    subheading:
-      'United across locals,Dioceses and Connexional — one family, one mission, one Lord.',
-  },
-  {
-    image: heroImage3,
-    eyebrow: 'Ambassadors in Unity & Love',
-    heading: 'Fellowship,\nWorship & Purpose',
-    subheading:
-      'Join us for fellowship, worship, and a journey of faith that transforms lives, campuses, and nations.',
-  },
-]
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Home Page
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const { data: heroSlides } = useHeroSlides()
+
   return (
     <>
       {/* Hero Section - Full height on desktop, reduced on mobile */}
       <HeroSection
         isHomePage={true}
-        slides={HERO_SLIDES}
+        slides={heroSlides ?? []}
         primaryButtonText="Join Us"
         primaryButtonLink="/contact"
         secondaryButtonText="Learn More"

@@ -2,20 +2,14 @@ import { Link } from 'react-router'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect, useCallback } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
-import heroImage1 from '../../images/3.jpg'
-import heroImage2 from '../../images/7.jpg'
-import heroImage3 from '../../images/5.jpg'
+import { usePageHero } from '../../lib/hooks'
+import type { HeroSlide } from '../../types/types'
+
+export type { HeroSlide }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
-
-export interface HeroSlide {
-  image: string
-  eyebrow: string
-  heading: string
-  subheading: string
-}
 
 interface HeroSectionProps {
   slides?: HeroSlide[]
@@ -29,37 +23,10 @@ interface HeroSectionProps {
   title?: string
   titleHighlight?: string
   subtitle?: string
-  backgroundImage?: string
+  /** Key into the page_heroes table; the banner image comes from there. */
+  pageKey?: string
   tagline?: string
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Default Slides
-// ─────────────────────────────────────────────────────────────────────────────
-
-const DEFAULT_SLIDES: HeroSlide[] = [
-  {
-    image: heroImage1,
-    eyebrow: 'Welcome Home',
-    heading: "Ghana Methodist\nStudents' Union",
-    subheading:
-      'A vibrant movement of students committed to faith, fellowship, and the transformation of every campus in Ghana for Christ.',
-  },
-  {
-    image: heroImage2,
-    eyebrow: 'Ambassadors for Christ',
-    heading: 'Ambassadors\nin Unity & Love',
-    subheading:
-      'United across campuses and locals — one family pursuing one mission under one Lord.',
-  },
-  {
-    image: heroImage3,
-    eyebrow: 'Unity and Love',
-    heading: 'Ambassadors\nFor Christ',
-    subheading:
-      'Join us for Spirit-filled worship, deep fellowship, and a journey of faith that transforms lives and nations.',
-  },
-]
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Home Hero — synced text + image transitions, smooth fade-up heading
@@ -86,6 +53,7 @@ function HomeHero({
 
   const goTo = useCallback(
     (i: number, d: number) => {
+      if (!slides.length) return
       setDir(d)
       setIndex((i + slides.length) % slides.length)
     },
@@ -101,14 +69,20 @@ function HomeHero({
   }, [index, goTo])
 
   useEffect(() => {
-    if (paused) return
+    if (paused || slides.length < 2) return
     const timer = setInterval(() => {
       next()
     }, SLIDE_DURATION)
     return () => clearInterval(timer)
-  }, [next, paused])
+  }, [next, paused, slides.length])
 
   const slide = slides[index]
+
+  // While slides load (or if none are published), keep the hero's space so the
+  // page below does not jump.
+  if (!slide) {
+    return <section className="min-h-screen w-full" style={{ background: 'var(--background)' }} aria-busy="true" />
+  }
 
   // Shared easing for synced motion
   const ease = [0.22, 1, 0.36, 1] as const
@@ -535,27 +509,32 @@ function InnerHero({
   title,
   titleHighlight,
   subtitle,
-  backgroundImage,
+  pageKey,
   tagline,
 }: {
   title: string
   titleHighlight?: string
   subtitle: string
-  backgroundImage: string
+  pageKey?: string
   tagline?: string
 }) {
+  const { data: hero } = usePageHero(pageKey)
+  const backgroundImage = hero?.imageUrl ?? ''
+
   return (
     <section
       className="relative flex h-[50vh] min-h-[300px] items-center
         justify-center overflow-hidden sm:h-[55vh] md:h-[60vh]"
     >
-      <div className="absolute inset-0 z-0">
-        <img
-          src={backgroundImage}
-          alt=""
-          aria-hidden="true"
-          className="h-full w-full scale-105 object-cover"
-        />
+      <div className="absolute inset-0 z-0 bg-[#003D82]">
+        {backgroundImage && (
+          <img
+            src={backgroundImage}
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full scale-105 object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/80" />
       </div>
 
@@ -631,14 +610,14 @@ export function HeroSection({
   title = 'Page',
   titleHighlight,
   subtitle = '',
-  backgroundImage = '',
+  pageKey,
   tagline,
   isHomePage = false,
 }: HeroSectionProps) {
   if (isHomePage) {
     return (
       <HomeHero
-        slides={slides ?? DEFAULT_SLIDES}
+        slides={slides ?? []}
         primaryButtonText={primaryButtonText}
         primaryButtonLink={primaryButtonLink}
         secondaryButtonText={secondaryButtonText}
@@ -652,7 +631,7 @@ export function HeroSection({
       title={title}
       titleHighlight={titleHighlight}
       subtitle={subtitle}
-      backgroundImage={backgroundImage}
+      pageKey={pageKey}
       tagline={tagline}
     />
   )

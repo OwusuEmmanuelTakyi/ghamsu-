@@ -1,6 +1,8 @@
 # GHAMSU: Sanity to Supabase Migration Plan
 
-Status: Phase 1 applied to the Supabase project. Phase 2 script written and dry-run tested; the owner runs the real migration. No app code has changed.
+Status: Phases 1 and 2 done (schema applied; migration run by the owner: 22 documents, 26 images, 0 errors). Phase 3 (public site reads from Supabase) is on the `supabase-switch` branch, not yet merged or deployed.
+
+**Before deploying Phase 3:** add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to Vercel (otherwise the site shows its "temporarily unavailable" page), and run `--stats-only` just before the switch so likes and views collected on the old site carry over.
 
 **Owner decisions (answers to the Phase 1 questions):**
 

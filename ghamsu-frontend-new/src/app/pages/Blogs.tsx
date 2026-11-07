@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Calendar, User, ArrowRight } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
-import { useBlogs } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
+import { useBlogs } from '../../lib/hooks'
+import { imageProps } from '../../lib/media'
 import { useNavigate, useLocation } from 'react-router'
 
 export default function Blogs() {
@@ -24,15 +24,15 @@ export default function Blogs() {
     }
   }, [location])
 
-  // Handle content type based on hash or query parameter
+  // Handle content type based on hash or ?category= (used by the home page cards)
   useEffect(() => {
     const hash = window.location.hash
-    const searchParams = new URLSearchParams(location.search)
-    
-    if (hash === '#news') {
+    const requested = new URLSearchParams(location.search).get('category')
+
+    if (hash === '#news' || requested === 'news') {
       setContentType('news')
       setSelectedCategory(undefined)
-    } else if (hash === '#articles') {
+    } else if (hash === '#articles' || requested === 'articles') {
       setContentType('articles')
       setSelectedCategory(undefined)
     } else if (hash === '#all-posts') {
@@ -41,17 +41,17 @@ export default function Blogs() {
     }
   }, [location.hash, location.search])
 
-  const { data: blogs, loading, error } = useBlogs({ category: selectedCategory })
+  const { data: blogs, loading, error } = useBlogs()
+  const allBlogs = blogs || []
 
-  // Get unique categories from all blogs
-  const allBlogs = useBlogs().data || []
-  const categories = ['All', ...Array.from(new Set(allBlogs.map((b) => b.category).filter(Boolean)))]
+  // News posts all carry the category 'news'; articles carry their own.
+  const categories = ['All', ...Array.from(new Set(allBlogs.map((b) => b.category).filter(Boolean) as string[]))]
 
-  // Filter content based on type
-  const filteredContent = blogs?.filter((post) => {
-    if (contentType === 'all') return true
-    if (contentType === 'news') return post.category === 'news'
-    if (contentType === 'articles') return post.category !== 'news'
+  // Filter by type and category in the browser
+  const filteredContent = allBlogs.filter((post) => {
+    if (selectedCategory && post.category !== selectedCategory) return false
+    if (contentType === 'news') return post._type === 'news'
+    if (contentType === 'articles') return post._type === 'article'
     return true
   })
 
@@ -73,7 +73,7 @@ export default function Blogs() {
       <HeroSection
         title="News & Articles"
         subtitle="Latest updates, insights, and practical wisdom for your spiritual journey."
-        backgroundImage="https://images.unsplash.com/photo-1778088742542-ffe6bab6fe0e?q=80&w=1172&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        pageKey="blogs"
         isHomePage={false}
       />
 
@@ -156,7 +156,7 @@ export default function Blogs() {
               <div className="text-center py-12">
                 <p className="text-muted-foreground">Loading content...</p>
               </div>
-            ) : !filteredContent || filteredContent.length === 0 ? (
+            ) : filteredContent.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No content found in this category.</p>
               </div>
@@ -168,8 +168,10 @@ export default function Blogs() {
                       {/* Featured Image */}
                       <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
                         <img
-                          src={urlFor(post.featuredImage).width(600).height(300).url()}
+                          {...imageProps(post.featuredImage, post.title)}
                           alt={post.title}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                         <div className="absolute top-4 left-4 flex gap-2">

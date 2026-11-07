@@ -1,40 +1,35 @@
 // ─── Shared ────────────────────────────────────────────────────────────────────
-export interface SanityImage {
-  _type: 'image'
-  asset: { _ref: string; _type: 'reference' }
-  hotspot?: { x: number; y: number; height: number; width: number }
-  crop?: { top: number; bottom: number; left: number; right: number }
-  alt?: string
-  caption?: string
+export interface ImageFocus {
+  hotspot?: { x: number; y: number; width?: number; height?: number } | null
+  crop?: { top: number; bottom: number; left: number; right: number } | null
 }
 
-// ─── Scripture Quote ───────────────────────────────────────────────────────────
-export interface ScriptureQuote {
-  _id: string
-  quoteText: string
-  reference: string
+/** An image stored in the Supabase media bucket. */
+export interface MediaImage {
+  path: string
+  alt?: string | null
+  caption?: string | null
+  focus?: ImageFocus | null
 }
 
-// ─── GHAMSU Today ──────────────────────────────────────────────────────────────
-export interface HappeningNowItem {
-  title: string
-  location: string
+export interface FetchState<T> {
+  data: T | null
+  loading: boolean
+  error: Error | null
 }
 
-export interface LaterTodayItem {
-  title: string
-  time: string
-  location: string
+// ─── Rich text (TipTap / ProseMirror JSON) ─────────────────────────────────────
+export interface RichTextMark {
+  type: string
+  attrs?: Record<string, unknown>
 }
 
-export interface GhamsuToday {
-  _id: string
-  themeTitle: string
-  themeDescription: string
-  scriptureReference: string
-  happeningNow: HappeningNowItem[]
-  laterToday: LaterTodayItem[]
-  date: string
+export interface RichTextNode {
+  type: string
+  attrs?: Record<string, unknown>
+  content?: RichTextNode[]
+  marks?: RichTextMark[]
+  text?: string
 }
 
 // ─── Event ─────────────────────────────────────────────────────────────────────
@@ -46,61 +41,56 @@ export interface Event {
   title: string
   date: string
   venue: string
-  flyer: SanityImage
+  flyer: MediaImage | null
   description?: string
   eventType?: EventType
   registrationLink?: string
-  published: boolean
 }
 
-// ─── News ──────────────────────────────────────────────────────────────────────
+// ─── Posts (news and articles) ─────────────────────────────────────────────────
 export type NewsCategory = 'announcement' | 'event-coverage' | 'campus-news' | 'union-update'
-
-export interface News {
-  _id: string
-  _type: 'news'
-  title: string
-  slug: {
-    current: string
-  }
-  featuredImage: SanityImage
-  excerpt: string
-  content?: PortableTextContent
-  reporter: string                  // ← Reporter name (required)
-  reporterPosition?: string         // ← Reporter position/local (optional)
-  newsCategory?: NewsCategory
-  publishedDate?: string
-  featured: boolean
-  likes: number
-  views: number
-  category?: 'news'                 // ← For unified blog filtering
-}
-
-// ─── Article ───────────────────────────────────────────────────────────────────
 export type ArticleCategory = 'faith' | 'leadership' | 'campus-life' | 'devotionals'
 
-export interface Article {
+export interface MediaAttachment {
+  mediaType: 'video' | 'audio'
+  label: string
+  url: string
+  description?: string
+}
+
+interface PostBase {
   _id: string
-  _type: 'article'
+  /** The Sanity ID for migrated posts. Keeps the old liked_<id> browser keys valid. */
+  legacyId: string | null
   title: string
-  slug: {
-    current: string
-  }
-  featuredImage: SanityImage
+  slug: { current: string }
+  featuredImage: MediaImage | null
   excerpt: string
-  content?: PortableTextContent
-  authorName: string               // ← Author name (required)
-  authorLocal?: string             // ← Author position/local (optional)
-  articleCategory?: ArticleCategory
+  content?: RichTextNode | null
+  authorName?: string
+  authorLocal?: string
   publishedDate?: string
-  readTime?: number
   featured: boolean
   likes: number
   views: number
-  category?: ArticleCategory       // ← For unified blog filtering
+  mediaAttachments?: MediaAttachment[]
 }
 
-// ─── Blog (Legacy - Maps to News or Article) ───────────────────────────────────
+export interface News extends PostBase {
+  _type: 'news'
+  newsCategory?: NewsCategory
+  /** Always 'news', so lists can treat news as one category. */
+  category: 'news'
+  readTime?: undefined
+}
+
+export interface Article extends PostBase {
+  _type: 'article'
+  articleCategory?: ArticleCategory
+  category?: ArticleCategory
+  readTime?: number
+}
+
 export type Blog = News | Article
 
 // ─── Sermon ────────────────────────────────────────────────────────────────────
@@ -115,45 +105,31 @@ export interface Sermon {
   mediaType: MediaType
   videoUrl?: string
   audioUrl?: string
-  thumbnail?: SanityImage
+  thumbnail: MediaImage | null
   scriptureReference?: string
   description?: string
   series?: string
   duration?: string
 }
 
-// ─── Testimonial ──────────────────────────────────────────────────────────────
-export interface Testimonial {
-  _id: string
-  name: string
-  photo?: SanityImage
-  role?: string
-  local?: string
-  university?: string
-  testimony: string
-  rating?: number
-  date?: string
-  featured?: boolean
-}
-
-// ─── Gallery ──────────────────────────────────────────────────────────────────
+// ─── Gallery ───────────────────────────────────────────────────────────────────
 export interface GalleryItem {
   _id: string
   title: string
   description?: string
-  coverImage: SanityImage
+  coverImage: MediaImage | null
   photoCount: number
-  date?: string
+  date: string
   link: string
   category?: string
 }
 
-// ─── Executive ────────────────────────────────────────────────────────────────
+// ─── Executive ─────────────────────────────────────────────────────────────────
 export interface Executive {
   _id: string
   name: string
   position: string
-  image: SanityImage
+  image: MediaImage | null
   phone?: string
   email?: string
   whatsapp?: string
@@ -162,32 +138,116 @@ export interface Executive {
   bio?: string
 }
 
-// ─── Department ───────────────────────────────────────────────────────────────
-export interface Department {
-  _id: string
+// ─── Boards ────────────────────────────────────────────────────────────────────
+export interface BoardMember {
+  id: string
   name: string
-  image?: SanityImage
-  description: string
-  leader?: {
-    _id: string
-    name: string
-    position: string
-  }
-  activities?: string[]
-  color?: string
+  position: string | null
+  bio: string | null
+  phone: string | null
+  email: string | null
+  image: MediaImage | null
 }
 
-// ─── Portable Text Content ────────────────────────────────────────────────────
-export type PortableTextContent = Array<{
-  _type: string
-  _key?: string
-  children?: Array<{ _type: string; text: string; [key: string]: unknown }>
-  [key: string]: unknown
-}>
+export interface Board {
+  id: string
+  slug: string
+  title: string
+  summary: string | null
+  description: string | null
+  detailDescription: string | null
+  icon: string | null
+  homeIcon: string | null
+  color: string | null
+  memberCount: number | null
+  vision: string | null
+  responsibilities: string[]
+  activities: string[]
+  members: BoardMember[]
+}
 
-// ─── Fetch State ──────────────────────────────────────────────────────────────
-export interface SanityFetchState<T> {
-  data: T | null
-  loading: boolean
-  error: Error | null
+export interface MajorActivity {
+  id: string
+  title: string
+  dateText: string | null
+  location: string | null
+  description: string | null
+  imageUrl: string
+  imageAlt: string | null
+}
+
+// ─── Hero images ───────────────────────────────────────────────────────────────
+export interface HeroSlide {
+  image: string
+  eyebrow: string
+  heading: string
+  subheading: string
+}
+
+export interface PageHero {
+  page: string
+  title: string
+  subtitle: string | null
+  imageUrl: string
+  imageAlt: string | null
+}
+
+// ─── Site settings and small lists ─────────────────────────────────────────────
+export interface SocialLink {
+  id: string
+  platform: string
+  label: string
+  url: string
+  icon: string | null
+}
+
+export interface Stat {
+  id: string
+  key: string
+  label: string
+  numericValue: number | null
+  displayValue: string | null
+  icon: string | null
+}
+
+export interface YearlyThemeSetting {
+  year?: number | null
+  title?: string | null
+  scripture?: string | null
+}
+
+export interface ContactDetailsSetting {
+  address_lines?: string[] | null
+  phones?: { label?: string | null; number?: string | null }[] | null
+  emails?: string[] | null
+}
+
+export interface CoordinatorSetting {
+  name?: string | null
+  title?: string | null
+  section_heading?: string | null
+  section_subheading?: string | null
+  image_path?: string | null
+  image_alt?: string | null
+  bio_paragraphs?: string[] | null
+  email?: string | null
+  phone?: string | null
+  whatsapp?: string | null
+  stats?: { value?: string | null; label?: string | null }[] | null
+}
+
+export interface BankDetailsSetting {
+  section_heading?: string | null
+  section_subheading?: string | null
+  account_name?: string | null
+  bank_name?: string | null
+  branch?: string | null
+  account_number?: string | null
+  alternative_bank?: string | null
+  alternative_account_number?: string | null
+  momo_name?: string | null
+  momo_number?: string | null
+  momo_network?: string | null
+  international_note?: string | null
+  receipt_note?: string | null
 }

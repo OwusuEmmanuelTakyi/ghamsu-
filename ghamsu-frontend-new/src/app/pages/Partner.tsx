@@ -2,8 +2,14 @@ import { Heart, TrendingUp, Users, Globe } from 'lucide-react'
 import { Link } from 'react-router'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
+import { useSiteSetting } from '../../lib/hooks'
+import type { BankDetailsSetting } from '../../types/types'
+
+const CONTACT_PHRASE = 'contact us here'
 
 export default function Partner() {
+  const { data: bank } = useSiteSetting<BankDetailsSetting>('bank_details')
+
   const ways = [
     {
       icon: Heart,
@@ -27,12 +33,30 @@ export default function Partner() {
     },
   ]
 
+  // Each row appears only once it has a value in the database.
+  const bankRows = [
+    { label: 'Account Name', value: bank?.account_name },
+    { label: 'Bank Name', value: bank?.bank_name },
+    { label: 'Branch', value: bank?.branch },
+    { label: 'Account Number', value: bank?.account_number, emphasis: true },
+    { label: 'Or', value: bank?.alternative_bank },
+    { label: 'Account Number', value: bank?.alternative_bank ? bank?.alternative_account_number : null, emphasis: true },
+    { label: 'Mobile Money Name', value: bank?.momo_name },
+    { label: 'Mobile Money Number', value: bank?.momo_number, emphasis: true },
+    { label: 'Mobile Money Network', value: bank?.momo_network },
+  ].filter((row) => row.value)
+
+  // "...information, contact us here" links the closing phrase to /contact.
+  const note = bank?.international_note?.trim()
+  const noteLinked = note?.toLowerCase().endsWith(CONTACT_PHRASE)
+  const noteText = noteLinked ? note!.slice(0, -CONTACT_PHRASE.length) : note
+
   return (
     <div>
       <HeroSection
         title="Partner With Us"
         subtitle="Your partnership enables us to transform lives, strengthen families, and impact communities for Christ."
-        backgroundImage="https://i.pinimg.com/1200x/74/f4/cb/74f4cbf489738376666d1927ff18a686.jpg"
+        pageKey="partner"
         isHomePage={false}
       />
 
@@ -77,183 +101,73 @@ export default function Partner() {
           </div>
         </section>
 
-        {/* Bank Account Details */}
-        <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 bg-secondary/50">
-          <div className="max-w-4xl mx-auto">
-            <AnimatedSection>
-              <div className="text-center mb-12 sm:mb-16">
-                <h2
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
-                  style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
-                >
-                  Bank Account Details
-                </h2>
-                <p className="text-muted-foreground text-sm sm:text-base mt-4 max-w-2xl mx-auto">
-                  Make your contribution directly to our bank account in Ghana
-                </p>
-              </div>
-            </AnimatedSection>
+        {/* Bank and Mobile Money Details */}
+        {bankRows.length > 0 && (
+          <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 bg-secondary/50">
+            <div className="max-w-4xl mx-auto">
+              <AnimatedSection>
+                <div className="text-center mb-12 sm:mb-16">
+                  <h2
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl"
+                    style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
+                  >
+                    {bank?.section_heading || 'Bank Account Details'}
+                  </h2>
+                  {bank?.section_subheading && (
+                    <p className="text-muted-foreground text-sm sm:text-base mt-4 max-w-2xl mx-auto">
+                      {bank.section_subheading}
+                    </p>
+                  )}
+                </div>
+              </AnimatedSection>
 
-            <AnimatedSection delay={0.2}>
-              <div className="bg-card border border-border p-6 sm:p-8 lg:p-12 rounded-lg shadow-xl">
-                <div className="space-y-6 sm:space-y-8">
-                  <div className="pb-6 sm:pb-8 border-b border-border">
-                    <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
-                      Account Name
-                    </p>
-                    <p className="text-lg sm:text-xl font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>
-                      Ghana Methodist Student's Union
-                    </p>
-                  </div>
+              <AnimatedSection delay={0.2}>
+                <div className="bg-card border border-border p-6 sm:p-8 lg:p-12 rounded-lg shadow-xl">
+                  <div className="space-y-6 sm:space-y-8">
+                    {bankRows.map((row, index) => (
+                      <div
+                        key={`${row.label}-${index}`}
+                        className={index < bankRows.length - 1 ? 'pb-6 sm:pb-8 border-b border-border' : ''}
+                      >
+                        <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
+                          {row.label}
+                        </p>
+                        <p
+                          className={row.emphasis
+                            ? 'text-xl sm:text-2xl font-bold text-accent tracking-wide'
+                            : 'text-lg sm:text-xl font-semibold'}
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {row.value}
+                        </p>
+                      </div>
+                    ))}
 
-                  <div className="pb-6 sm:pb-8 border-b border-border">
-                    <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
-                      Bank Name
-                    </p>
-                    <p className="text-lg sm:text-xl font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>
-                      GCB Bank Ltd.
-                    </p>
-                  </div>
-
-                  <div className="pb-6 sm:pb-8 border-b border-border">
-                    <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
-                      Branch
-                    </p>
-                    <p className="text-lg sm:text-xl font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>
-                      Knust Branch, Kumasi
-                    </p>
-                  </div>
-
-                  <div className="pb-6 sm:pb-8 border-b border-border">
-                    <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
-                      Account Number
-                    </p>
-                    <p className="text-xl sm:text-2xl font-bold text-accent tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
-                      [Your Account Number]
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider mb-2 sm:mb-3">
-                      Or
-                    </p>
-                    <p className="text-lg sm:text-xl font-semibold" style={{ fontFamily: 'var(--font-heading)' }}>
-                      Standard Chartered Bank, Harper Road Kumasi
-                    </p>
-                  </div>
-
-                  <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-border">
-                    <p className="text-sm text-muted-foreground text-center mb-4">
-                      For Special information and international transfer information,{' '}
-                      <Link to="/contact" className="text-accent hover:text-accent/80 font-semibold transition-colors">
-                        contact us here
-                      </Link>
-                    </p>
-                    <p className="text-xs text-muted-foreground text-center">
-                      Please contact us for a receipt.
-                    </p>
+                    {(note || bank?.receipt_note) && (
+                      <div className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-border">
+                        {note && (
+                          <p className="text-sm text-muted-foreground text-center mb-4">
+                            {noteText}
+                            {noteLinked && (
+                              <Link to="/contact" className="text-accent hover:text-accent/80 font-semibold transition-colors">
+                                {CONTACT_PHRASE}
+                              </Link>
+                            )}
+                          </p>
+                        )}
+                        {bank?.receipt_note && (
+                          <p className="text-xs text-muted-foreground text-center">
+                            {bank.receipt_note}
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
-
-        {/* Contribution Form */}
-        <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24">
-          <div className="max-w-2xl mx-auto">
-            <AnimatedSection>
-              <div className="bg-card border border-border p-6 sm:p-8 lg:p-12 rounded-lg shadow-xl">
-                <h2
-                  className="text-2xl sm:text-3xl md:text-4xl mb-8 text-center"
-                  style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
-                >
-                  Make a Contribution
-                </h2>
-
-                <form className="space-y-5 sm:space-y-6">
-                  <div>
-                    <label className="block mb-2 sm:mb-3 font-semibold text-sm sm:text-base">
-                      Contribution Type
-                    </label>
-                    <select className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm sm:text-base">
-                      <option>One-Time Gift</option>
-                      <option>Monthly Partnership</option>
-                      <option>Mission Support</option>
-                      <option>Building Fund</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block mb-3 sm:mb-4 font-semibold text-sm sm:text-base">
-                      Amount (GHS)
-                    </label>
-                    <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4">
-                      {['₵50', '₵100', '₵250'].map((amt) => (
-                        <button
-                          key={amt}
-                          type="button"
-                          className="py-2.5 sm:py-3 border-2 border-border hover:border-accent hover:bg-accent/5 transition-colors font-semibold text-sm sm:text-base rounded-lg"
-                        >
-                          {amt}
-                        </button>
-                      ))}
-                    </div>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm sm:text-base"
-                      placeholder="Custom amount"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 sm:mb-3 font-semibold text-sm sm:text-base">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm sm:text-base"
-                      placeholder="Your name"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 sm:mb-3 font-semibold text-sm sm:text-base">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm sm:text-base"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-2 sm:mb-3 font-semibold text-sm sm:text-base">
-                      Phone (Optional)
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full px-4 py-2.5 sm:py-3 bg-secondary border border-border rounded-lg focus:border-primary focus:outline-none transition-colors text-sm sm:text-base"
-                      placeholder="+233 (0) 123 456 789"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full bg-accent text-accent-foreground py-3 sm:py-4 rounded-lg hover:bg-accent/90 transition-colors font-semibold text-sm sm:text-base uppercase tracking-wider"
-                  >
-                    Continue to Payment
-                  </button>
-
-                  <p className="text-center text-xs sm:text-sm text-muted-foreground">
-                    All contributions are tax-deductible. You will receive a receipt via email.
-                  </p>
-                </form>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
+              </AnimatedSection>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   )

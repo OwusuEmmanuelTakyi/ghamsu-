@@ -1,121 +1,81 @@
-import { Users, Globe, Calendar, Award } from 'lucide-react'
+import { Users, Globe, Calendar, Award, BarChart3, type LucideIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useStats } from '../../lib/hooks'
+import type { Stat } from '../../types/types'
 
-export function StatsSection() {
-  const [counts, setCounts] = useState({ members: 0, diocese: 0, events: 0, locals: 0 })
-  const sectionRef = useRef(null)
-  const hasAnimated = useRef(false)
+// Icon names stored in stats.icon.
+const ICONS: Record<string, LucideIcon> = { Users, Globe, Calendar, Award }
 
-  const stats = [
-    {
-      icon: Users,
-      value: 50000,
-      label: 'Active Members',
-      key: 'members',
-    },
-    {
-      icon: Globe,
-      value: 61,
-      label: 'Years of Service',
-      key: 'events',
-    },
-    {
-      icon: Calendar,
-      value: 24,
-      label: 'Dioceses',
-      key: 'diocese',
-    },
-    {
-      icon: Award,
-      value: 1000,
-      label: 'Locals',
-      key: 'locals',
-    },
-  ]
+// Literal class names so Tailwind compiles them.
+const GRID_COLUMNS: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-2 md:grid-cols-3',
+  4: 'grid-cols-2 md:grid-cols-4',
+}
+
+const ANIMATION_MS = 1500
+
+function formatNumber(num: number) {
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`.replace('.0K', 'K')
+  return num.toString()
+}
+
+/** Counts up to its target once the section scrolls into view. */
+function AnimatedValue({ stat, start }: { stat: Stat; start: boolean }) {
+  const target = stat.numericValue
+  const [current, setCurrent] = useState(0)
 
   useEffect(() => {
+    if (!start || target === null) return
+    let frame = 0
+    const began = performance.now()
+    const tick = (now: number) => {
+      const progress = Math.min(1, (now - began) / ANIMATION_MS)
+      setCurrent(Math.round(target * progress))
+      if (progress < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [start, target])
+
+  if (target === null) return <>{stat.displayValue}</>
+  // As before: a "+" after numbers under 1,000; thousands show as "K".
+  return <>{formatNumber(current)}{current > 0 && current < 1000 ? '+' : ''}</>
+}
+
+export function StatsSection() {
+  const { data: stats } = useStats('home')
+  const sectionRef = useRef<HTMLElement>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const element = sectionRef.current
+    if (!element) return
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true
-
-          // Animate members 0 to 5000
-          let memberCount = 0
-          const memberInterval = setInterval(() => {
-            memberCount += Math.ceil(5000 / 50)
-            if (memberCount >= 5000) {
-              memberCount = 5000
-              clearInterval(memberInterval)
-            }
-            setCounts((prev) => ({ ...prev, members: memberCount }))
-          }, 30)
-
-          // Animate years 0 to 60
-          let yearCount = 0
-          const yearInterval = setInterval(() => {
-            yearCount += Math.ceil(60 / 30)
-            if (yearCount >= 60) {
-              yearCount = 60
-              clearInterval(yearInterval)
-            }
-            setCounts((prev) => ({ ...prev, events: yearCount }))
-          }, 50)
-
-          // Animate diocese 0 to 25
-          let dioceseCount = 0
-          const dioceseInterval = setInterval(() => {
-            dioceseCount += 1
-            if (dioceseCount >= 24) {
-              dioceseCount = 24
-              clearInterval(dioceseInterval)
-            }
-            setCounts((prev) => ({ ...prev, diocese: dioceseCount }))
-          }, 80)
-
-          // Animate locals 0 to 1000
-          let localCount = 0
-          const localInterval = setInterval(() => {
-            localCount += Math.ceil(1000 / 50)
-            if (localCount >= 1000) {
-              localCount = 1000
-              clearInterval(localInterval)
-            }
-            setCounts((prev) => ({ ...prev, locals: localCount }))
-          }, 30)
+        if (entries[0].isIntersecting) {
+          setVisible(true)
+          observer.disconnect()
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     )
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [stats?.length])
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current)
-      }
-    }
-  }, [])
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`.replace('.0K', 'K')
-    }
-    return num.toString()
-  }
+  // Hide the band entirely until at least one stat is filled in and published.
+  if (!stats?.length) return null
 
   return (
     <section ref={sectionRef} className="py-32 px-6 bg-secondary">
       <div className="max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-16">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon
-            const countKey = stat.key as keyof typeof counts
-            const currentCount = counts[countKey]
-
+        <div className={`grid ${GRID_COLUMNS[Math.min(stats.length, 4)]} gap-12 md:gap-16`}>
+          {stats.map((stat) => {
+            const Icon = ICONS[stat.icon ?? ''] ?? BarChart3
             return (
-              <div key={index} className="text-center border-l border-accent/20 pl-6">
+              <div key={stat.id} className="text-center border-l border-accent/20 pl-6">
                 <div className="mb-4 flex justify-center">
                   <Icon className="w-8 h-8 text-accent" strokeWidth={1.5} />
                 </div>
@@ -123,8 +83,7 @@ export function StatsSection() {
                   className="text-5xl md:text-6xl mb-3 text-foreground tracking-tight"
                   style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
                 >
-                  {formatNumber(currentCount)}
-                  {stat.value >= 1000 && currentCount >= 1000 ? '' : currentCount > 0 ? '+' : ''}
+                  <AnimatedValue stat={stat} start={visible} />
                 </div>
                 <div className="text-muted-foreground text-xs tracking-wider uppercase">{stat.label}</div>
               </div>

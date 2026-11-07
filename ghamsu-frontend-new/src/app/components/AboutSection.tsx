@@ -2,16 +2,14 @@ import { AnimatedSection } from './AnimatedSection'
 import { Link } from 'react-router'
 import { CheckCircle2 } from 'lucide-react'
 import aboutImage from '../../images/3.jpg'
+import { useStats } from '../../lib/hooks'
+
+// Literal class names so Tailwind compiles them.
+const STAT_COLUMNS: Record<number, string> = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Data
 // ─────────────────────────────────────────────────────────────────────────────
-
-const STATS = [
-  { value: '60+',  label: 'Years of\nImpact'      },
-  { value: '100+', label: 'Locals\nNationwide'    },
-  { value: 'Many', label: 'Lives\nTransformed'    },
-]
 
 const PILLARS = [
   'Rooted in Scripture & Methodist tradition',
@@ -86,6 +84,12 @@ function GoldFrame({ children }: { children: React.ReactNode }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function AboutSection() {
+  const { data: stats } = useStats('home_about')
+  const statBoxes = (stats ?? []).slice(0, 3).map((stat) => ({
+    value: stat.displayValue ?? String(stat.numericValue),
+    label: stat.label,
+  }))
+
   return (
     <>
       <style>{`
@@ -204,9 +208,10 @@ export function AboutSection() {
                   ))}
                 </ul>
 
-                {/* Stat Boxes */}
-                <div className="mb-8 grid grid-cols-3 gap-2.5 sm:mb-10 sm:gap-4">
-                  {STATS.map((stat) => (
+                {/* Stat Boxes (only published, filled-in stats) */}
+                {statBoxes.length > 0 && (
+                <div className={`mb-8 grid ${STAT_COLUMNS[statBoxes.length]} gap-2.5 sm:mb-10 sm:gap-4`}>
+                  {statBoxes.map((stat) => (
                     <div
                       key={stat.label}
                       className="about-stat-box flex flex-col items-center justify-center px-2 py-4 text-center sm:px-4 sm:py-5"
@@ -218,11 +223,12 @@ export function AboutSection() {
                         {stat.value}
                       </p>
                       <p className="about-stat-label mt-1.5 text-[9px] uppercase leading-tight tracking-wider sm:text-[11px]">
-                        {stat.label.replace('\n', ' ')}
+                        {stat.label}
                       </p>
                     </div>
                   ))}
                 </div>
+                )}
 
                 {/* CTA */}
                 <Link to="/about" aria-label="Read our full story">

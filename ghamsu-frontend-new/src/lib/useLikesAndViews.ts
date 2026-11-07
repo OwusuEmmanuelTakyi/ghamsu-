@@ -1,9 +1,6 @@
-import { useState, useEffect } from 'react'
-import { sanityClient } from './sanity'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
+import { useEffect, useState } from 'react'
+import { supabase } from './supabase'
+import type { Blog } from '../types/types'
 
 interface LikesAndViews {
   likes: number
@@ -12,119 +9,89 @@ interface LikesAndViews {
   hasLiked: boolean
   error: string | null
   addLike: () => Promise<void>
-  addView: () => Promise<void>
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Hook
-// ─────────────────────────────────────────────────────────────────────────────
+// Browser storage can be unavailable (private mode, blocked site data), so every
+// access is guarded and the counters still work without it.
+const storage = {
+  get(area: Storage | undefined, key: string) {
+    try { return area?.getItem(key) ?? null } catch { return null }
+  },
+  set(area: Storage | undefined, key: string, value: string) {
+    try { area?.setItem(key, value) } catch { /* ignore */ }
+  },
+  remove(area: Storage | undefined, key: string) {
+    try { area?.removeItem(key) } catch { /* ignore */ }
+  },
+}
+const local = typeof window !== 'undefined' ? window.localStorage : undefined
+const session = typeof window !== 'undefined' ? window.sessionStorage : undefined
 
-export function useLikesAndViews(documentId: string): LikesAndViews {
-  const [likes,     setLikes]     = useState<number>(0)
-  const [views,     setViews]     = useState<number>(0)
-  const [isLiking,  setIsLiking]  = useState(false)
-  const [hasLiked,  setHasLiked]  = useState(false)
-  const [hasViewed, setHasViewed] = useState(false)
-  const [error,     setError]     = useState<string | null>(null)
+/**
+ * Likes and views through the increment_post_like and increment_post_view
+ * database functions, which only change published posts.
+ *
+ * The like key is liked_<Sanity ID> for migrated posts, as it was before, so
+ * people who already liked a post cannot like it again.
+ */
+export function useLikesAndViews(post: Blog | null): LikesAndViews {
+  const slug = post?.slug.current
+  const recordId = post ? post.legacyId ?? post._id : null
+  const likeKey = recordId ? `liked_${recordId}` : null
 
-  // ── Restore liked state from localStorage ───────────────────────────────
+  const [likes, setLikes] = useState(post?.likes ?? 0)
+  const [views, setViews] = useState(post?.views ?? 0)
+  const [isLiking, setIsLiking] = useState(false)
+  const [hasLiked, setHasLiked] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Reset when a different post loads.
   useEffect(() => {
-    if (!documentId) return
-    const liked = localStorage.getItem(`liked_${documentId}`)
-    if (liked === 'true') setHasLiked(true)
-  }, [documentId])
+    setLikes(post?.likes ?? 0)
+    setViews(post?.views ?? 0)
+    setHasLiked(likeKey ? storage.get(local, likeKey) === 'true' : false)
+    setError(null)
+  }, [post?._id])
 
-  // ── Fetch initial likes & views via GROQ (replaces broken GraphQL) ──────
+  // One view per browser session per post.
   useEffect(() => {
-    if (!documentId) return
+    if (!slug || !recordId || !supabase) return
+    const viewedKey = `viewed_${recordId}`
+    if (storage.get(session, viewedKey)) return
+    storage.set(session, viewedKey, 'true')
 
-    const fetchStats = async () => {
-      try {
-        const data = await sanityClient.fetch<{ likes: number; views: number }>(
-          `*[_id == $id][0]{ likes, views }`,
-          { id: documentId }
-        )
-        if (data) {
-          setLikes(data.likes ?? 0)
-          setViews(data.views ?? 0)
-        }
-      } catch (err) {
-        console.error('[useLikesAndViews] Failed to fetch stats:', err)
+    supabase.rpc('increment_post_view', { post_slug: slug }).then(({ data, error: rpcError }) => {
+      if (rpcError) {
+        storage.remove(session, viewedKey)
+        console.error('[views] Could not record the view:', rpcError.message)
+        return
       }
-    }
+      if (typeof data === 'number') setViews(data)
+    })
+  }, [slug, recordId])
 
-    fetchStats()
-  }, [documentId])
-
-  // ── Auto-increment view once per session ────────────────────────────────
-  useEffect(() => {
-    if (!hasViewed && documentId) {
-      addView()
-      setHasViewed(true)
-    }
-  }, [documentId])
-
-  // ── Add like ─────────────────────────────────────────────────────────────
   const addLike = async () => {
-    if (isLiking || hasLiked) return
-
+    if (!slug || !likeKey || !supabase || isLiking || hasLiked) return
     setIsLiking(true)
     setError(null)
 
-    // Optimistic update — feels instant
+    // Optimistic update, rolled back if the call fails.
     setLikes((prev) => prev + 1)
     setHasLiked(true)
-    localStorage.setItem(`liked_${documentId}`, 'true')
+    storage.set(local, likeKey, 'true')
 
-    try {
-      const response = await fetch('/api/blog-stats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: documentId, action: 'like' }),
-      })
-
-      if (!response.ok) throw new Error('Failed to add like')
-
-      const data = await response.json()
-      setLikes(data.likes)
-    } catch (err) {
-      console.error('[useLikesAndViews] Error adding like:', err)
-      // Roll back optimistic update
+    const { data, error: rpcError } = await supabase.rpc('increment_post_like', { post_slug: slug })
+    if (rpcError || typeof data !== 'number') {
+      console.error('[likes] Could not record the like:', rpcError?.message ?? 'no matching published post')
       setLikes((prev) => prev - 1)
       setHasLiked(false)
-      localStorage.removeItem(`liked_${documentId}`)
+      storage.remove(local, likeKey)
       setError('Failed to add like')
-    } finally {
-      setIsLiking(false)
+    } else {
+      setLikes(data)
     }
+    setIsLiking(false)
   }
 
-  // ── Add view ─────────────────────────────────────────────────────────────
-  const addView = async () => {
-    try {
-      const response = await fetch('/api/blog-stats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: documentId, action: 'view' }),
-      })
-
-      if (!response.ok) throw new Error('Failed to add view')
-
-      const data = await response.json()
-      setViews(data.views)
-    } catch (err) {
-      console.error('[useLikesAndViews] Error adding view:', err)
-      // Not user-facing — fail silently
-    }
-  }
-
-  return {
-    likes,
-    views,
-    isLiking,
-    hasLiked,
-    error,
-    addLike,
-    addView,
-  }
+  return { likes, views, isLiking, hasLiked, error, addLike }
 }
