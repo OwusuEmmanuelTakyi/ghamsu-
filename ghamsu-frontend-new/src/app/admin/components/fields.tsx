@@ -7,13 +7,14 @@ import { Switch } from '../../components/ui/switch'
 import { Textarea } from '../../components/ui/textarea'
 import { ImageField, type ImageValue } from './ImageField'
 import { SortableList } from './SortableList'
+import { RichTextEditor } from './RichTextEditor'
 import { cleanText, EMAIL_RULE, fromLocalInput, HTTP_URL_RULE, toLocalInput } from '../lib/forms'
 
 // ─── Field definitions ─────────────────────────────────────────────────────────
 
 export type FieldType =
   | 'text' | 'textarea' | 'url' | 'email' | 'tel' | 'number' | 'datetime'
-  | 'select' | 'switch' | 'image' | 'list' | 'objects'
+  | 'select' | 'switch' | 'image' | 'list' | 'objects' | 'richtext'
 
 export interface FieldDef {
   /** Column (or JSON key). For images, the column prefix: flyer → flyer_path, flyer_alt… */
@@ -75,7 +76,9 @@ function imageColumns(field: FieldDef, image: ImageValue): Values {
 
 const isEmpty = (value: unknown) =>
   value === null || value === undefined || (typeof value === 'string' && value.trim() === '') ||
-  (Array.isArray(value) && value.length === 0)
+  (Array.isArray(value) && value.length === 0) ||
+  // An empty rich-text document
+  (typeof value === 'object' && !Array.isArray(value) && (value as Values).type === 'doc' && !(value as Values).content?.length)
 
 /** Database row (or JSON setting) → form values. */
 export function toFormValues(fields: FieldDef[], row: Values): Values {
@@ -89,6 +92,7 @@ export function toFormValues(fields: FieldDef[], row: Values): Values {
       case 'list': values[field.name] = Array.isArray(raw) ? raw : []; break
       case 'objects': values[field.name] = Array.isArray(raw) ? raw.map((r) => ({ ...r, __key: newKey() })) : []; break
       case 'image': break
+      case 'richtext': values[field.name] = raw ?? null; break
       default: if (!field.virtual) values[field.name] = raw ?? ''
     }
   }
@@ -106,6 +110,7 @@ export function toPayload(fields: FieldDef[], values: Values): Values {
       case 'number': out[field.name] = value === '' || value === null || value === undefined ? null : Number(value); break
       case 'datetime': out[field.name] = fromLocalInput(value ?? ''); break
       case 'switch': out[field.name] = Boolean(value); break
+      case 'richtext': out[field.name] = value && value.content?.length ? value : null; break
       case 'list':
         out[field.name] = (value ?? []).map((item: string) => item.trim()).filter(Boolean)
         break
@@ -213,6 +218,17 @@ export function FieldInput({ field, values, onChange, error, idPrefix = 'f' }: F
         error={error}
         onChange={(image) => onChange(imageColumns({ ...field, withCaption: true }, image))}
       />
+    )
+  }
+
+  if (field.type === 'richtext') {
+    return (
+      <div className="space-y-1.5">
+        <Label>{field.label}{required}</Label>
+        <RichTextEditor content={value ?? null} invalid={invalid} onChange={(content) => onChange({ [field.name]: content })} />
+        {field.help && <p id={describedBy} className="text-xs text-muted-foreground">{field.help}</p>}
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </div>
     )
   }
 

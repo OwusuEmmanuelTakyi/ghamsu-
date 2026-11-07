@@ -4,6 +4,36 @@ Status: Phases 1 and 2 done (schema applied; migration run by the owner: 22 docu
 
 Phase 4 (the `/admin` dashboard) is also on `supabase-switch`. It needs `scripts/create-thumbnails.mjs` run once (card images fall back to full size until then), and in Supabase → Authentication → URL Configuration, the site's `/admin/reset-password` address (production and `http://localhost:5173`) added to the redirect URLs, or password reset links will not work.
 
+### Change: Major Activities with online registration (migration 0004)
+
+Major Activities moved from `/boards` to a section on `/events`. Each activity has its own page at `/activities/:slug`, with details, a full description and a registration form. Also on `supabase-switch`.
+
+**Order matters:**
+1. Run `supabase/migrations/0004_activities_registration.sql` in the Supabase SQL editor **before** deploying this code, and before testing it locally. Until then, the Events page hides the section and activity pages show "not found".
+2. Run `node --env-file=.env.migration scripts/test-activity-registration.mjs`. It creates a test activity, checks every rule below against the live database, then deletes the test data.
+
+**What 0004 adds:**
+- **`major_activities`:** `slug` (unique, backfilled from titles), `starts_at`, `ends_at`, `image_focus`, `body` (TipTap JSON), `fee_text`, `audience`, `contact_name`, `contact_phone`, `registration_open`, `registration_deadline` and `capacity`. The existing `location` column is the venue, and `description` stays the short card summary.
+- **`activity_registrations`:** one row per sign-up. Phone numbers are stored as `+233…`, and the same number can register only once per activity.
+- **`activity_registration_status(activity_id)`:** tells the public page whether registration is open, why not, and how many places are left. It reveals no personal data.
+
+**Rules, enforced in the database:**
+
+| Who | Can |
+|---|---|
+| Visitors | Insert a registration, only while the activity is published, registration is open, the deadline hasn't passed and the activity isn't full. They can never read, count, change or delete registrations, or set `id` or `created_at`. |
+| Editors | Read registrations. |
+| Admins | Read and delete registrations. |
+| Nobody (no update policy) | Change a registration. |
+
+- A trigger normalises the input. It locks the activity row while counting, so two people registering at the same moment cannot exceed the capacity.
+- The form adds field validation (Ghana phone formats such as `024…`, `+233…` and `233…`) and a hidden honeypot field. A filled honeypot shows the success screen without sending anything.
+- There's no rate limiting. A determined script could still submit many sign-ups with different phone numbers.
+
+**Admin:**
+- Major activities have the full editor, including a rich-text description, an automatic slug, and an Open/Close registration button on the list.
+- Each activity has a Registrations page with search, a total count, places left, admin-only delete, and a CSV download. In the CSV, text that a spreadsheet could read as a formula is prefixed so it can't run.
+
 **Before deploying Phase 3:** add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to Vercel (otherwise the site shows its "temporarily unavailable" page), and run `--stats-only` just before the switch so likes and views collected on the old site carry over.
 
 **Owner decisions (answers to the Phase 1 questions):**

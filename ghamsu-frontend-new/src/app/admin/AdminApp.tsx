@@ -8,6 +8,7 @@ import { AdminLayout } from './AdminLayout'
 import { ForgotPasswordPage, LoginPage, RequireAdmin, RequireStaff, ResetPasswordPage } from './pages/AuthPages'
 import { Dashboard } from './pages/Dashboard'
 import { PostForm } from './pages/PostForm'
+import { Registrations } from './pages/Registrations'
 import { ResourceForm } from './pages/ResourceForm'
 import { ResourceList } from './pages/ResourceList'
 import { SiteSettings } from './pages/SiteSettings'
@@ -66,6 +67,7 @@ export default function AdminApp() {
               element={guard(config, config.customForm ? <PostForm /> : <ResourceForm config={config} />)}
             />,
           ])}
+          <Route path="activities/:id/registrations" element={<Registrations />} />
           <Route path="settings" element={<RequireAdmin><SiteSettings /></RequireAdmin>} />
           <Route path="users" element={<RequireAdmin><Users /></RequireAdmin>} />
           <Route path="*" element={

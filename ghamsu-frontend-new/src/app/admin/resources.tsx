@@ -43,6 +43,12 @@ export interface ResourceConfig {
   /** Use the dedicated form instead of the generic one. */
   customForm?: boolean
   help?: string
+  /** New items fill this slug field from the title until it is edited by hand. */
+  slugField?: { name: string; from: string }
+  /** A boolean column the list can switch with one click. */
+  listToggle?: { column: string; onLabel: string; offLabel: string; onMessage: string; offMessage: string }
+  /** Extra links on each list row. */
+  rowLinks?: { label: string; to: (row: Values) => string }[]
 }
 
 // ─── Shared options ────────────────────────────────────────────────────────────
@@ -320,19 +326,51 @@ export const majorActivities: ResourceConfig = {
   singular: 'Activity',
   path: '/admin/activities',
   titleColumn: 'title',
-  subtitle: (row) => [row.date_text, row.location].filter(Boolean).join(' · '),
+  subtitle: (row) => [
+    row.starts_at ? formatDate(row.starts_at) : row.date_text,
+    row.location,
+    row.registration_open ? 'Registration open' : 'Registration closed',
+  ].filter(Boolean).join(' · '),
   imagePath: (row) => row.image_path ?? row.image_url,
-  searchColumns: ['title', 'location', 'description'],
+  searchColumns: ['title', 'slug', 'location', 'description'],
   order: { column: 'sort_order', ascending: true },
   sortable: true,
-  publicPath: () => '/boards',
-  help: 'Shown in the "Major Activities" section of the Boards page.',
+  publicPath: (row) => `/activities/${row.slug}`,
+  help: 'Shown in the "Major Activities" section of the Events page, each with its own registration page.',
+  slugField: { name: 'slug', from: 'title' },
+  listToggle: {
+    column: 'registration_open',
+    onLabel: 'Close registration',
+    offLabel: 'Open registration',
+    onMessage: 'Registration is now open.',
+    offMessage: 'Registration is now closed.',
+  },
+  rowLinks: [{ label: 'Registrations', to: (row) => `/admin/activities/${row.id}/registrations` }],
   fields: [
     { name: 'title', label: 'Title', type: 'text', required: true },
-    { name: 'date_text', label: 'Date', type: 'text', placeholder: '2026, or To be communicated' },
-    { name: 'location', label: 'Location', type: 'text' },
-    { name: 'description', label: 'Description', type: 'textarea' },
-    { name: 'image', label: 'Image', type: 'image', urlColumn: 'image_url' },
+    {
+      name: 'slug', label: 'Web address', type: 'text', required: true, pattern: SLUG_RULE, maxLength: 96,
+      patternMessage: 'Use lowercase letters, numbers and single dashes only (for example connexional-conference-2026).',
+      help: 'The page will be /activities/ followed by this. Changing it breaks links people have already shared.',
+    },
+    { name: 'image', label: 'Banner image', type: 'image', urlColumn: 'image_url' },
+    { name: 'starts_at', label: 'Starts', type: 'datetime' },
+    {
+      name: 'ends_at', label: 'Ends', type: 'datetime',
+      validate: (value, values) =>
+        value && values.starts_at && new Date(value as string) < new Date(values.starts_at) ? 'The end must be after the start.' : null,
+    },
+    { name: 'date_text', label: 'Date text', type: 'text', placeholder: 'To be communicated', help: 'Shown instead of a date when no start date is set.' },
+    { name: 'location', label: 'Venue', type: 'text' },
+    { name: 'description', label: 'Short summary', type: 'textarea', rows: 3, help: 'Shown on the Events page card.' },
+    { name: 'body', label: 'Full description', type: 'richtext', help: 'Shown on the activity page.' },
+    { name: 'fee_text', label: 'Fee', type: 'text', placeholder: 'GH₵ 50', help: 'Leave empty to show "Free".' },
+    { name: 'audience', label: 'Who it is for', type: 'text', placeholder: 'All GHAMSU members' },
+    { name: 'contact_name', label: 'Contact person', type: 'text' },
+    { name: 'contact_phone', label: 'Contact phone', type: 'tel', placeholder: '024 123 4567' },
+    { name: 'registration_open', label: 'Registration open', type: 'switch', help: 'People can only register while this is on and the activity is published.' },
+    { name: 'registration_deadline', label: 'Registration deadline', type: 'datetime', help: 'Registration closes automatically after this. Leave empty for no deadline.' },
+    { name: 'capacity', label: 'Maximum number of people', type: 'number', integer: true, min: 1, help: 'Leave empty for no limit.' },
   ],
 }
 

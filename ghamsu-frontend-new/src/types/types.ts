@@ -168,14 +168,30 @@ export interface Board {
 
 export interface MajorActivity {
   id: string
+  slug: string
   title: string
+  /** Free-text date, used when startsAt is not set ("To be communicated"). */
   dateText: string | null
+  startsAt: string | null
+  endsAt: string | null
+  /** The venue. */
   location: string | null
+  /** Short summary for cards. */
   description: string | null
+  /** Full description for the activity page. */
+  body: RichTextNode | null
   imageUrl: string
   /** Smaller copy for cards; falls back to imageUrl if missing. */
   thumbnailUrl: string
   imageAlt: string | null
+  imageFocus: ImageFocus | null
+  feeText: string | null
+  audience: string | null
+  contactName: string | null
+  contactPhone: string | null
+  registrationOpen: boolean
+  registrationDeadline: string | null
+  capacity: number | null
 }
 
 // ─── Hero images ───────────────────────────────────────────────────────────────

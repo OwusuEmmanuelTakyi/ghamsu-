@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
+import { MajorActivitiesSection } from '../components/MajorActivitiesSection'
 import { useEvents } from '../../lib/hooks'
 import { thumbProps } from '../../lib/media'
 import type { Event } from '../../types/types'
@@ -69,6 +70,8 @@ export default function Events() {
         pageKey="events"
         isHomePage={false}
       />
+
+      <MajorActivitiesSection />
 
       <div className="pb-24">
         <section className="px-4 py-16 sm:py-20 md:py-24">

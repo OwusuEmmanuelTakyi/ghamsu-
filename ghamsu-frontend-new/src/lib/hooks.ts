@@ -351,15 +351,34 @@ export function useMajorActivities(): FetchState<MajorActivity[]> {
         .order('sort_order', { ascending: true }),
     ).map((row: Row): MajorActivity => ({
       id: row.id,
+      slug: row.slug,
       title: row.title,
       dateText: row.date_text,
+      startsAt: row.starts_at ?? null,
+      endsAt: row.ends_at ?? null,
       location: row.location,
       description: row.description,
+      body: row.body ?? null,
       imageUrl: mediaUrl(row.image_path) || mediaUrl(row.image_url),
       thumbnailUrl: thumbUrl(row.image_path) || mediaUrl(row.image_url),
       imageAlt: row.image_alt,
+      imageFocus: row.image_focus ?? null,
+      feeText: row.fee_text ?? null,
+      audience: row.audience ?? null,
+      contactName: row.contact_name ?? null,
+      contactPhone: row.contact_phone ?? null,
+      registrationOpen: Boolean(row.registration_open),
+      registrationDeadline: row.registration_deadline ?? null,
+      capacity: row.capacity ?? null,
     })),
   )
+}
+
+/** One published activity, from the same cached list. */
+export function useActivityBySlug(slug: string | undefined): FetchState<MajorActivity | null> {
+  const all = useMajorActivities()
+  const data = useMemo(() => (all.data ? all.data.find((a) => a.slug === slug) ?? null : null), [all.data, slug])
+  return { ...all, data }
 }
 
 // ─── Hero images ───────────────────────────────────────────────────────────────

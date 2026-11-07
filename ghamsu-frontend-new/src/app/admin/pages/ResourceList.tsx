@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
-import { ArrowUpDown, ExternalLink, Eye, EyeOff, Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react'
+import { ArrowUpDown, ExternalLink, Eye, EyeOff, ListChecks, Loader2, Lock, LockOpen, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '../../../lib/supabase'
 import { clearPublicDataCache } from '../../../lib/hooks'
@@ -17,7 +17,7 @@ import { formatDateTime } from '../lib/forms'
 import type { ResourceConfig } from '../resources'
 
 type Filter = 'all' | 'published' | 'draft'
-type Pending = { action: 'publish' | 'unpublish' | 'delete'; row: Values } | null
+type Pending = { action: 'publish' | 'unpublish' | 'delete' | 'toggle'; row: Values } | null
 
 /** Saves a new order. Two passes, so unique sort_order columns never clash. */
 export async function saveOrder(config: ResourceConfig, rows: Values[]) {
@@ -78,16 +78,23 @@ export function ResourceList({ config }: { config: ResourceConfig }) {
     setPending(null)
     if (!next || !supabase) return
     const { action, row } = next
+    const toggle = config.listToggle
     setBusy(true)
     const query = action === 'delete'
       ? supabase.from(config.table).delete().eq(idColumn, row[idColumn])
-      : supabase.from(config.table).update({ status: action === 'publish' ? 'published' : 'draft' }).eq(idColumn, row[idColumn])
+      : action === 'toggle' && toggle
+        ? supabase.from(config.table).update({ [toggle.column]: !row[toggle.column] }).eq(idColumn, row[idColumn])
+        : supabase.from(config.table).update({ status: action === 'publish' ? 'published' : 'draft' }).eq(idColumn, row[idColumn])
     const { error } = await query
     setBusy(false)
     if (error) return toast.error(friendlyError(error))
     clearPublicDataCache()
     const name = row[config.titleColumn] || config.singular
-    toast.success(action === 'delete' ? `"${name}" deleted.` : action === 'publish' ? `"${name}" is now live.` : `"${name}" is now a draft.`)
+    toast.success(
+      action === 'delete' ? `"${name}" deleted.`
+        : action === 'toggle' && toggle ? (row[toggle.column] ? toggle.offMessage : toggle.onMessage)
+          : action === 'publish' ? `"${name}" is now live.` : `"${name}" is now a draft.`,
+    )
     load()
   }
 
@@ -199,7 +206,7 @@ export function ResourceList({ config }: { config: ResourceConfig }) {
                     <Link to={`${config.path}/${encodeURIComponent(row[idColumn])}`} className="min-w-0 flex-1 hover:opacity-80">
                       {renderRow(row)}
                     </Link>
-                    <div className="flex flex-wrap gap-1.5 sm:flex-nowrap">
+                    <div className="flex flex-wrap gap-1.5 sm:max-w-md sm:justify-end">
                       <Button variant="outline" size="sm" asChild>
                         <Link to={`${config.path}/${encodeURIComponent(row[idColumn])}`}><Pencil /> Edit</Link>
                       </Button>
@@ -214,6 +221,17 @@ export function ResourceList({ config }: { config: ResourceConfig }) {
                           </Button>
                         )
                       )}
+                      {config.listToggle && (
+                        <Button variant="outline" size="sm" disabled={busy} onClick={() => setPending({ action: 'toggle', row })}>
+                          {row[config.listToggle.column] ? <Lock /> : <LockOpen />}
+                          {row[config.listToggle.column] ? config.listToggle.onLabel : config.listToggle.offLabel}
+                        </Button>
+                      )}
+                      {config.rowLinks?.map((link) => (
+                        <Button key={link.label} variant="outline" size="sm" asChild>
+                          <Link to={link.to(row)}><ListChecks /> {link.label}</Link>
+                        </Button>
+                      ))}
                       {publicPath && (
                         <Button variant="ghost" size="sm" asChild>
                           <a href={publicPath} target="_blank" rel="noopener noreferrer" aria-label="View on site"><ExternalLink /></a>
@@ -238,17 +256,26 @@ export function ResourceList({ config }: { config: ResourceConfig }) {
         onOpenChange={(open) => !open && setPending(null)}
         title={
           pending?.action === 'delete' ? `Delete this ${config.singular.toLowerCase()}?`
-            : pending?.action === 'publish' ? `Publish this ${config.singular.toLowerCase()}?`
-              : `Unpublish this ${config.singular.toLowerCase()}?`
+            : pending?.action === 'toggle' && config.listToggle
+              ? `${pending.row[config.listToggle.column] ? config.listToggle.onLabel : config.listToggle.offLabel}?`
+              : pending?.action === 'publish' ? `Publish this ${config.singular.toLowerCase()}?`
+                : `Unpublish this ${config.singular.toLowerCase()}?`
         }
         description={
           pending?.action === 'delete'
-            ? `"${pending.row[config.titleColumn] ?? ''}" will be permanently deleted. This cannot be undone.`
-            : pending?.action === 'publish'
-              ? `"${pending?.row[config.titleColumn] ?? ''}" will be visible to everyone on the website.`
-              : `"${pending?.row[config.titleColumn] ?? ''}" will be hidden from the website and kept as a draft.`
+            ? `"${pending.row[config.titleColumn] ?? ''}" will be permanently deleted${config.key === 'major_activities' ? ', together with all its registrations' : ''}. This cannot be undone.`
+            : pending?.action === 'toggle'
+              ? `This applies to "${pending.row[config.titleColumn] ?? ''}" straight away.`
+              : pending?.action === 'publish'
+                ? `"${pending?.row[config.titleColumn] ?? ''}" will be visible to everyone on the website.`
+                : `"${pending?.row[config.titleColumn] ?? ''}" will be hidden from the website and kept as a draft.`
         }
-        confirmLabel={pending?.action === 'delete' ? 'Delete' : pending?.action === 'publish' ? 'Publish' : 'Unpublish'}
+        confirmLabel={
+          pending?.action === 'delete' ? 'Delete'
+            : pending?.action === 'toggle' && config.listToggle
+              ? (pending.row[config.listToggle.column] ? config.listToggle.onLabel : config.listToggle.offLabel)
+              : pending?.action === 'publish' ? 'Publish' : 'Unpublish'
+        }
         destructive={pending?.action === 'delete'}
         onConfirm={() => run(pending)}
       />

@@ -17,6 +17,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Partner = lazy(() => import('./pages/Partner'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail'));
 const BoardDetail = lazy(() => import('./pages/BoardDetail'));
+const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
 const Notfound = lazy(() => import('./pages/Notfound'));
 // The admin dashboard is a separate chunk with its own layout.
 const AdminApp = lazy(() => import('./admin/AdminApp'));
@@ -68,7 +69,8 @@ export const router = createBrowserRouter([
       { path: '*', Component: Notfound },
       { path: 'blogs/:slug', Component: BlogDetail },
 
-      { path: 'boards/:slug', Component: BoardDetail }
+      { path: 'boards/:slug', Component: BoardDetail },
+      { path: 'activities/:slug', Component: ActivityDetail },
     ],
   },
 ]);

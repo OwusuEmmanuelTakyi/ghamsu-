@@ -10,7 +10,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { FieldInput, toFormValues, toPayload, validate, type Errors, type Values } from '../components/fields'
 import { EmptyState, Loading, PageHeader, StatusBadge } from '../components/ui'
 import { friendlyError } from '../lib/errors'
-import { formatDateTime } from '../lib/forms'
+import { formatDateTime, slugify } from '../lib/forms'
 import type { ResourceConfig } from '../resources'
 
 export function ResourceForm({ config }: { config: ResourceConfig }) {
@@ -29,6 +29,7 @@ export function ResourceForm({ config }: { config: ResourceConfig }) {
   const [missing, setMissing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [slugEdited, setSlugEdited] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -60,6 +61,11 @@ export function ResourceForm({ config }: { config: ResourceConfig }) {
   }, [config, id, creating, idColumn])
 
   const change = (changes: Values) => {
+    const slug = config.slugField
+    if (slug && slug.name in changes) setSlugEdited(true)
+    if (slug && creating && !slugEdited && slug.from in changes && !(slug.name in changes)) {
+      changes = { ...changes, [slug.name]: slugify(String(changes[slug.from] ?? '')) }
+    }
     setValues((prev) => ({ ...prev, ...changes }))
     setErrors((prev) => {
       const next = { ...prev }
