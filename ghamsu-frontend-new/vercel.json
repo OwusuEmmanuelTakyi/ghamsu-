@@ -1,5 +1,10 @@
 {
   "rewrites": [
+    {
+      "source": "/activities/:slug",
+      "missing": [{ "type": "query", "key": "spa" }],
+      "destination": "/api/activity-preview?slug=:slug"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "buildCommand": "npm run build",

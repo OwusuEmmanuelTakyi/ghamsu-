@@ -1,8 +1,8 @@
 import { Calendar, User, ArrowRight } from 'lucide-react'
 import { AnimatedSection } from './AnimatedSection'
 import { Link } from 'react-router'
-import { useNews, useArticles } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
+import { useNews, useArticles } from '../../lib/hooks'
+import { thumbProps } from '../../lib/media'
 
 export function BlogPreviewSection() {
   const { data: news, loading: newsLoading } = useNews()
@@ -186,8 +186,10 @@ export function BlogPreviewSection() {
                       <article className="blog-card overflow-hidden group h-full flex flex-col rounded-lg">
                         <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
                           <img
-                            src={urlFor(item.featuredImage).width(600).height(300).url()}
+                            {...thumbProps(item.featuredImage, item.title)}
                             alt={item.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                           {/* Type Badge */}

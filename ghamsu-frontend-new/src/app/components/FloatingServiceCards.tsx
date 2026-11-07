@@ -2,8 +2,8 @@ import { BookOpen, FileText, Calendar, Lightbulb } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Link } from 'react-router'
 import { useEffect, useState } from 'react'
-import { useNews, useArticles, useEvents } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
+import { useNews, useArticles, useEvents } from '../../lib/hooks'
+import { thumbUrl } from '../../lib/media'
 
 export function FloatingServiceCards() {
   const [scriptureOfDay, setScriptureOfDay] = useState<{ text: string; reference: string } | null>(null)
@@ -103,9 +103,7 @@ export function FloatingServiceCards() {
       icon: BookOpen,
       title: "Today's News",
       description: latestNews ? truncateText(latestNews.title, 50) : 'No news yet',
-      image: latestNews?.featuredImage
-        ? urlFor(latestNews.featuredImage).width(200).height(200).url()
-        : null,
+      image: thumbUrl(latestNews?.featuredImage?.path) || null,
       link: latestNews ? `/blogs/${latestNews.slug.current}` : '/blogs?category=news',
       active: true,
       readMoreText: 'Read News',
@@ -114,9 +112,7 @@ export function FloatingServiceCards() {
       icon: FileText,
       title: 'Article of the Day',
       description: articleOfDay ? truncateText(articleOfDay.title, 50) : 'Loading article...',
-      image: articleOfDay?.featuredImage
-        ? urlFor(articleOfDay.featuredImage).width(200).height(200).url()
-        : null,
+      image: thumbUrl(articleOfDay?.featuredImage?.path) || null,
       link: articleOfDay ? `/blogs/${articleOfDay.slug.current}` : '/blogs?category=articles',
       active: false,
       readMoreText: 'Read Article',

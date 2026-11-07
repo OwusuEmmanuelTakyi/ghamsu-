@@ -2,9 +2,10 @@ import { useState, useMemo } from 'react'
 import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
-import { useEvents } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
-import type { Event } from '../../../src/types/types'
+import { MajorActivitiesSection } from '../components/MajorActivitiesSection'
+import { useEvents } from '../../lib/hooks'
+import { thumbProps } from '../../lib/media'
+import type { Event } from '../../types/types'
 
 export default function Events() {
   const [selectedType, setSelectedType] = useState<string | undefined>()
@@ -66,9 +67,11 @@ export default function Events() {
       <HeroSection
         title="Upcoming Events"
         subtitle="Join us for worship, fellowship, and community events that strengthen faith and build connections."
-        backgroundImage="https://lh3.googleusercontent.com/pw/AP1GczPgJ-D9S-fzrJR1is1c7g4gkRHtQbwo1ySL0aM2nqGE7-WqzVj_delsYsLvUbtR_0CE3gXq5pvTnn4fWyWjLVFOx5LdA8EEXWwwWupwRiky7nPt1uXB-gi20uuilw6j9IsBQGKZkkgn4j38aVXNz96n=w1445-h963-s-no-gm"
+        pageKey="events"
         isHomePage={false}
       />
+
+      <MajorActivitiesSection />
 
       <div className="pb-24">
         <section className="px-4 py-16 sm:py-20 md:py-24">
@@ -110,8 +113,10 @@ export default function Events() {
                     <div className="bg-card border border-border overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-full flex flex-col group">
                       <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
                         <img
-                          src={urlFor(event.flyer).width(600).height(300).url()}
+                          {...thumbProps(event.flyer, event.title)}
                           alt={event.title}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                         <div className="absolute top-4 right-4 space-y-2">
@@ -193,8 +198,8 @@ export default function Events() {
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                      <p className="text-4xl font-bold text-accent">{allEvents.length}</p>
-                      <p className="text-muted-foreground mt-2">{allEvents.length === 1 ? 'Event' : 'Events'}</p>
+                      <p className="text-4xl font-bold text-accent">{safeAllEvents.length}</p>
+                      <p className="text-muted-foreground mt-2">{safeAllEvents.length === 1 ? 'Event' : 'Events'}</p>
                     </div>
                     <div>
                       <p className="text-4xl font-bold text-accent">

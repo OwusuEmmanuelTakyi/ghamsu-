@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react'
-import { MapPin, Phone, Mail } from 'lucide-react'
+import { Fragment, useEffect, useState, type ReactNode } from 'react'
+import { MapPin, Phone, Mail, type LucideIcon } from 'lucide-react'
 import { HeroSection } from '../components/HeroSection'
 import { AnimatedSection } from '../components/AnimatedSection'
-import { useExecutives } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
+import { useExecutives, useSiteSetting } from '../../lib/hooks'
+import { thumbProps, mediaUrl } from '../../lib/media'
+import type { ContactDetailsSetting, CoordinatorSetting } from '../../types/types'
 import emailjs from '@emailjs/browser'
-import revImage from '../../images/rev.png'
+
+// Links are built from the same value that is displayed, so they always match.
+const telHref = (number: string) => `tel:${number.replace(/[^\d+]/g, '')}`
+const whatsappHref = (number: string) => `https://wa.me/${number.replace(/\D/g, '')}`
 
 export default function Contact() {
   const [selectedCategory, setSelectedCategory] = useState<string>('connexional')
@@ -21,6 +25,62 @@ export default function Contact() {
   const [errorMessage, setErrorMessage] = useState('')
 
   const { data: executives, loading: executivesLoading } = useExecutives({ category: selectedCategory })
+  const { data: contact } = useSiteSetting<ContactDetailsSetting>('contact_details')
+  const { data: coordinator } = useSiteSetting<CoordinatorSetting>('coordinator')
+
+  // Contact details: anything still empty in the database is left out.
+  const addressLines = (contact?.address_lines ?? []).filter(Boolean)
+  const phones = (contact?.phones ?? []).filter((p) => p?.number)
+  const emails = (contact?.emails ?? []).filter(Boolean)
+  const contactItems: { icon: LucideIcon; title: string; content: ReactNode }[] = []
+  if (addressLines.length) {
+    contactItems.push({
+      icon: MapPin,
+      title: 'Address',
+      content: (
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          {addressLines.map((line, i) => (
+            <Fragment key={i}>{line}{i < addressLines.length - 1 && <br />}</Fragment>
+          ))}
+        </p>
+      ),
+    })
+  }
+  if (phones.length) {
+    contactItems.push({
+      icon: Phone,
+      title: 'Phone',
+      content: (
+        <div className="flex flex-col gap-2">
+          {phones.map((phone, i) => (
+            <a key={i} href={telHref(phone.number!)} className="text-sm text-muted-foreground hover:text-accent transition-colors">
+              {phone.label ? `${phone.label}: ` : ''}{phone.number}
+            </a>
+          ))}
+        </div>
+      ),
+    })
+  }
+  if (emails.length) {
+    contactItems.push({
+      icon: Mail,
+      title: 'Email',
+      content: (
+        <div className="flex flex-col gap-2">
+          {emails.map((email) => (
+            <a key={email} href={`mailto:${email}`} className="text-sm text-muted-foreground hover:text-accent transition-colors break-all">
+              {email}
+            </a>
+          ))}
+        </div>
+      ),
+    })
+  }
+
+  const coordinatorImage = mediaUrl(coordinator?.image_path)
+  const coordinatorBio = (coordinator?.bio_paragraphs ?? []).filter(Boolean)
+  const coordinatorStats = (coordinator?.stats ?? []).filter((s) => s?.value && s?.label)
+  const hasCoordinatorContact = Boolean(coordinator?.email || coordinator?.phone || coordinator?.whatsapp)
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -81,7 +141,7 @@ export default function Contact() {
       <HeroSection
         title="Contact Us"
         subtitle="We'd love to hear from you. Reach out with any questions or prayer requests."
-        backgroundImage="https://lh3.googleusercontent.com/pw/AP1GczPLWM9K4uwBhNvM9giX94dinXuCmGShUkXnryhkifXnJD41vT5X5yEx_FVG97uM1J5ID7JJPE_5gMKJXldF-oW1Ij3-PU6Hjs27juHdXc9R3B-AkiO5WyFD_4auGACsQH41qZpR1BRBgtzcEzRT_8Rv=w1445-h963-s-no-gm"
+        pageKey="contact"
         isHomePage={false}
       />
 
@@ -102,60 +162,7 @@ export default function Contact() {
           </h2>
 
           <div className="space-y-5 sm:space-y-6">
-            {[
-              {
-                icon: MapPin,
-                title: 'Address',
-                content: (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    c/o The Methodist Church Ghana<br />
-                    P.O Box 403 Wesley House, Liberia Road, <br />
-                    Greater Accra Region, Ghana 
-                    
-                  </p>
-                ),
-              },
-              {
-                icon: Phone,
-                title: 'Phone',
-                content: (
-                  <div className="flex flex-col gap-2">
-                    <a
-                      href="tel:+233244123456"
-                      className="text-sm text-muted-foreground hover:text-accent transition-colors"
-                    >
-                      CGC: +233 (0) 241 240 907
-                    </a>
-                    <a
-                      href="tel:+233244123457"
-                      className="text-sm text-muted-foreground hover:text-accent transition-colors"
-                    >
-                      Office: +233 (0) 000 000 000
-                    </a>
-                  </div>
-                ),
-              },
-              {
-                icon: Mail,
-                title: 'Email',
-                content: (
-                  <div className="flex flex-col gap-2">
-                    <a
-                      href="mailto:ghamsunationalsec@gmail.com"
-                      className="text-sm text-muted-foreground hover:text-accent transition-colors break-all"
-                    >
-                      ghamsunationalsec@gmail.com
-                    </a>
-                    <a
-                      href="mailto:ghamsupcb@gmail.com"
-                      className="text-sm text-muted-foreground hover:text-accent transition-colors break-all"
-                    >
-                      ghamsupcb@gmail.com
-                    </a>
-                  </div>
-                ),
-              },
-            ].map(({ icon: Icon, title, content }, i) => (
+            {contactItems.map(({ icon: Icon, title, content }, i) => (
               <div key={i} className="flex items-start gap-4">
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg border border-border bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
@@ -272,6 +279,7 @@ export default function Contact() {
 </section>
 
         {/* Connexional Coordinator */}
+        {coordinator?.name && (
         <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-32 bg-[#003D82] dark:bg-[#0a1628]">
           <div className="max-w-[1400px] mx-auto">
             <AnimatedSection>
@@ -286,94 +294,107 @@ export default function Contact() {
                   className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6 tracking-tight text-white"
                   style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
                 >
-                  Connexional Coordinator
+                  {coordinator.section_heading || 'Connexional Coordinator'}
                 </h2>
-                <p className="text-white/70 text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
-                  The driving force behind GHAMSU's mission and vision
-                </p>
+                {coordinator.section_subheading && (
+                  <p className="text-white/70 text-xs sm:text-sm md:text-base max-w-2xl mx-auto font-light">
+                    {coordinator.section_subheading}
+                  </p>
+                )}
               </div>
             </AnimatedSection>
 
             <AnimatedSection delay={0.1}>
               <div className="bg-white/10 dark:bg-[#0d1f3c] border border-white/20 dark:border-white/10 backdrop-blur-sm overflow-hidden grid grid-cols-1 lg:grid-cols-5 gap-0">
                 <div className="relative overflow-hidden h-72 sm:h-96 lg:h-full lg:col-span-2">
-                  <img
-                    src={revImage}
-                    alt="Connexional Coordinator"
-                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
-                  />
+                  {coordinatorImage && (
+                    <img
+                      src={coordinatorImage}
+                      alt={coordinator.image_alt || coordinator.name}
+                      className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#003D82]/60 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#003D82]/40 dark:lg:to-[#0d1f3c]/60" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 lg:hidden bg-gradient-to-t from-[#003D82] to-transparent">
                     <h3 className="text-xl font-semibold text-white tracking-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-                      REV. YAW ANOKYE KYEI BAFFOUR
+                      {coordinator.name}
                     </h3>
-                    <p className="text-[#D4AF37] text-xs uppercase tracking-widest font-semibold mt-1">
-                      Connexional Ghamsu Coordinator
-                    </p>
+                    {coordinator.title && (
+                      <p className="text-[#D4AF37] text-xs uppercase tracking-widest font-semibold mt-1">
+                        {coordinator.title}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="lg:col-span-3 p-6 sm:p-8 lg:p-12 flex flex-col justify-between border-l border-[#D4AF37]/20">
+                  {/* Grouped so hidden parts do not leave gaps; stats stay at the bottom. */}
+                  <div>
                   <div className="hidden lg:block mb-6">
                     <h3
                       className="text-2xl sm:text-3xl mb-1 tracking-tight text-white"
                       style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
                     >
-                      REV. YAW ANOKYE KYEI BAFFOUR
+                      {coordinator.name}
                     </h3>
-                    <p className="text-[#D4AF37] text-xs uppercase tracking-widest font-semibold mb-4">
-                      Connexional Ghamsu Coordinator
-                    </p>
+                    {coordinator.title && (
+                      <p className="text-[#D4AF37] text-xs uppercase tracking-widest font-semibold mb-4">
+                        {coordinator.title}
+                      </p>
+                    )}
                     <div className="h-[1px] w-12 bg-[#D4AF37]" />
                   </div>
 
-                  <div className="space-y-3 sm:space-y-4 mb-6">
-                    <p className="text-white/70 leading-relaxed font-light text-sm">
-                      With over 15 years of dedicated service to the Methodist Church and student ministry, Rev. Anokye brings
-                      visionary leadership and pastoral excellence to GHAMSU. His commitment to spiritual development and
-                      youth empowerment has transformed the lives of thousands of students across the Connexion.
-                    </p>
-                    <p className="text-white/70 leading-relaxed font-light text-sm">
-                      Rev. Anokye holds a Master's degree in Theology and has led several transformational initiatives within the
-                      Methodist Church. His leadership philosophy centers on developing Ambassadors for Christ who impact
-                      their communities with faith, integrity, and service.
-                    </p>
-                  </div>
-
-                  <div className="mb-6">
-                    <p className="text-xs text-[#D4AF37] uppercase tracking-widest font-semibold mb-3">Contact</p>
-                    <div className="flex flex-col gap-2 text-sm">
-                      <a href="mailto:john.mensah@gmsu.org" className="text-white/80 hover:text-[#D4AF37] transition-colors break-all">
-                        anokyeyaw13@gmail.com
-                      </a>
-                      <a href="tel:+233244123456" className="text-white/80 hover:text-[#D4AF37] transition-colors">
-                        +233 (0) 241 240 907
-                      </a>
-                      <a href="https://wa.me/233244123456" target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#D4AF37] transition-colors">
-                        WhatsApp: +233 241 240 907
-                      </a>
+                  {coordinatorBio.length > 0 && (
+                    <div className="space-y-3 sm:space-y-4 mb-6">
+                      {coordinatorBio.map((paragraph, i) => (
+                        <p key={i} className="text-white/70 leading-relaxed font-light text-sm">{paragraph}</p>
+                      ))}
                     </div>
+                  )}
+
+                  {hasCoordinatorContact && (
+                    <div className="mb-6">
+                      <p className="text-xs text-[#D4AF37] uppercase tracking-widest font-semibold mb-3">Contact</p>
+                      <div className="flex flex-col gap-2 text-sm">
+                        {coordinator.email && (
+                          <a href={`mailto:${coordinator.email}`} className="text-white/80 hover:text-[#D4AF37] transition-colors break-all">
+                            {coordinator.email}
+                          </a>
+                        )}
+                        {coordinator.phone && (
+                          <a href={telHref(coordinator.phone)} className="text-white/80 hover:text-[#D4AF37] transition-colors">
+                            {coordinator.phone}
+                          </a>
+                        )}
+                        {coordinator.whatsapp && (
+                          <a href={whatsappHref(coordinator.whatsapp)} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-[#D4AF37] transition-colors">
+                            WhatsApp: {coordinator.whatsapp}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 border-t border-white/15">
-                    {[
-                      { value: '15+', label: 'Years in Service' },
-                      { value: 'MANY', label: 'Lives Impacted' },
-                      { value: '8+ ', label: 'As Cordinator' },
-                    ].map((stat, i) => (
-                      <div key={i} className="text-center sm:text-left">
-                        <p className="text-xl sm:text-2xl font-bold text-[#D4AF37] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
-                          {stat.value}
-                        </p>
-                        <p className="text-xs text-white/55 uppercase tracking-wider">{stat.label}</p>
-                      </div>
-                    ))}
-                  </div>
+                  {coordinatorStats.length > 0 && (
+                    <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-6 border-t border-white/15">
+                      {coordinatorStats.map((stat, i) => (
+                        <div key={i} className="text-center sm:text-left">
+                          <p className="text-xl sm:text-2xl font-bold text-[#D4AF37] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                            {stat.value}
+                          </p>
+                          <p className="text-xs text-white/55 uppercase tracking-wider">{stat.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </AnimatedSection>
           </div>
         </section>
+        )}
 
         {/* Leadership Team */}
         <section className="px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24 lg:py-32 bg-[#003D82] dark:bg-[#0a1628]">
@@ -432,8 +453,10 @@ export default function Contact() {
                     <div className="bg-white/10 dark:bg-[#0d1f3c] border border-white/20 dark:border-white/10 hover:border-[#D4AF37] backdrop-blur-sm overflow-hidden group transition-all duration-500 rounded-lg">
                       <div className="relative overflow-hidden">
                         <img
-                          src={urlFor(executive.image).width(400).height(500).url()}
+                          {...thumbProps(executive.image, executive.name)}
                           alt={executive.name}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-48 sm:h-56 md:h-64 lg:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-700"
                         />
                       </div>

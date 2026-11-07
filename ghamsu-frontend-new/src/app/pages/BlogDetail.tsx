@@ -1,21 +1,13 @@
 import { useParams, useNavigate } from 'react-router'
 import { Calendar, User, ArrowLeft, Heart, Eye, Share2, Play, Music } from 'lucide-react'
 import { AnimatedSection } from '../components/AnimatedSection'
-import { useBlogBySlug } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
-import { useLikesAndViews } from '../../../src/lib/useLikesAndViews'
+import { RichText } from '../components/RichText'
+import { CommentsSection } from '../components/CommentsSection'
+import { useBlogBySlug } from '../../lib/hooks'
+import { imageProps } from '../../lib/media'
+import { useLikesAndViews } from '../../lib/useLikesAndViews'
 import { useState } from 'react'
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface MediaAttachment {
-  mediaType: 'video' | 'audio'
-  label: string
-  url: string
-  description?: string
-}
+import type { MediaAttachment } from '../../types/types'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Share Helper
@@ -194,6 +186,10 @@ export default function BlogDetail() {
   const navigate     = useNavigate()
   const [copyToast, setCopyToast] = useState(false)
 
+  // All hooks run on every render, before any early return.
+  const { data: blog, loading, error } = useBlogBySlug(slug)
+  const { likes, views, isLiking, hasLiked, addLike } = useLikesAndViews(blog ?? null)
+
   const handleShare = async (title: string) => {
     const result = await sharePost(title)
     if (result === 'copied') {
@@ -219,9 +215,6 @@ export default function BlogDetail() {
       </div>
     )
   }
-
-  const { data: blog, loading, error } = useBlogBySlug(slug)
-  const { likes, views, isLiking, hasLiked, addLike } = useLikesAndViews(blog?._id || '')
 
   if (error) {
     return (
@@ -265,70 +258,11 @@ export default function BlogDetail() {
     )
   }
 
-  const isNews      = blog.category === 'news' || blog._type === 'news'
+  const isNews      = blog._type === 'news'
   const contentType = isNews ? 'News' : 'Article'
   const authorLabel = isNews ? 'Reporter' : 'Author'
-  const mediaAttachments: MediaAttachment[] = blog.mediaAttachments ?? []
-
-  // ── Content renderer ─────────────────────────────────────────────────────
-
-  const renderContent = () => {
-    if (!blog.content || !Array.isArray(blog.content)) {
-      return <p className="text-muted-foreground">No content available for this post.</p>
-    }
-
-    return blog.content.map((block: any, idx: number) => {
-      if (block._type === 'block') {
-        return (
-          <div key={idx} className="mb-6">
-            {block.children?.map((child: any, childIdx: number) => {
-              const text = child.text
-              let element = <span key={childIdx}>{text}</span>
-              if (child.marks?.includes('strong'))      element = <strong key={childIdx} className="font-semibold">{text}</strong>
-              else if (child.marks?.includes('em'))     element = <em key={childIdx} className="italic">{text}</em>
-              else if (child.marks?.includes('code'))   element = <code key={childIdx} className="bg-secondary/50 px-2 py-1 rounded font-mono text-sm">{text}</code>
-              return element
-            })}
-          </div>
-        )
-      }
-
-      if (block._type === 'block' && block.style?.startsWith('h')) {
-        const level = block.style.charAt(1)
-        return React.createElement(`h${level}`, {
-          key: idx,
-          className: `text-${level === '1' ? '3xl' : level === '2' ? '2xl' : 'xl'} font-bold mt-8 mb-4`
-        }, block.children?.map((child: any) => child.text).join(''))
-      }
-
-      if (block._type === 'image') {
-        return (
-          <figure key={idx} className="my-12">
-            <img src={urlFor(block).width(800).url()} alt={block.alt || 'Blog image'} className="w-full rounded-lg" />
-            {block.caption && <figcaption className="text-center text-sm text-muted-foreground mt-4 italic">{block.caption}</figcaption>}
-          </figure>
-        )
-      }
-
-      if (block.listItem === 'bullet') {
-        return (
-          <ul key={idx} className="list-disc list-inside mb-6 space-y-2">
-            <li>{block.children?.map((child: any) => child.text).join('')}</li>
-          </ul>
-        )
-      }
-
-      if (block.listItem === 'number') {
-        return (
-          <ol key={idx} className="list-decimal list-inside mb-6 space-y-2">
-            <li>{block.children?.map((child: any) => child.text).join('')}</li>
-          </ol>
-        )
-      }
-
-      return null
-    })
-  }
+  const mediaAttachments = blog.mediaAttachments ?? []
+  const cover = imageProps(blog.featuredImage, blog.title)
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -359,11 +293,12 @@ export default function BlogDetail() {
           <AnimatedSection>
 
             {/* Featured Image */}
-            {blog.featuredImage && (
+            {cover.src && (
               <div className="relative">
                 <img
-                  src={urlFor(blog.featuredImage).width(800).url()}
+                  src={cover.src}
                   alt={blog.title}
+                  style={cover.style}
                   className="w-full h-96 object-cover rounded-lg mb-8 sm:mb-10 md:mb-12"
                 />
                 <div className="absolute bottom-4 right-4 flex gap-2">
@@ -433,8 +368,8 @@ export default function BlogDetail() {
             </p>
 
             {/* Body content */}
-            <div className="prose prose-lg max-w-none mb-12 sm:mb-16 text-base sm:text-lg leading-relaxed text-foreground space-y-6">
-              {renderContent()}
+            <div className="max-w-none mb-12 sm:mb-16 text-base sm:text-lg leading-relaxed text-foreground">
+              <RichText doc={blog.content} />
             </div>
 
             {/* ── Media Attachments ── */}
@@ -456,42 +391,36 @@ export default function BlogDetail() {
             )}
 
             {/* Stats + Share */}
-            {(likes !== undefined || views !== undefined) && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 py-8 border-t border-b my-8 sm:my-10">
-                <div className="flex gap-8">
-                  {likes !== undefined && (
-                    <div>
-                      <p className="text-3xl sm:text-4xl font-bold text-accent">{likes}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">👍 Likes</p>
-                    </div>
-                  )}
-                  {views !== undefined && (
-                    <div>
-                      <p className="text-3xl sm:text-4xl font-bold text-accent">{views}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">👁️ Views</p>
-                    </div>
-                  )}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 py-8 border-t border-b my-8 sm:my-10">
+              <div className="flex gap-8">
+                <div>
+                  <p className="text-3xl sm:text-4xl font-bold text-accent">{likes}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">👍 Likes</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={addLike}
-                    disabled={isLiking || hasLiked}
-                    aria-label={hasLiked ? 'Already liked' : 'Like this post'}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 border disabled:opacity-60 ${hasLiked ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-500/10 dark:border-red-500/30' : 'border-border hover:border-red-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 active:scale-95'}`}
-                  >
-                    <Heart className={`w-4 h-4 transition-all duration-200 ${hasLiked ? 'fill-red-500 text-red-500' : ''}`} />
-                    {hasLiked ? 'Liked' : 'Like'}
-                  </button>
-                  <button
-                    onClick={() => handleShare(blog.title)}
-                    aria-label="Share this post"
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium border border-border hover:border-blue-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all duration-200 active:scale-95"
-                  >
-                    <Share2 className="w-4 h-4" /> Share
-                  </button>
+                <div>
+                  <p className="text-3xl sm:text-4xl font-bold text-accent">{views}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">👁️ Views</p>
                 </div>
               </div>
-            )}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={addLike}
+                  disabled={isLiking || hasLiked}
+                  aria-label={hasLiked ? 'Already liked' : 'Like this post'}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 border disabled:opacity-60 ${hasLiked ? 'bg-red-50 border-red-200 text-red-500 dark:bg-red-500/10 dark:border-red-500/30' : 'border-border hover:border-red-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 active:scale-95'}`}
+                >
+                  <Heart className={`w-4 h-4 transition-all duration-200 ${hasLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                  {hasLiked ? 'Liked' : 'Like'}
+                </button>
+                <button
+                  onClick={() => handleShare(blog.title)}
+                  aria-label="Share this post"
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium border border-border hover:border-blue-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all duration-200 active:scale-95"
+                >
+                  <Share2 className="w-4 h-4" /> Share
+                </button>
+              </div>
+            </div>
 
             {/* Author */}
             {blog.authorName && (
@@ -505,6 +434,9 @@ export default function BlogDetail() {
             )}
 
           </AnimatedSection>
+
+          {/* Not animated: the form must be usable straight away. */}
+          <CommentsSection postId={blog._id} />
         </div>
       </article>
 

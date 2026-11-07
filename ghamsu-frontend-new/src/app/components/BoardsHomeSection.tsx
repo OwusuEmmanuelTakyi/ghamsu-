@@ -1,46 +1,16 @@
-import { Heart, FileText, Shield, Wrench, GraduationCap, Activity } from 'lucide-react'
 import { AnimatedSection } from './AnimatedSection'
+import { boardIcon } from './boardStyles'
+import { useBoards } from '../../lib/hooks'
 import { Link } from 'react-router'
 
 export function BoardsHomeSection() {
-  const boards = [
-    {
-      icon: Heart,
-      title: 'Prayer Board',
-      slug: 'prayer-board',
-      description: 'Coordinating prayer initiatives and intercession ministries.',
-    },
-    {
-      icon: FileText,
-      title: 'Publications & Communications Board',
-      slug: 'publications-board',
-      description: 'Managing church communications and media outreach.',
-    },
-    {
-      icon: Shield,
-      title: 'Audit Board',
-      slug: 'audit-board',
-      description: 'Ensuring financial accountability and transparency.',
-    },
-    {
-      icon: Wrench,
-      title: 'Project Board',
-      slug: 'project-board',
-      description: 'Overseeing church development and infrastructure projects.',
-    },
-    {
-      icon: GraduationCap,
-      title: 'Research & Education Board',
-      slug: 'research-board',
-      description: 'Advancing theological research and educational programs.',
-    },
-    {
-      icon: Activity,
-      title: 'Medical Board',
-      slug: 'medical-board',
-      description: 'Providing healthcare ministry and wellness initiatives.',
-    },
-  ]
+  const { data } = useBoards()
+  const boards = (data ?? []).map((board) => ({
+    icon: boardIcon(board.homeIcon ?? board.icon),
+    title: board.title,
+    slug: board.slug,
+    description: board.summary ?? board.description ?? '',
+  }))
 
   return (
     <section className="py-32 px-6">

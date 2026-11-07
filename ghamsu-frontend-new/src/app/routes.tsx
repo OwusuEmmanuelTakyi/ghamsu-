@@ -17,7 +17,20 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Partner = lazy(() => import('./pages/Partner'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail'));
 const BoardDetail = lazy(() => import('./pages/BoardDetail'));
+const Activities = lazy(() => import('./pages/Activities'));
+const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
+const ExecutiveForm = lazy(() => import('./pages/ExecutiveForm'));
 const Notfound = lazy(() => import('./pages/Notfound'));
+// The admin dashboard is a separate chunk with its own layout.
+const AdminApp = lazy(() => import('./admin/AdminApp'));
+
+function AdminRoot() {
+  return (
+    <Suspense fallback={<PageLoader show={true} />}>
+      <AdminApp />
+    </Suspense>
+  );
+}
 
 function Layout() {
   const navigation = useNavigation();
@@ -40,6 +53,8 @@ function Layout() {
 }
 
 export const router = createBrowserRouter([
+  // Outside the public Layout: no site navigation or footer.
+  { path: '/admin/*', Component: AdminRoot },
   {
     path: '/',
     Component: Layout,
@@ -56,7 +71,10 @@ export const router = createBrowserRouter([
       { path: '*', Component: Notfound },
       { path: 'blogs/:slug', Component: BlogDetail },
 
-      { path: 'boards/:slug', Component: BoardDetail }
+      { path: 'boards/:slug', Component: BoardDetail },
+      { path: 'activities', Component: Activities },
+      { path: 'activities/:slug', Component: ActivityDetail },
+      { path: 'executive-form/:token', Component: ExecutiveForm },
     ],
   },
 ]);

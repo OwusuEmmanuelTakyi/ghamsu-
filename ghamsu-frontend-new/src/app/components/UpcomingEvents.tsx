@@ -1,11 +1,14 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { AnimatedSection } from './AnimatedSection'
 import { Link } from 'react-router'
-import { useEvents } from '../../../src/lib/hooks'
-import { urlFor } from '../../../src/lib/sanity'
+import { useEvents } from '../../lib/hooks'
+import { thumbProps } from '../../lib/media'
 
 export function UpcomingEvents() {
-  const { data: events, loading, error } = useEvents()
+  const { data: allEvents, loading, error } = useEvents()
+  // Only events that have not happened yet (events are sorted soonest first).
+  const now = Date.now()
+  const events = (allEvents ?? []).filter((event) => new Date(event.date).getTime() >= now)
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -73,8 +76,10 @@ export function UpcomingEvents() {
                 <div className="bg-card border border-border hover:border-accent/50 transition-all duration-500 overflow-hidden group">
                   <div className="relative h-40 sm:h-44 md:h-48 overflow-hidden">
                     <img
-                      src={urlFor(event.flyer).width(400).height(300).url()}
+                      {...thumbProps(event.flyer, event.title)}
                       alt={event.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
