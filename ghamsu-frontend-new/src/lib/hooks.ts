@@ -270,11 +270,13 @@ export function useGallery(filters?: { category?: string }): FetchState<GalleryI
 // ─── Executives ────────────────────────────────────────────────────────────────
 
 export function useExecutives(filters?: { category?: string }): FetchState<Executive[]> {
+  // Visitors can only read the public_* contact columns, which the database
+  // leaves empty when the person chose to hide their phone or email.
   const all = useQuery('executives', async (db) =>
     unwrap(
       await db
         .from('executives')
-        .select('*')
+        .select('id, name, position, image_path, image_alt, image_caption, image_focus, sort_order, category, bio, public_phone, public_email, public_whatsapp')
         .eq('status', 'published')
         .order('sort_order', { ascending: true }),
     ).map((row: Row): Executive => ({
@@ -282,9 +284,9 @@ export function useExecutives(filters?: { category?: string }): FetchState<Execu
       name: row.name,
       position: row.position,
       image: toImage(row, 'image'),
-      phone: opt(row.phone),
-      email: opt(row.email),
-      whatsapp: opt(row.whatsapp),
+      phone: opt(row.public_phone),
+      email: opt(row.public_email),
+      whatsapp: opt(row.public_whatsapp),
       order: opt(row.sort_order),
       category: opt(row.category),
       bio: opt(row.bio),

@@ -18,6 +18,7 @@ const Partner = lazy(() => import('./pages/Partner'));
 const BlogDetail = lazy(() => import('./pages/BlogDetail'));
 const BoardDetail = lazy(() => import('./pages/BoardDetail'));
 const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
+const ExecutiveForm = lazy(() => import('./pages/ExecutiveForm'));
 const Notfound = lazy(() => import('./pages/Notfound'));
 // The admin dashboard is a separate chunk with its own layout.
 const AdminApp = lazy(() => import('./admin/AdminApp'));
@@ -71,6 +72,7 @@ export const router = createBrowserRouter([
 
       { path: 'boards/:slug', Component: BoardDetail },
       { path: 'activities/:slug', Component: ActivityDetail },
+      { path: 'executive-form/:token', Component: ExecutiveForm },
     ],
   },
 ]);

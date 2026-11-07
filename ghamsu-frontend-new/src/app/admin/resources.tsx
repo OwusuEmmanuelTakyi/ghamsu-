@@ -87,9 +87,10 @@ async function syncCoordinator(row: Values, values: Values, ctx: ResourceContext
       title: row.position,
       image_path: row.image_path,
       image_alt: row.image_alt,
-      email: row.email,
-      phone: row.phone,
-      whatsapp: row.whatsapp,
+      // The coordinator panel is public, so honour the person's privacy choices.
+      email: row.show_email === false ? null : row.email,
+      phone: row.show_phone === false ? null : row.phone,
+      whatsapp: row.show_phone === false ? null : row.whatsapp,
       bio_paragraphs: bio,
     }
   } else if (current.executive_id === row.id) {
@@ -218,6 +219,7 @@ export const executives: ResourceConfig = {
   label: 'Executives',
   singular: 'Executive',
   path: '/admin/executives',
+  defaults: { show_phone: true, show_email: true },
   titleColumn: 'name',
   subtitle: (row) => `${row.position ?? 'No position'} · ${({ connexional: 'Connexional Executive', 'Connexional Boards': 'Connexional Boards', Diocese: 'Diocese', local: 'Local' } as Values)[row.category] ?? 'No category'}`,
   badge: (row, extra) => (extra.coordinatorId && extra.coordinatorId === row.id ? 'Coordinator' : null),
@@ -251,6 +253,8 @@ export const executives: ResourceConfig = {
       help: 'Digits only, with the country code. No spaces, dashes or + sign.',
     },
     { name: 'bio', label: 'Short bio', type: 'textarea', help: 'Leave a blank line between paragraphs.' },
+    { name: 'show_phone', label: 'Show phone and WhatsApp publicly', type: 'switch', help: 'When off, visitors cannot see them, even through the database. Staff still can.' },
+    { name: 'show_email', label: 'Show email publicly', type: 'switch' },
     {
       name: 'is_coordinator', label: 'Is coordinator', type: 'switch', virtual: true, adminOnly: true,
       help: "Shows this person in the Contact page's Connexional Coordinator panel. Saving copies their name, position, photo, contact details and bio there. Headings and stats stay as they are.",

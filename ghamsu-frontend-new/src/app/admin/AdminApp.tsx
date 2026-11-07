@@ -7,6 +7,8 @@ import { AuthProvider } from './auth'
 import { AdminLayout } from './AdminLayout'
 import { ForgotPasswordPage, LoginPage, RequireAdmin, RequireStaff, ResetPasswordPage } from './pages/AuthPages'
 import { Dashboard } from './pages/Dashboard'
+import { ExecutiveLinks } from './pages/ExecutiveLinks'
+import { ExecutiveSubmissionReview, ExecutiveSubmissions } from './pages/ExecutiveSubmissions'
 import { PostForm } from './pages/PostForm'
 import { Registrations } from './pages/Registrations'
 import { ResourceForm } from './pages/ResourceForm'
@@ -68,6 +70,9 @@ export default function AdminApp() {
             />,
           ])}
           <Route path="activities/:id/registrations" element={<Registrations />} />
+          <Route path="executive-links" element={<RequireAdmin><ExecutiveLinks /></RequireAdmin>} />
+          <Route path="executive-submissions" element={<RequireAdmin><ExecutiveSubmissions /></RequireAdmin>} />
+          <Route path="executive-submissions/:id" element={<RequireAdmin><ExecutiveSubmissionReview /></RequireAdmin>} />
           <Route path="settings" element={<RequireAdmin><SiteSettings /></RequireAdmin>} />
           <Route path="users" element={<RequireAdmin><Users /></RequireAdmin>} />
           <Route path="*" element={

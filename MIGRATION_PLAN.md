@@ -34,6 +34,29 @@ Major Activities moved from `/boards` to a section on `/events`. Each activity h
 - Major activities have the full editor, including a rich-text description, an automatic slug, and an Open/Close registration button on the list.
 - Each activity has a Registrations page with search, a total count, places left, admin-only delete, and a CSV download. In the CSV, text that a spreadsheet could read as a formula is prefixed so it can't run.
 
+### Change: Executive self-submission (migration 0005)
+
+Executives submit their own profile through a link an admin shares. Nothing appears on the site until an admin approves it. Also on `supabase-switch`.
+
+**Order matters:** run 0004, then 0005, in the Supabase SQL editor before deploying this code. The Contact page reads the new `public_*` columns from 0005, so without it the leadership grid fails to load. Both were already applied on 2026-11-07, when `node --env-file=.env.migration scripts/test-executive-submissions.mjs` passed 32 of 32 checks against the live project and deleted its test data.
+
+**What 0005 adds:**
+- **`executive_invite_links`:** a name, a random 64-character token, and optionally a preset category, a preset board, an expiry date and a maximum number of submissions. Links can be switched on and off. Only admins can read or change them.
+- **`executive_submissions`:** the submitted profile, photo paths, consent, `show_phone` and `show_email`, a status (pending, approved or rejected), a rejection reason, who reviewed it and when, and the executive it created. The same phone number can't have two pending submissions on one link.
+- **`executives.show_phone` and `executives.show_email`:** both default to true, so existing executives are unchanged. Visitors can no longer read the raw `phone`, `email` and `whatsapp` columns. They read `public_phone`, `public_email` and `public_whatsapp` instead, which are empty when the person chose to hide them. WhatsApp follows the phone setting.
+- **Functions:** `executive_invite_info(token)` checks a link for the form. `submit_executive_profile(token, profile)` is the only way a visitor can create a submission. `approve_executive_submission` and `reject_executive_submission` are admin-only.
+- **Bucket `executive-submissions` (private):** WebP or JPEG files of up to 5 MB. Visitors can upload only into a folder named after a link that is currently valid. They can't read, list, overwrite or delete files. Staff can read, and admins can delete.
+
+**How it works:**
+- **Admin, Executive links:** create a link, then copy it or share it on WhatsApp. Each link shows its submission and pending counts, and can be deactivated or deleted. Deleting a link keeps the submissions already received.
+- **Visitor, `/executive-form/:token`:** the photo is resized in the browser to a WebP copy of at most 2000 px plus an 800 px thumbnail (JPEG on browsers without WebP). The form checks Ghana phone numbers, has a hidden honeypot field, requires consent, and is marked `noindex`. An invalid, expired, inactive or full link shows a "no longer active" page.
+- **Admin, Executive submissions:** Pending, Approved and Rejected tabs. The menu shows a badge with the pending count. Before approving, the admin can edit every field and click the photo to set its focus point. Approving copies the photo into the public `media` bucket, creates a published executive at the end of its category, and opens it in the Executives editor. If the link has a preset board, the person is also added to that board's members, with phone and email only if they chose to show them. Rejecting takes an optional reason and publishes nothing.
+
+**Known limits:**
+- There's no rate limiting. A script holding a valid link could fill it up to its maximum, or upload photos without submitting. Setting a maximum and an expiry on each link limits this.
+- Photos from abandoned forms, or from submissions later deleted, stay in the private bucket until an admin removes them. They are never public.
+- Signed-in staff can still read every executive's raw phone and email. Sign-ups are disabled, so only staff accounts exist.
+
 **Before deploying Phase 3:** add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to Vercel (otherwise the site shows its "temporarily unavailable" page), and run `--stats-only` just before the switch so likes and views collected on the old site carry over.
 
 **Owner decisions (answers to the Phase 1 questions):**

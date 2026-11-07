@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import {
-  Calendar, ExternalLink, FileText, Flag, Images, LayoutDashboard, LogOut, Menu, Mic, Quote, Settings,
+  Calendar, ExternalLink, FileText, Flag, Images, Inbox, LayoutDashboard, Link2, LogOut, Menu, Mic, Quote, Settings,
   Sparkles, UserCog, Users as UsersIcon, Presentation,
 } from 'lucide-react'
+import { countPendingSubmissions } from './pages/ExecutiveSubmissions'
 import logoImage from '../../images/logo.png'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
@@ -24,12 +25,24 @@ const CONTENT_LINKS = [
 ]
 
 const ADMIN_LINKS = [
+  { to: '/admin/executive-submissions', label: 'Executive submissions', icon: Inbox, badge: true },
+  { to: '/admin/executive-links', label: 'Executive links', icon: Link2 },
   { to: '/admin/settings', label: 'Site settings', icon: Settings },
   { to: '/admin/users', label: 'Users', icon: UserCog },
 ]
 
 function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const { isAdmin, profile, signOut } = useAuth()
+  const { pathname } = useLocation()
+  const [pending, setPending] = useState(0)
+  // Refreshed on every page change, so approving or rejecting updates it.
+  useEffect(() => {
+    if (!isAdmin) return
+    let current = true
+    countPendingSubmissions().then((n) => current && setPending(n))
+    return () => { current = false }
+  }, [isAdmin, pathname])
+
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
       isActive ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-secondary'
@@ -53,9 +66,14 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
         {isAdmin && (
           <>
             <p className="px-3 pb-1 pt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Admin</p>
-            {ADMIN_LINKS.map(({ to, label, icon: Icon }) => (
+            {ADMIN_LINKS.map(({ to, label, icon: Icon, badge }) => (
               <NavLink key={to} to={to} className={linkClass} onClick={onNavigate}>
-                <Icon className="h-4 w-4" /> {label}
+                <Icon className="h-4 w-4" /> <span className="flex-1">{label}</span>
+                {badge && pending > 0 && (
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground" aria-label={`${pending} waiting for approval`}>
+                    {pending}
+                  </span>
+                )}
               </NavLink>
             ))}
           </>
